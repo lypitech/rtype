@@ -1,15 +1,15 @@
 # CPP-500 ‒ `R-Type`
 
 ## Requrements:
-- **CMAKE**
-- **Package manager**
+### CMAKE
+### Package manager
     - [Conan](conan.io)
     - [Vcpkg](vcpkg.io)
     - [CMake CPM](https://github.com/cpm-cmake/CPM.cmake)
-- **Cross-Platform**
+### Cross-Platform
     - Window (Microsoft Visual C++)
     - no MacOS / WSL
-- **Documentation**
+### Documentation
     - English
 
     - README
@@ -49,15 +49,14 @@
         - RFC style (not obligatory)
         - Describe commands
         - Describe Packets
-- **Accessibility Requirements**
+### Accessibility Requirements
     - Providing a solution to:
         - Physical and motor disabilities
         - Audio and visual disabilities
         - Mental and cognitive disabilities
 
 
-## Delivery
-### <u>Part 1:</u> First Game prototype
+## <u>Delivery Part 1:</u> First Game prototype
 4 weeks
 - **MUST** be playable
     - Star-field in background
@@ -72,7 +71,7 @@
         - Networking
         - Game Logic
 
-#### Server
+### Server
 Handles game logic
 Has authority
 
@@ -102,7 +101,7 @@ Has authority
         - Windows Sockets
         - (MUST be encapsulated)
 
-#### Client
+### Client
 graphical display of the game
 
 - **MUST** display the game
@@ -127,7 +126,7 @@ graphical display of the game
         - Godot
         - etc...
 
-#### Protocol
+### Protocol
 - **MUST** be binary protocol
 - **MUST** use UDP
 - **MAY** use TCP for certain cases with justification
@@ -139,7 +138,7 @@ graphical display of the game
 Note: we can use [ASN.1 in BER/DER](https://en.wikipedia.org/wiki/ASN.1#Example_encoded_in_DER) for dynamic data transmition  
 `type[1] length[1/1+inf] data[length]`
 
-#### Game Engine
+### Game Engine
 key words:
 - abstraction
 - re-usable code
@@ -154,7 +153,7 @@ Determines:
 - physics
 - network
 
-#### Gameplay
+### Gameplay
 
 - **MUST** display a slow horizontal scrolling background representing space with stars, planets...
 - **MUST** use timers
@@ -165,8 +164,82 @@ Determines:
 - The four players in a game **MUST** be distinctly identifiable
 - Add sound
 
-### <u>Part 2:</u> Advanced Topics
+## <u>Delivery Part 2:</u> Advanced Topics
 3 weeks
+### <u>Track #1:</u> Advanced Architecture - Building a real game engine
+@nathan
+
+- use of 3rd-party libs are allowed
+- can be delivered as a separate and standalone project
+- create a 2nd sample game to demonstrate a reusable and generic system
+
+#### Game Engine Features:
+- Modularity
+    - compile time (as flags to enable features)
+    - link-time (as multiple libs)
+    - run-time plugin API (load shared-object libraries)
+- Engine Subsystems
+    - Rendering Engine
+    - Physics engine
+    - Audio Engine
+    - Human-Machine interface
+    - Message passing interface
+    - Resources & asset management
+    - Scripting
+
+#### Tooling
+- Developer console
+- In-game metrics and profiling
+- World/scene/assets Editor
+    - The quality of the editor(s) will be evaluated:  
+    From a very simplistic solution using only configuration files, to a fully fledged interactive drag-and-drop graphical application.
+
+### <u>Track #2:</u> Advanced Networking - Building a reliable network game
+
+3 topics to choose from
+
+#### Multi-instance Server
+- Run several different game instances in parallel
+- Lobby/Room system
+- Users and identities management:
+    - storage
+    - sessions
+    - authentication
+    - etc...
+- Communication between users:
+    - text chat
+    - voice chat
+- Game rules management (per game instance)
+- Global scoreboard
+- Administration dashboard
+
+#### Data Transmission Efficiency and Reliability
+what mechanisms can you provide to help mitigate on
+those network issues
+
+- Data packing
+- General-purpose data compression
+    - note: useless unless for large data (json, ect)
+- Network errors mitigation (packets drops, reordering, duplication)
+- Message reliability
+- High-level Networking Engine Architecture
+    - note: interpolation
+- Possible solutions
+    - client-side prediction with server reconciliation
+    - entity state interpolation
+    - server-side lag compensation
+        - input delaying
+        - rollback netcode
+
+### <u>Track #3:</u> Advanced Gameplay - Building a Fun and complete video game
+
+make it fun to play
+
+#### Players: elements of Gameplay
+@see p21
+
+#### Game Designers: content creation tools
+@see p22
 
 ---
 
