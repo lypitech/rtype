@@ -3,57 +3,57 @@
 ## Requrements:
 ### CMAKE
 ### Package manager
-    - [Conan](conan.io)
-    - [Vcpkg](vcpkg.io)
-    - [CMake CPM](https://github.com/cpm-cmake/CPM.cmake)
+- [Conan](conan.io)
+- [Vcpkg](vcpkg.io)
+- [CMake CPM](https://github.com/cpm-cmake/CPM.cmake)
 ### Cross-Platform
-    - Window (Microsoft Visual C++)
-    - no MacOS / WSL
+- Window (Microsoft Visual C++)
+- no MacOS / WSL
 ### Documentation
-    - English
+- English
 
-    - README
-        - Project purpose
-        - Dependencies / Requirements / Supported platforms
-        - Build
-        - Usage instructions
-        - Quick-start information
-        - Useful links
-        - License
-        - Authors / contacts
+- README
+    - Project purpose
+    - Dependencies / Requirements / Supported platforms
+    - Build
+    - Usage instructions
+    - Quick-start information
+    - Useful links
+    - License
+    - Authors / contacts
 
-    - Developer Documentation
-        - Architectural diagrams
-        - Main systems overviews and description
-        - Tutorials and How-To's
-        - Contribution guidelines
-        - Coding conventions
-        - Doxygen is not enougth
+- Developer Documentation
+    - Architectural diagrams
+    - Main systems overviews and description
+    - Tutorials and How-To's
+    - Contribution guidelines
+    - Coding conventions
+    - Doxygen is not enougth
 
-    - Technical and Comparative Study
-        - Relevance of used technologies
-        - Explain used algorithms and data structures:
-        - Selection of existing algorithms
-        - Design patterns
-        - Data structures
-        - New and custom-designed algorithms
-        - Study storage techniques:
-        - Persistence
-        - Reliability
-        - Storage constraints
-        - Study Security:
-        - Main vulnerabilities of each technology
-        - Security monitoring in the long term
+- Technical and Comparative Study
+    - Relevance of used technologies
+    - Explain used algorithms and data structures:
+    - Selection of existing algorithms
+    - Design patterns
+    - Data structures
+    - New and custom-designed algorithms
+    - Study storage techniques:
+    - Persistence
+    - Reliability
+    - Storage constraints
+    - Study Security:
+    - Main vulnerabilities of each technology
+    - Security monitoring in the long term
 
-    - Protocol documentation
-        - RFC style (not obligatory)
-        - Describe commands
-        - Describe Packets
+- Protocol documentation
+    - RFC style (not obligatory)
+    - Describe commands
+    - Describe Packets
 ### Accessibility Requirements
-    - Providing a solution to:
-        - Physical and motor disabilities
-        - Audio and visual disabilities
-        - Mental and cognitive disabilities
+- Providing a solution to:
+    - Physical and motor disabilities
+    - Audio and visual disabilities
+    - Mental and cognitive disabilities
 
 
 ## <u>Delivery Part 1:</u> First Game prototype
