@@ -1,8 +1,8 @@
 ## Requrements:
 ### CMAKE
 ### Package manager
-- [Conan](conan.io)
-- [Vcpkg](vcpkg.io)
+- [Conan](https://conan.io)
+- [Vcpkg](https://vcpkg.io)
 - [CMake CPM](https://github.com/cpm-cmake/CPM.cmake)
 ### Cross-Platform
 - Window (Microsoft Visual C++)
