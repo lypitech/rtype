@@ -53,6 +53,7 @@ cmake --build build --target debug
 ## Useful links
 
 ## License
+See [LICENCE](LICENCE).
 
 ## Authors / contacts
 louis.persin@epitech.eu  
