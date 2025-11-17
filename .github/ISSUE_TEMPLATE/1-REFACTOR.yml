@@ -1,7 +1,7 @@
 name: Create a refactor request
 title: "Quick description"
 description: request a refactor here
-projects: "Sigmapitech/9"
+projects: "lypitech/2"
 body:
   - type: textarea
     id: refactor_description
