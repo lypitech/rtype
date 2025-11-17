@@ -1,0 +1,36 @@
+# build artifacts
+*.o
+*.a
+*.so
+*.dll
+
+# debug files
+*.gch
+*.gcda
+*.gcno
+vgcore.*
+
+# ide specific
+.vscode/
+.cache/
+compile_commands.json
+.clangd
+.idea/
+
+# CMake specific
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+CMakeUserPresets.json
+
+# binaries
+a.out
+rtype
