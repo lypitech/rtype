@@ -5,7 +5,7 @@ This project is developed as part of the EPITECH Advanced C++ curriculum.
 Its primary objective is to design and implement a ecs based game engine built on a client–server architecture.  
 The engine is intended to provide a solid foundation for real-time gameplay, efficient communication between components, and scalable system design.
 
-To showcase and validate the engine’s features, the project includes a full recreation of the classic game *R-Type*.  
+To showcase and validate the engine’s features, the project includes a full recreation of the classic game _R-Type_.  
 This recreation serves both as a technical demonstration and as a practical benchmark, ensuring that the engine supports entity management, networking, rendering, event handling, and other core gameplay mechanics.
 
 ## Dependencies / Requirements / Supported platforms
@@ -53,7 +53,7 @@ cmake --build build --target debug
 ## Useful links
 
 ## License
-See [LICENCE](LICENCE).
+See [LICENCE](/LICENCE).
 
 ## Authors / contacts
 louis.persin@epitech.eu  
