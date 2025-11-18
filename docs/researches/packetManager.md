@@ -1,34 +1,27 @@
 # **Why Our R-Type Project Should Use Conan Instead of vcpkg or CPM.cmake**
 
 ## **Overview**
-
 Our R-Type project depends on **raylib**, **ImGui**, and **ASIO**, and needs a dependency manager that is reliable across platforms, works well in CMake, and keeps our builds predictable for every developer. After evaluating **Conan**, **vcpkg**, and **CPM.cmake**, Conan provides the strongest overall workflow for this type of project.
 
 # **Conan: Key Advantages**
 
 ### **Reproducible Builds**
-
 Conan uses **profiles** and **lockfiles** to ensure that all developers and CI pipelines use the same compiler settings, dependency versions, and configurations. This prevents inconsistent builds and avoids environment-related bugs.
 
 ### **Efficient CMake Integration**
-
-Conan’s CMake integration is straightforward and modern, allowing us to simply call `find_package()` for raylib, ImGui, and ASIO without manual FetchContent setups or custom build scripts.
+Conan's CMake integration is straightforward and modern, allowing us to simply call `find_package()` for raylib, ImGui, and ASIO without manual FetchContent setups or custom build scripts.
 
 ### **Binary Caching for Faster Builds**
-
-Conan can download or locally build dependencies once and reuse them, reducing build times significantly—especially important for raylib and ImGui.
+Conan can download or locally build dependencies once and reuse them, reducing build times significantly-especially important for raylib and ImGui.
 
 
 # **Why Not vcpkg?**
-
 Although vcpkg is popular and easy to use, it presents several issues for a project like R-Type:
 
 ### **1. Limited Flexibility**
-
-vcpkg enforces configuration through *triplets*, which constrain how libraries are built. This makes custom tuning (static/shared options, compiler flags, experimental configs) more difficult compared to Conan’s fully customizable profiles.
+vcpkg enforces configuration through *triplets*, which constrain how libraries are built. This makes custom tuning (static/shared options, compiler flags, experimental configs) more difficult compared to Conan's fully customizable profiles.
 
 ### **2. Rebuilds and Slow Installations**
-
 vcpkg often recompiles dependencies when no prebuilt binaries exist for your platform or configuration. For libraries like raylib:
 
 - Building from source frequently becomes slow
@@ -36,22 +29,19 @@ vcpkg often recompiles dependencies when no prebuilt binaries exist for your pla
 - Developer onboarding takes longer
 
 ### **3. Global Toolchain Side Effects**
-
 vcpkg uses a **global** toolchain file.
 This means:
 
 - All dependencies must come from vcpkg
 - Mixing custom libraries with vcpkg libraries can become messy
-- There is less isolation and version control compared to Conan’s per-project dependency model
+- There is less isolation and version control compared to Conan's per-project dependency model
 
 For multi-platform game development with varied environments, these constraints can cause friction.
 
 # **Why Not CPM.cmake?**
-
 CPM is lightweight but insufficient for a real project like R-Type.
 
 ### **1. Always Builds From Source**
-
 CPM.cmake fetches dependencies using `FetchContent`.
 This means:
 
@@ -63,7 +53,6 @@ This means:
 This is a major drawback for projects with several compiled components.
 
 ### **2. No Version or ABI Management**
-
 CPM has no:
 
 - Lockfiles
@@ -71,16 +60,15 @@ CPM has no:
 - Conflict resolution
 - Reproducibility guarantees
 
-If upstream repositories change, our builds change too—potentially breaking functionality without warning.
+If upstream repositories change, our builds change too-potentially breaking functionality without warning.
 
 ### **3. Not Scalable for Larger Projects**
-
 While fine for header-only libraries or simple utilities, CPM becomes burdensome as soon as:
 
 - Multiple platforms
 - Multiple dependencies
 - or CI pipelines are involved.  
-  Game projects like R-Type quickly exceed CPM’s design scope.
+  Game projects like R-Type quickly exceed CPM's design scope.
 
 ---
 
