@@ -15,7 +15,7 @@ git clone --recurse-submodules https://github.com/lypitech/rtype.git
 ```
 
 This project uses [`conan`](https://conan.io/downloads) as its build system.  
-You can read how to setup `conan` in [docs/setup_connan.md](/docs/setup_connan.md).
+You can read how to setup `conan` in [docs/setup_conan.md](/docs/setup_conan.md).
 
 ## Build
 This project uses **CMake** as its build system.
