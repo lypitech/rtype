@@ -59,7 +59,8 @@ See [LICENSE](/LICENSE.md).
 louis.persin@epitech.eu  
 lysandre.boursette@epitech.eu  
 nathan.jeannot@epitech.eu  
-pierre.marguerie@epitech.eu
+pierre.marguerie@epitech.eu  
+esteban.bouyault-yvanez@epitech.eu
 
 ---
 
