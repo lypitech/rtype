@@ -12,6 +12,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # for clangd
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+# ==============================================================================
+#  Dependencies
+# ==============================================================================
+include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+
+find_package(asio REQUIRED)
+find_package(raylib REQUIRED)
+find_package(imgui REQUIRED)
+
 # ==============================================================================
 #  Source files
 # ==============================================================================
@@ -30,8 +43,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 # ==============================================================================
 #  Linking
 # ==============================================================================
-# target_link_libraries(${PROJECT_NAME} PRIVATE
-# )
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        asio::asio
+        raylib
+        imgui::imgui
+)
 
 # ==============================================================================
 #  Multithreaded builds

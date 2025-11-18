@@ -9,15 +9,22 @@ To showcase and validate the engine’s features, the project includes a full re
 This recreation serves both as a technical demonstration and as a practical benchmark, ensuring that the engine supports entity management, networking, rendering, event handling, and other core gameplay mechanics.
 
 ## Dependencies / Requirements / Supported platforms
+This project uses [**conan**](https://conan.io/downloads) as its build system.
+Make sure to run:
+```
+$ conan remote add conancenter https://center.conan.io
+$ conan remote list
+conancenter: https://center2.conan.io [Verify SSL: True, Enabled: True]
+$ conan profile detect
+```
 
 ## Build
-
 This project uses **CMake** as its build system.
 
 ### Build & Run
-
 ```sh
 # Configure and generate build files
+conan install . --output-folder=build --build=missing
 cmake -B build
 
 # Compile the project
@@ -31,7 +38,6 @@ mv build/rtype .
 ```
 
 ### Other Targets
-
 You can use the following custom build targets:
 
 | Target  | Description                                                    |
