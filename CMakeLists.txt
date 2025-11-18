@@ -64,16 +64,20 @@ endif()
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG_MODE")
 
-target_compile_options(${PROJECT_NAME} PRIVATE
-    -Wall -Wextra
-    -Winit-self
-    -Wshadow -Wundef
-    -Wredundant-decls -Wunreachable-code
-    -Wwrite-strings
-    -pedantic
-    -Wstrict-overflow=2
-    --param max-inline-insns-single=200
-)
+if (MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        -Wall -Wextra
+        -Winit-self
+        -Wshadow -Wundef
+        -Wredundant-decls -Wunreachable-code
+        -Wwrite-strings
+        -pedantic
+        -Wstrict-overflow=2
+        --param max-inline-insns-single=200
+    )
+endif()
 
 # ==============================================================================
 #  Custom build targets
