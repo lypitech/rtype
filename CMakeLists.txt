@@ -102,17 +102,9 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin
 )
 
-# ============================================================
+# ==============================================================================
 #  Tests
-# ============================================================
-# enable_testing()
-# 
-# add_executable(test_shovologger tests/Tester3000.cpp)
-# 
-# target_link_libraries(test_shovologger PRIVATE shovologger)
-# 
-# target_include_directories(test_shovologger PRIVATE
-#     ${CMAKE_CURRENT_SOURCE_DIR}/include
-# )
-# 
-# add_test(NAME LoggerTest COMMAND test_shovologger)
+# ==============================================================================
+enable_testing()
+
+add_subdirectory(tests)

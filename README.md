@@ -51,6 +51,14 @@ cmake --build build --target clean
 cmake --build build --target debug
 ```
 
+### Testing
+You can run tests by runing:
+```sh
+cmake --build build --target test
+cd build
+ctest --output-on-failure
+```
+
 ## Usage instructions
 
 ## Quick-start information
