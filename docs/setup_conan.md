@@ -1,7 +1,7 @@
 # Setup `conan`
 
 ## Get conan
-You can install `conan` for your os from [https://conan.io/downloads](https://conan.io/downloads).
+You can install `conan` for your OS from [https://conan.io/downloads](https://conan.io/downloads).
 
 ## Post-install
 

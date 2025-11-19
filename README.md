@@ -2,11 +2,14 @@
 
 ## Project Purpose
 This project is developed as part of the EPITECH Advanced C++ curriculum.  
-Its primary objective is to design and implement a ecs based game engine built on a client–server architecture.  
-The engine is intended to provide a solid foundation for real-time gameplay, efficient communication between components, and scalable system design.
+Its primary objective is to design and implement an ECS-based game engine built on a client–server architecture.  
+The engine is intended to provide a solid foundation for real-time gameplay, efficient communication between components,
+and scalable system design.
 
-To showcase and validate the engine’s features, the project includes a full recreation of the classic game _R-Type_.  
-This recreation serves both as a technical demonstration and as a practical benchmark, ensuring that the engine supports entity management, networking, rendering, event handling, and other core gameplay mechanics.
+To showcase and validate the engine’s features, the project includes a full recreation of the classic 1987 game
+[_R-Type_](https://en.wikipedia.org/wiki/R-Type).  
+This recreation serves both as a technical demonstration and as a practical benchmark, ensuring that the engine supports
+entity management, networking, rendering, event handling, and other core gameplay mechanics.
 
 ## Dependencies / Requirements / Supported platforms
 Make sure to clone the repo and its submodules:
@@ -14,7 +17,7 @@ Make sure to clone the repo and its submodules:
 git clone --recurse-submodules https://github.com/lypitech/rtype.git
 ```
 
-This project uses [`conan`](https://conan.io/downloads) as its build system.  
+This project uses [`conan`](https://conan.io/) as its package manager.  
 You can read how to setup `conan` in [docs/setup_conan.md](/docs/setup_conan.md).
 
 ## Build
@@ -23,11 +26,11 @@ This project uses **CMake** as its build system.
 ### Build & Run
 ```sh
 # Configure and generate build files
-conan install . --output-folder=build --build=missing
-cmake -B build
+conan install . --output-folder=build/ --build=missing
+cmake -B build/
 
 # Compile the project
-cmake --build build
+cmake --build build/
 
 # Move the resulting binary to the project root
 mv build/rtype .
@@ -35,6 +38,8 @@ mv build/rtype .
 # Run the program
 ./rtype
 ```
+
+If you want the build to be faster (to use all of your CPU cores), simply add `--parallel` to the options!
 
 ### Other Targets
 You can use the following custom build targets:
@@ -52,10 +57,10 @@ cmake --build build --target debug
 ```
 
 ### Testing
-You can run tests by runing:
+You can run tests by running:
 ```sh
-cmake --build build --target test
-cd build
+cmake --build build/ --target test
+cd build/
 ctest --output-on-failure
 ```
 
