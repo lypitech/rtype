@@ -21,12 +21,11 @@ endif()
 # ==============================================================================
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
-
 find_package(asio REQUIRED)
 find_package(raylib REQUIRED)
 find_package(imgui REQUIRED)
 
-add_subdirectory(shovologger)
+add_subdirectory(lib/shuvlog)
 
 # ==============================================================================
 #  Source files
@@ -35,20 +34,18 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-
 # ==============================================================================
 #  Include paths
 # ==============================================================================
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/shovologger/include
+    ${CMAKE_SOURCE_DIR}/lib/shuvlog/include
 )
 
 # ==============================================================================
 #  Linking
 # ==============================================================================
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    shovologger
     asio::asio
     raylib
     imgui::imgui
@@ -97,7 +94,6 @@ add_custom_target(re
     COMMAND ${CMAKE_COMMAND} --build . --target clean
     COMMAND ${CMAKE_COMMAND} --build . --target all
 )
-
 
 # ==============================================================================
 #  Installation

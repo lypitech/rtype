@@ -1,3 +1,3 @@
-[submodule "shovologger"]
-	path = shovologger
-	url = https://github.com/Shuvlyy/shovologger.git
+[submodule "shuvlog"]
+	path = lib/shuvlog
+	url = https://github.com/lypitech/shuvlog
