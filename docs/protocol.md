@@ -62,13 +62,15 @@ All packets begin with a standardized header that supports:
 - Acknowledgment
 - Timestamp echoing
 - Message classification.
+- Order grouping for reliable message
+- Reliable messages ID
 
 This section defines the updated header format incorporating timestamp echo support.
 
 ### 5.1 Packet Header
 ```
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|          Type           |       Reserved        |
+|          Type           |   order   |  Reserved |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                     Sequence                    |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -78,33 +80,47 @@ This section defines the updated header format incorporating timestamp echo supp
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                  Timestamp Echo                 |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                  Ack Delay (µs)                 |
+|                  Ack Delay (ms)                 |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    reliable_id                  |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                     Reserved2                   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
 ```
 
 Example in c:
 ```c
-struct PacketHeader {
+struct PacketHeaderReliable {
     uint16_t type;
-    uint16_t reserved; // unused
+    uint8_t order_group;   // for reliable
+    uint8_t reserved;      // unused
+
     uint32_t seq;
     uint32_t ack;
     uint32_t ack_bits;
+
     uint32_t timestamp;
     uint32_t ack_delay;
+
+    uint32_t reliable_id;  // for reliable
+    uint32_t reserved2;    // unused
 };
 ```
 
 ### 5.2 Header Fields
 - **Type (16 bits)** - Identifies the packet type (snapshot, input, reliable event, etc.).
-- **Reserved (16 bits)** - Unused (padding)
+- **Order group (8 bits)** - used for reliable ordered streaming (ex: game chat)
+- **Reserved (8 bits)** - Unused (padding)
 - **Sequence (32 bits)** - Monotonically increasing packet identifier.
 - **Ack (32 bits)** - Highest sequence number received from the peer.
 - **Ack Bits (32 bits)** - Bitmask where bit *n* indicates receipt of (Ack - n - 1).
 - **Timestamp Echo (32 bits)** - The sender echoes the timestamp (in ms) attached to the last acknowledged packet received from the peer.
 - **Ack Delay (32 bits)** - Time in ms between the moment the acknowledged packet was received and the moment this acknowledgment was generated.
+- **Reliable Message ID (32 bits)** - 
+- **Reserved2  (32 bits)** - Unused (padding)
 
-Total is a 24 bytes header.  
+Total is a 32 bytes header.  
 Payload content depends on the packet type.
 
 ## 6. Sequence Numbering, Acknowledgment System, and Timestamp Echo
@@ -200,39 +216,205 @@ Endpoints MUST NOT treat out-of-order arrival as an error: it is expected behavi
 | Out-of-order | Sequence < highest received                | Use only if useful; otherwise discard |
 
 ## 8. Reliable Message Layer
-This layer provides selective reliability for game-relevant messages such as inventory changes, ability activations, or session events.
+The Reliable Message Layer adds optional message-level reliability on top of the base protocol. Instead of using nested headers, the **base packet header is extended** with reliability-related fields when needed.
 
-### 8.1 Identification of Reliable Messages
-Reliable messages MUST be explicitly marked.  
-Two mechanisms are defined:
-1. **Packet Type Flag** - certain packet types are inherently reliable.
-2. **Reliable Message Header** - individual messages inside a packet may carry a `ReliableID` field.
+This keeps packets compact and simplifies parsing.
 
-A reliable message SHALL contain:
-- A unique 32-bit **Reliable Message ID**
-- Optional ordering group identifier (0 = no ordering required)
+### 8.1 Extended Header for Reliable Messages
 
-### 8.2 Reliable Message Queue
-Each endpoint maintains a retransmission queue containing:
-- Reliable Message ID
-- Associated packet sequence number
-- Timestamp of last transmission
-- Serialized payload
+#### 8.1.1 If the packet contains reliable messages, the header becomes:
+```c
+struct PacketHeaderReliable {
+    uint16_t type;
+    uint8_t order_group;   // ordering group 0..255
+    uint8_t reserved;      // unused
 
-When a packet containing reliable messages becomes acknowledged (via Ack/AckBits), all corresponding messages MUST be removed from the retransmission queue.
+    uint32_t seq;
+    uint32_t ack;
+    uint32_t ack_bits;
 
-### 8.3 Retransmission Logic
-Reliable messages are retransmitted if not acknowledged within a timeout.
+    uint32_t timestamp;
+    uint32_t ack_delay;
 
-The recommended timeout is:  
-**timeout = max(2 * RTT, 30 ms)**
+    uint32_t reliable_id;  // ReliableMessageID for this packet
+    uint32_t reserved2;    // unused
+};
+```
 
-This value is short enough for responsive gameplay but long enough to avoid excessive retransmissions.
+#### 8.1.2 Key points:
+- **Order group replaces the old "reserved" field.**
+- **reliable_id and reliable_length are included only if RELIABLE_MESSAGE_PRESENT is set.**
+- For packets without reliable messages, the original compact header is used.
 
-### 8.4 Ordering Rules
-If a reliable message belongs to an ordering group:
-- Messages MUST be applied in increasing ReliableMessageID order.
-- Out-of-order messages MUST be buffered until predecessors arrive.
+### 8.2 How a Packet Is Explicitly Marked as Reliable
+Inside `type` we dedicate one bit:
+```
+RELIABLE_MESSAGE_PRESENT = 0x8000  // highest bit
+```
+
+If this bit is set:
+- the extended reliable fields follow the base header.
+
+### 8.3 ReliableMessageID
+Each reliable packet has **one** ReliableMessageID.
+If the game needs to send multiple reliable messages at once, they must be bundled as one logical message or sent in separate reliable packets.
+
+Rationale:
+- Keeps packets much simpler.
+- Avoids per-message headers.
+
+`ReliableMessageID` is a strictly increasing 32-bit counter per endpoint.
+
+### 8.4 Ordering Groups
+
+#### 8.4.1 Definition
+An ordering group defines an independent *reliable ordered stream*.  
+Each group preserves message order *within* that group, but groups are independent from each other.
+
+#### 8.4.2 Group semantics
+- **Group 0** = unordered reliable message  
+  Applied immediately when received.
+
+- **Group 1..255** = ordered streams  
+  Each group maintains:
+  - `next_expected_reliable_id`
+  - a small buffer of out-of-order reliable messages
+
+#### 8.4.3 Purpose
+Without groups, reliable messages behave like TCP:
+- one lost message blocks all later reliable messages
+- even if those later messages are unrelated
+
+With ordering groups:
+- inventory updates can be ordered within their stream
+- ability activation messages can be ordered in another stream
+- chat messages can be ordered separately
+- losing a message in one stream does **not** block the others
+
+This avoids global head-of-line blocking.
+
+#### 8.4.4 Receiving a reliable message
+1. If `order_group == 0`  
+   -> deliver immediately, ack it
+
+2. If `reliable_id == next_expected_id`  
+   -> deliver  
+   -> increment `next_expected_id`  
+   -> then flush any buffered consecutive messages
+
+3. If `reliable_id > next_expected_id`  
+   -> store in buffer
+   -> wait for missing messages
+
+4. If `reliable_id < next_expected_id`  
+   -> duplicate  
+   -> ignore
+
+### 8.5 Acknowledgment of Reliable Messages
+Packet-level ACKs confirm only packet delivery—not reliable messages.  
+So reliable messages require their own acknowledgement system.
+
+#### 8.5.1 Reliable ACK Message
+A Reliable ACK is a small control message to ensure data transfer:
+```
+type = RELIABLE_ACK
+acked_reliable_id (32 bits)
+order_group (8 bits)
+```
+
+#### 8.5.2 When to send a Reliable ACK:
+- As soon as a new reliable message is received.
+- When a buffered reliable message becomes deliverable.
+- When an out-of-order message fills a gap.
+
+#### 8.5.3 What is NOT acknowledged:
+- Duplicates
+- Messages already acknowledged
+- Messages that belong to a group and arrive early but aren't yet deliverable
+
+#### 8.5.4 Exemple
+
+```
+CLIENT (sender)                                                SERVER (receiver)
+---------------------------------------+----------------------------------------
+                                       |
++------------------------------------->+
+SEND ReliableMessage(ID=42)            |
+  Packet contains:                     |
+  | type = RELIABLE_MESSAGE_PRESENT    |
+  | order_group = 3                    |
+  | reliable_id = 42                   |
+                                       |
+Sender stores message 42 in            |
+retransmission queue                   |
+                                       |
+                                       |
+                                       +--------------------------------------->
+                                       |    RECEIVE ReliableMessage(ID=42)
+                                       |      Check duplicate?
+                                       |      Check ordering group?
+                                       |      Buffer or deliver?
+                                       |        (Assume new + in-order)
+                                       |
+                                       |
+                                       +<--------------------------------------+
+                                       |    GENERATE Reliable ACK (ID=42)
+                                       |      Packet contains:
+                                       |      | type = RELIABLE_ACK
+                                       |      | acked_reliable_id = 42
+                                       |      | order_group = 3
+                                       |
+                                       |
+<--------------------------------------+
+RECEIVE Reliable ACK (ID=42)           |
+                                       |
+Sender removes ID=42 from              |
+retransmission queue                   |
+                                       |
+---------------------------------------+----------------------------------------
+                                       |
+--- LOSS CASE ---                      |
+                                       |
+If no ACK is received by timeout:      |
+    timeout = max(1.25 * RTT, 20 ms)   |
+                                       |
++------------------------------------->+
+SEND ReliableMessage(ID=42)            |
+  ...                                  |
+                                       +--------------------------------------->
+                                       |    RECEIVE ReliableMessage(ID=32)
+                                       |      reliable_id 42 already received
+                                       |      duplicate -> discard
+                                       |
+                                       |
+                                       +<--------------------------------------+
+                                       |    GENERATE Reliable ACK (ID=42)
+                                       |      ...
+---------------------------------------+----------------------------------------
+```
+
+## 8.6 Retransmission Logic
+
+Each sent reliable message is stored in the **retransmission queue**:
+
+```
+struct RetransmitEntry {
+    uint32_t reliable_id;
+    uint8_t order_group;
+    uint64_t last_send_time;
+    std::vector<uint8_t> payload;
+};
+```
+
+Reliable messages are removed once acknowledged.
+
+Timeout Formula:
+```
+timeout = max(1.25 * RTT, 20 ms)
+```
+
+- 20 ms minimum ensures very responsive retransmissions.
+- 1.25 RTT multiplier avoids false retransmits under jitter.
 
 Packets carrying reliable messages are resent when timeout expires.
 
