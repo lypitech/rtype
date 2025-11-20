@@ -1,0 +1,5 @@
+#!/bin/bash
+
+FILES=$(find . -iname "*.cpp" -or -iname "*.hpp" | xargs)
+
+clang-format --dry-run "$FILES"
