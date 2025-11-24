@@ -26,7 +26,7 @@ This project uses **CMake** as its build system.
 ### Build & Run
 ```sh
 # Configure and generate build files
-conan install . --output-folder=build/ --build=missing
+conan install . --output-folder=build/ --build=missing -s compiler.cppstd=23
 cmake -B build/
 
 # Compile the project
