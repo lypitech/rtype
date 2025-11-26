@@ -28,6 +28,7 @@ Makefile
 cmake_install.cmake
 install_manifest.txt
 compile_commands.json
+conan_provider.cmake
 CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
