@@ -1,4 +1,8 @@
+<div align="center"><img src="md/assets/R-Type_Banner.png" alt="R-Type banner"></div>
+
 # CPP-500 ‒ `R-Type`
+
+
 
 ## Project Purpose
 This project is developed as part of the EPITECH Advanced C++ curriculum.  
