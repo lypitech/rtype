@@ -1,38 +1,78 @@
-# build artifacts
+# CMake
+## Build directories
+[Cc]MakeFiles/
+CMakeCache.txt
+CMakeScripts/
+cmake_install.cmake
+CTestTestfile.cmake
+CMakeUserPresets.json
+Makefile
+build.ninja
+rules.ninja
+*.cmake
+*.ninja
+*.dir/
+
+## Common build directories
+cmake-build-*/
+build/
+out/
+bin/
+lib/
+obj/
+
+## CTest / testing outputs
+Testing/
+*.cache
+*.ctest
+*.test
+*.Test.xml
+
+# Build artifacts
 *.o
 *.a
 *.so
 *.dll
 
-# debug files
+# Debug files
 *.gch
 *.gcda
 *.gcno
 vgcore.*
 
-# ide specific
+# IDE specific
 .vscode/
 .cache/
-compile_commands.json
 .clangd
 .idea/
 
-# CMake specific
-build/
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-conan_provider.cmake
-CTestTestfile.cmake
-_deps
-CMakeUserPresets.json
+# Logs
+logs/
+*.log
 
-# binaries
-a.out
-rtype
+# OS specific
+## macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+## Thumbnails
+._*
+
+## Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.stackdump
+
+# Linux
+*~
+.nfs*
+
+# Binaries
+*.out
+*.exe
+*.app
+r-type_server
+r-type_client
