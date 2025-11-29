@@ -18,7 +18,6 @@ cmake-build-*/
 build/
 out/
 bin/
-lib/
 obj/
 
 ## CTest / testing outputs
