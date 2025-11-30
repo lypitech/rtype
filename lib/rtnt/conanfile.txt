@@ -1,0 +1,11 @@
+[requires]
+asio/1.36.0
+gtest/1.17.0
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[options]
+# no OpenSSL for Asio (header-only)
+asio/*:with_ssl=False
