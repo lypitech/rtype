@@ -1,18 +1,20 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(rtype
+project(r-type
     VERSION 0.0.1
     DESCRIPTION "CPP-500 ‒ R-Type"
     HOMEPAGE_URL "https://github.com/lypitech/rtype"
     LANGUAGES CXX
 )
 
+# --- Conan setup check ---
 if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
     include("${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
 else()
     message(FATAL_ERROR "Conan toolchain not found. Did you run 'conan install .' ?")
 endif()
 
+# --- Build options ---
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -22,9 +24,7 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# ==============================================================================
-#  Dependencies
-# ==============================================================================
+# --- Dependencies ---
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
 find_package(asio REQUIRED)
@@ -38,9 +38,7 @@ add_subdirectory(Server)
 #add_subdirectory(Client)
 #add_subdirectory(Editor)
 
-# ==============================================================================
-#  Custom build targets
-# ==============================================================================
+# --- Build targets ---
 add_custom_target(debug
     COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} --build .
@@ -52,9 +50,7 @@ add_custom_target(re
     COMMAND ${CMAKE_COMMAND} --build . --target all
 )
 
-# ==============================================================================
-#  Installation
-# ==============================================================================
+# --- Installation ---
 #install(TARGETS ${PROJECT_NAME}
 #    RUNTIME DESTINATION bin
 #)
