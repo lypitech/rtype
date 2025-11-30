@@ -1,8 +1,7 @@
 <div align="center"><img src="md/assets/R-Type_Banner.png" alt="R-Type banner"></div>
 
 # CPP-500 ‒ `R-Type`
-
-
+###### An [<img src="https://newsroom.ionis-group.com/wp-content/uploads/2023/09/epitech-2023-logo-m.png" alt="Epitech" height=10/>](https://www.epitech.eu/) project
 
 ## Project Purpose
 This project is developed as part of the EPITECH Advanced C++ curriculum.  
@@ -16,13 +15,14 @@ This recreation serves both as a technical demonstration and as a practical benc
 entity management, networking, rendering, event handling, and other core gameplay mechanics.
 
 ## Dependencies / Requirements / Supported platforms
-Make sure to clone the repo and its submodules:
+
+Make sure to clone the repository and its submodules:
 ```sh
 git clone --recurse-submodules https://github.com/lypitech/rtype.git
 ```
 
-This project uses [`conan`](https://conan.io/) as its package manager.  
-You can read how to setup `conan` in [docs/setup_conan.md](/docs/setup_conan.md).
+This project uses [`Conan`](https://conan.io/) as its package manager.  
+You can read how to setup `Conan` in [docs/setup_conan.md](/docs/setup_conan.md).
 
 ## Build
 This project uses **CMake** as its build system.
@@ -35,12 +35,6 @@ cmake -B build/
 
 # Compile the project
 cmake --build build/
-
-# Move the resulting binary to the project root
-mv build/rtype .
-
-# Run the program
-./rtype
 ```
 
 If you want the build to be faster (to use all of your CPU cores), simply add `--parallel` to the options!
@@ -83,7 +77,3 @@ lysandre.boursette@epitech.eu
 nathan.jeannot@epitech.eu  
 pierre.marguerie@epitech.eu  
 esteban.bouyault-yvanez@epitech.eu
-
----
-
-###### An [<img src="https://newsroom.ionis-group.com/wp-content/uploads/2023/09/epitech-2023-logo-m.png" alt="Epitech" height=10/>](https://www.epitech.eu/) project
