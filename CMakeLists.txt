@@ -35,7 +35,7 @@ add_subdirectory(lib/shuvlog)
 add_subdirectory(lib/rtnt)
 
 add_subdirectory(Server)
-#add_subdirectory(Client)
+add_subdirectory(Client)
 #add_subdirectory(Editor)
 
 # --- Build targets ---
