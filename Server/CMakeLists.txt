@@ -33,6 +33,16 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     OUTPUT_NAME ${PROJECT_NAME}
 )
 
+# --- Shuvlog build info fetch ---
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    SHLG_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
+    SHLG_BUILD_VERSION="${PROJECT_VERSION}"
+    SHLG_COMPILER_ID="${CMAKE_CXX_COMPILER_ID}"
+    SHLG_COMPILER_VERSION="${CMAKE_CXX_COMPILER_VERSION}"
+    SHLG_COMPILER_FLAGS="${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}"
+    SHLG_BUILD_SYSTEM="CMake ${CMAKE_VERSION}"
+)
+
 # --- Compiler settings ---
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 
