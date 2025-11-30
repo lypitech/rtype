@@ -1,16 +1,22 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(rtype
-    VERSION 0.0.0
-    DESCRIPTION "R-Type Game + game engine"
+    VERSION 0.0.1
+    DESCRIPTION "CPP-500 ‒ R-Type"
     HOMEPAGE_URL "https://github.com/lypitech/rtype"
     LANGUAGES CXX
 )
 
+if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+    include("${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+else()
+    message(FATAL_ERROR "Conan toolchain not found. Did you run 'conan install .' ?")
+endif()
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # for clangd
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -26,60 +32,11 @@ find_package(raylib REQUIRED)
 find_package(imgui REQUIRED)
 
 add_subdirectory(lib/shuvlog)
+add_subdirectory(lib/rtnt)
 
-# ==============================================================================
-#  Source files
-# ==============================================================================
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
-
-add_executable(${PROJECT_NAME} ${SOURCES})
-
-# ==============================================================================
-#  Include paths
-# ==============================================================================
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/lib/shuvlog/include
-)
-
-# ==============================================================================
-#  Linking
-# ==============================================================================
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    asio::asio
-    raylib
-    imgui::imgui
-)
-
-# ==============================================================================
-#  Multithreaded builds
-# ==============================================================================
-if(NOT DEFINED CMAKE_BUILD_PARALLEL_LEVEL)
-    include(ProcessorCount)
-    ProcessorCount(N)
-    set(CMAKE_BUILD_PARALLEL_LEVEL ${N})
-endif()
-
-# ==============================================================================
-#  Compiler flags
-# ==============================================================================
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DDEBUG_MODE")
-
-if (MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
-else()
-    target_compile_options(${PROJECT_NAME} PRIVATE
-        -Wall -Wextra
-        -Winit-self
-        -Wshadow -Wundef
-        -Wredundant-decls -Wunreachable-code
-        -Wwrite-strings
-        -pedantic
-        -Wstrict-overflow=2
-        --param max-inline-insns-single=200
-    )
-endif()
+add_subdirectory(Server)
+#add_subdirectory(Client)
+#add_subdirectory(Editor)
 
 # ==============================================================================
 #  Custom build targets
@@ -98,13 +55,6 @@ add_custom_target(re
 # ==============================================================================
 #  Installation
 # ==============================================================================
-install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION bin
-)
-
-# ==============================================================================
-#  Tests
-# ==============================================================================
-enable_testing()
-
-add_subdirectory(tests)
+#install(TARGETS ${PROJECT_NAME}
+#    RUNTIME DESTINATION bin
+#)
