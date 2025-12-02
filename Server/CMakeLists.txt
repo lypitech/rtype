@@ -25,7 +25,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    shuvlog rtnt
+    rtnt
 )
 
 # --- Output ---
