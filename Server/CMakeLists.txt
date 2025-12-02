@@ -44,7 +44,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 )
 
 # --- Compiler settings ---
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 
 if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4 /permissive-)
