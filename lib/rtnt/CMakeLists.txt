@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
+include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+
 project(rtnt
     VERSION 0.0.1
     DESCRIPTION "R-Type Network library"
@@ -16,13 +18,10 @@ if(PROJECT_IS_TOP_LEVEL)
 endif()
 
 # --- Dependencies ---
-include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
-
 find_package(asio REQUIRED)
 
 # --- Sources / Headers ---
 add_library(${PROJECT_NAME} STATIC
-    src/rtnt.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
