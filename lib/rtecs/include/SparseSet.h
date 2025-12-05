@@ -11,6 +11,11 @@
 
 namespace rtecs {
 
+#ifndef PAGED_ARRAY
+    #define PAGE_OF(id, page_size) (id / page_size)
+    #define INDEX_OF(id, page_size) (id % page_size)
+#endif // PAGED_ARRAY
+
 // ================================
 //      SparseSet - Definition
 // ================================
@@ -18,11 +23,12 @@ template <typename Component>
 class SparseSet {
 public:
     static constexpr size_t kPageSize = 2048;
-private:
-    using Sparse = std::array<ssize_t, kPageSize>;
 
-    using SparseElement = ssize_t;
-    static constexpr SparseElement kNullSparseElement = -1;
+private:
+    using SparseElement = size_t;
+    using OptionalSparseElement = std::optional<SparseElement>;
+    using Sparse = std::array<OptionalSparseElement, kPageSize>;
+    static constexpr OptionalSparseElement kNullSparseElement = std::nullopt;
 
     std::vector<Component> _dense;
     std::vector<EntityID> _entities;
@@ -47,6 +53,13 @@ public:
      * @return A const-reference to the component of the entity.
      */
     [[nodiscard]] OptionalCRef<Component> getComponent(EntityID id) const noexcept;
+
+    /**
+     * @brief Check if the sparse-set has the given entity.
+     *
+     * @param id The id of the entity.
+     * @return `true` if the entity is present in the sparse-set, `false` otherwise.
+     */
     [[nodiscard]] bool has(EntityID id) const noexcept;
 
     /**
@@ -77,81 +90,74 @@ public:
 // ====================================
 template <typename Component>
 size_t SparseSet<Component>::getPage(const EntityID id) {
-    // (id - 1) because EntityID start at 1 (so that kNullEntity can be 0)
-    return (id - 1) / kPageSize;
+    return id / kPageSize;
 }
 
 template <typename Component>
 size_t SparseSet<Component>::getSparseIndex(const EntityID id) {
-    // (id - 1) because EntityID start at 1 (so that kNullEntity can be 0)
-    return (id - 1) % kPageSize;
+    return id % kPageSize;
 }
 
 template <typename Component>
 OptionalRef<Component> SparseSet<Component>::getComponent(const EntityID id) noexcept {
-    if (id == 0)
-        return std::nullopt;
-
-    const auto page = getPage(id);
-    const auto sparseIndex = getSparseIndex(id);
+    const size_t page = PAGE_OF(id, kPageSize);
+    const size_t sparseIndex = INDEX_OF(id, kPageSize);
 
     if (page >= _sparsePages.size()) {
         return std::nullopt;
     }
 
-    const auto denseIndex = _sparsePages[page][sparseIndex];
-    return std::ref(_dense[denseIndex]);
+    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
+
+    if (!optionalDenseIndex.has_value())
+        return std::nullopt;
+    return _dense[optionalDenseIndex.value()];
 }
 
 template <typename Component>
 OptionalCRef<Component> SparseSet<Component>::getComponent(const EntityID id) const noexcept {
-    if (id == 0)
-        return std::nullopt;
-
-    const auto page = getPage(id);
-    const auto sparseIndex = getSparseIndex(id);
+    const size_t page = PAGE_OF(id, kPageSize);
+    const size_t sparseIndex = INDEX_OF(id, kPageSize);
 
     if (page >= _sparsePages.size()) {
         return std::nullopt;
     }
 
-    const auto denseIndex = _sparsePages[page][sparseIndex];
-    return std::cref(_dense[denseIndex]);
+    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
+
+    if (!optionalDenseIndex.has_value())
+        return std::nullopt;
+    return std::cref(_dense[optionalDenseIndex.value()]);
 }
 
 template <typename Component>
 bool SparseSet<Component>::has(const EntityID id) const noexcept {
-    if (id == 0)
-        return false;
-
-    const auto page = getPage(id);
-    const auto sparseIndex = getSparseIndex(id);
+    const size_t page = PAGE_OF(id, kPageSize);
+    const size_t sparseIndex = INDEX_OF(id, kPageSize);
 
     if (page >= _sparsePages.size())
         return false;
-    return _sparsePages[page][sparseIndex] != kNullSparseElement;
+    return _sparsePages[page][sparseIndex].has_value();
 }
 
 template <typename Component>
 bool SparseSet<Component>::create(const EntityID id, Component component) noexcept {
-    if (id == 0)
-        return false;
-
-    const auto page = getPage(id);
-    const auto sparseIndex = getSparseIndex(id);
+    const size_t page = PAGE_OF(id, kPageSize);
+    const size_t sparseIndex = INDEX_OF(id, kPageSize);
 
     if (page >= _sparsePages.size()) {
         _sparsePages.resize(page + 1);
         _sparsePages[page].fill(kNullSparseElement);
     }
 
-    const SparseElement denseIndex = _sparsePages[page][sparseIndex];
+    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
 
-    if (denseIndex == kNullSparseElement) {
+    if (!optionalDenseIndex.has_value()) {
         _dense.push_back(component);
         _entities.push_back(id);
         _sparsePages[page][sparseIndex] = _dense.size() - 1;
     } else {
+        const size_t denseIndex = optionalDenseIndex.value();
         _dense[denseIndex] = component;
         _entities[denseIndex] = id;
     }
@@ -163,11 +169,16 @@ void SparseSet<Component>::destroy(const EntityID id) noexcept {
     if (!has(id))
         return;
 
-    const auto toDestroyPage = getPage(id);
-    const auto toDestroySparseIndex = getSparseIndex(id);
-    const SparseElement toDestroyElement = _sparsePages[toDestroyPage][toDestroySparseIndex];
-    Component &toDestroyComponent = _dense[toDestroyElement];
-    Component &toDestroyEntity = _entities[toDestroyElement];
+    const size_t toDestroyPage = PAGE_OF(id, kPageSize);
+    const size_t toDestroySparseIndex = INDEX_OF(id, kPageSize);
+    OptionalSparseElement optionalToDestroyIndex = _sparsePages[toDestroyPage][toDestroySparseIndex];
+
+    if (!optionalToDestroyIndex.has_value())
+        return;
+
+    const size_t toDestroyIndex = optionalToDestroyIndex.value();
+    Component &toDestroyComponent = _dense[toDestroyIndex];
+    EntityID &toDestroyEntity = _entities[toDestroyIndex];
 
     Component &lastComponent = _dense.back();
     EntityID &lastEntity = _entities.back();
