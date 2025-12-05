@@ -22,6 +22,7 @@ find_package(asio REQUIRED)
 
 # --- Sources / Headers ---
 add_library(${PROJECT_NAME} STATIC
+    src/Core/Session.cpp
     src/Core/Packet.cpp
 )
 
