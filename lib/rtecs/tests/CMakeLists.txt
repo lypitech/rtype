@@ -1,7 +1,7 @@
 # --- Sources ---
 set(RTECS_TEST_SOURCES
     Main.cpp
-    tests/Initialization.cpp
+    tests/SparseSet.cpp
 )
 
 add_executable(rtecs_tests ${RTECS_TEST_SOURCES})
