@@ -39,17 +39,18 @@ bool Session::handleIncoming(
 
     header = reinterpret_cast<const packet::Header*>(rawData.data());
 
-    if (header->protocolId != PROTOCOL_ID) {
+    if (ntohs(header->protocolId) != PROTOCOL_ID) {
         LOG_TRACE_R2("Sender protocol ID doesn't match the local protocol ID.");
         return false;
     }
 
-    if (header->sequenceId > _remoteSequenceId) {
-        _remoteSequenceId = header->sequenceId;
+    uint32_t incomingSeq = ntohl(header->sequenceId);
+    if (incomingSeq > _remoteSequenceId) {
+        _remoteSequenceId = incomingSeq;
     }
 
     outPacket = Packet(
-        header->messageId,
+        ntohs(header->messageId),
         static_cast<packet::Flag>(header->flags)
     );
 
@@ -59,7 +60,7 @@ bool Session::handleIncoming(
         return true;
     }
 
-    if (payloadSize != header->packetSize) {
+    if (payloadSize != ntohs(header->packetSize)) {
         LOG_TRACE_R2("Raw data size doesn't match the packet size (corrupted packet).");
         return false;
     }
