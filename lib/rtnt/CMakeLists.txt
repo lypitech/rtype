@@ -24,6 +24,9 @@ find_package(asio REQUIRED)
 add_library(${PROJECT_NAME} STATIC
     src/Core/Session.cpp
     src/Core/Packet.cpp
+    src/Core/Server.cpp
+    src/Core/Client.cpp
+    src/Core/Peer.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
