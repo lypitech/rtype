@@ -5,7 +5,7 @@
 
 #include "Packet.hpp"
 
-static const size_t BUFFER_SIZE = USHRT_MAX;
+static constexpr size_t BUFFER_SIZE = USHRT_MAX;
 
 namespace rtnt::core
 {
@@ -68,7 +68,7 @@ public:
      * @param   target  Target to send the data to
      * @param   data    Data to send (raw bytes)
      */
-    void send(
+    void sendToTarget(
         const udp::endpoint& target,
         const ByteBuffer& data
     );
