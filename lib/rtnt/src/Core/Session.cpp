@@ -76,21 +76,23 @@ bool Session::handleIncoming(
 
 void Session::send(Packet &packet)
 {
-    packet::Header header;
-    const uint8_t* headerPtr;
+    packet::Header header {};
+
+    header.protocolId = htons(PROTOCOL_ID);
+    header.sequenceId = htonl(_localSequenceId++);
+    header.acknowledgeId = htonl(_remoteSequenceId);
+    header.acknowledgeBitfield = 0; // todo: Implement ack bitfield
+    header.messageId = htons(packet.getId());
+    header.flags = static_cast<uint8_t>(packet.getReliability());
+    header.packetSize = htons(static_cast<uint16_t>(packet.getPayload().size()));
+    header.checksum = 0; // todo: Implement CRC32 checksum
+
     ByteBuffer rawBuffer;
     const auto& payload = packet.getPayload();
 
-    header.sequenceId = _localSequenceId++;
-    header.acknowledgeId = _remoteSequenceId;
-    header.acknowledgeBitfield = 0; // todo: Implement ack bitfield
-    header.messageId = packet.getId();
-    header.flags = static_cast<uint16_t>(packet.getReliability());
-    header.packetSize = packet.getPayload().size();
-    header.checksum = 0; // todo: Implement CRC32 checksum
+    rawBuffer.reserve(sizeof(packet::Header) + payload.size());
 
-    rawBuffer.reserve(sizeof(packet::Header) + header.packetSize);
-    headerPtr = reinterpret_cast<const uint8_t*>(&header); // fixme: maybe join declaration and initialization?
+    const auto* headerPtr = reinterpret_cast<const uint8_t*>(&header);
     rawBuffer.insert(rawBuffer.end(), headerPtr, headerPtr + sizeof(packet::Header));
     rawBuffer.insert(rawBuffer.end(), payload.begin(), payload.end());
 
@@ -114,7 +116,9 @@ void Session::send(Packet &packet)
         rawBuffer
     );
 
-    _sendToPeerFunction(rawBuffer);
+    if (_sendToPeerFunction) {
+        _sendToPeerFunction(rawBuffer);
+    }
 }
 
 }
