@@ -1,7 +1,7 @@
 # --- Sources ---
 set(RTNT_TEST_SOURCES
     Main.cpp
-    tests/Initialization.cpp
+    tests/Echo.cpp
 )
 
 add_executable(rtnt_tests ${RTNT_TEST_SOURCES})
@@ -28,11 +28,13 @@ target_include_directories(rtnt_tests PRIVATE
 
 # --- Dependencies ---
 find_package(GTest REQUIRED)
+find_package(asio REQUIRED)
 
 target_link_libraries(rtnt_tests
     PRIVATE
     GTest::gtest
     GTest::gtest_main
+    asio::asio
     rtnt
 )
 
