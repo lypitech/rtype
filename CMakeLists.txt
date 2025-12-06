@@ -33,6 +33,7 @@ find_package(imgui REQUIRED)
 
 add_subdirectory(lib/shuvlog)
 add_subdirectory(lib/rtnt)
+add_subdirectory(lib/cli_parser)
 add_subdirectory(lib/rtecs)
 add_subdirectory(lib/rteng)
 
