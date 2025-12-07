@@ -21,9 +21,6 @@ bool Session::handleIncoming(
     Packet &outPacket
 )
 {
-    packet::Header header;
-    size_t payloadSize = 0;
-
     LOG_TRACE_R3(
         "Handling incoming raw data\n"
         "Size: {} bytes\n"
