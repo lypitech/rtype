@@ -37,7 +37,7 @@ void Server::onReceive(
     if (it != _sessions.end()) { // Session found
         session = it->second;
     } else { // New connection
-        // todo: only create a session if packet received is CONNECT.
+        // todo: only create a session if packet received is internal packet CONNECT (0x01).
         session = std::make_shared<Session>(
             sender,
             [this, sender](const ByteBuffer& rawBytes) {
