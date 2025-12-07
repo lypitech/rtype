@@ -12,7 +12,7 @@ Session::Session(
     SendToPeerFunction sendToPeerFunction
 )   : _endpoint(std::move(endpoint))
     , _sendToPeerFunction(std::move(sendToPeerFunction))
-    , _lastSeen(system_clock::now())
+    , _lastSeen(steady_clock::now())
 {}
 
 bool Session::handleIncoming(
@@ -36,7 +36,7 @@ bool Session::handleIncoming(
         return false;
     }
 
-    _lastSeen = system_clock::now();
+    _lastSeen = steady_clock::now();
 
     std::memcpy(&header, rawData.data(), sizeof(packet::Header));
     header.toHost();

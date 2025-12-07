@@ -42,7 +42,7 @@ public:
     void send(Packet& packet);
 
     [[nodiscard]] udp::endpoint getEndpoint() const { return _endpoint; }
-    [[nodiscard]] time_point<system_clock> getLastSeenTimestamp() const { return _lastSeen; }
+    [[nodiscard]] time_point<steady_clock> getLastSeenTimestamp() const { return _lastSeen; }
 
 private:
     const udp::endpoint _endpoint;
@@ -52,7 +52,7 @@ private:
     uint32_t _localSequenceId = 0;
     uint32_t _remoteSequenceId = 0;
 
-    time_point<system_clock> _lastSeen;
+    time_point<steady_clock> _lastSeen;
 };
 
 }

@@ -36,15 +36,12 @@ void Client::update(milliseconds timeout)
         return;
     }
 
-    auto now = system_clock::now();
+    auto now = steady_clock::now();
     auto lastSeenTimestamp = _serverSession->getLastSeenTimestamp();
     auto age = duration_cast<milliseconds>(now - lastSeenTimestamp);
 
     if (age > timeout) {
-        LOG_FATAL(
-            "Server timeout exceeded (last seen: {}), disconnecting...",
-            lastSeenTimestamp
-        );
+        LOG_FATAL("Server timeout exceeded, disconnecting...");
 
         if (_onDisconnect) {
             _onDisconnect();
