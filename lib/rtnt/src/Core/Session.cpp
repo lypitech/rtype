@@ -20,8 +20,7 @@ bool Session::handleIncoming(
     Packet &outPacket
 )
 {
-    ByteBuffer buffer(rawData); // Packet copy
-    packet::Header* header;
+    packet::Header header;
     size_t payloadSize = 0;
 
     LOG_TRACE_R3(
@@ -32,34 +31,32 @@ bool Session::handleIncoming(
         byteBufferToHexString(rawData)
     );
 
-    if (buffer.size() < sizeof(packet::Header)) {
+    if (rawData.size() < sizeof(packet::Header)) {
         LOG_TRACE_R3("Data received is too small to contain a header, probably random internet noise. Skipping...");
         return false;
     }
 
     _lastSeen = system_clock::now();
 
-    header = reinterpret_cast<packet::Header*>(buffer.data());
+    std::memcpy(&header, rawData.data(), sizeof(packet::Header));
+    header.toHost();
 
-    header->toHost();
-
-    if (header->protocolId != PROTOCOL_ID) {
+    if (header.protocolId != PROTOCOL_ID) {
         LOG_TRACE_R2(
             "Sender protocol ID doesn't match the local protocol ID (got {}, expected {}).",
-            header->protocolId,
+            header.protocolId,
             PROTOCOL_ID
         );
         return false;
     }
 
-    uint32_t incomingSeq = header->sequenceId;
-    if (incomingSeq > _remoteSequenceId) {
-        _remoteSequenceId = incomingSeq;
+    if (header.sequenceId > _remoteSequenceId) {
+        _remoteSequenceId = header.sequenceId;
     }
 
     outPacket = Packet(
-        header->messageId,
-        static_cast<packet::Flag>(header->flags)
+        header.messageId,
+        static_cast<packet::Flag>(header.flags)
     );
 
     payloadSize = rawData.size() - sizeof(packet::Header);
@@ -68,7 +65,7 @@ bool Session::handleIncoming(
         return true;
     }
 
-    if (payloadSize != header->packetSize) {
+    if (payloadSize != header.packetSize) {
         LOG_TRACE_R2("Raw data size doesn't match the packet size (corrupted packet).");
         return false;
     }
