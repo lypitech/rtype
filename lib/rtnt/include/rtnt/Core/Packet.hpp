@@ -23,7 +23,7 @@ namespace packet
     struct Header
     {
         uint16_t protocolId             = PROTOCOL_ID; ///< Unique ID of the protocol, to avoid internet noise
-        uint16_t protocolVersion        = 0x0001; ///< Protocol version, to reject peers that have an older version
+        uint16_t protocolVersion        = PROTOCOL_VER; ///< Protocol version, to reject peers that have an older version
         uint32_t sequenceId             = 0; ///< Packet ID
         uint32_t acknowledgeId          = 0; ///< ID of the latest packet received
         uint32_t acknowledgeBitfield    = 0; ///< Bitmask of the previous 32 received packets
