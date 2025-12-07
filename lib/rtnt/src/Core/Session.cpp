@@ -29,7 +29,7 @@ bool Session::handleIncoming(
         byteBufferToHexString(rawData)
     );
 
-    if (rawData.size() < sizeof(packet::Header)) {
+    if (buffer.size() < sizeof(packet::Header)) {
         LOG_TRACE_R3("Data received is too small to contain a header, probably random internet noise. Skipping...");
         return false;
     }
