@@ -21,9 +21,6 @@ bool Session::handleIncoming(
     Packet &outPacket
 )
 {
-    packet::Header header;
-    size_t payloadSize = 0;
-
     LOG_TRACE_R3(
         "Handling incoming raw data\n"
         "Size: {} bytes\n"
@@ -39,6 +36,7 @@ bool Session::handleIncoming(
 
     _lastSeen = steady_clock::now();
 
+    packet::Header header;
     std::memcpy(&header, rawData.data(), sizeof(packet::Header));
     header.toHost();
 
@@ -60,7 +58,7 @@ bool Session::handleIncoming(
         static_cast<packet::Flag>(header.flags)
     );
 
-    payloadSize = rawData.size() - sizeof(packet::Header);
+    size_t payloadSize = rawData.size() - sizeof(packet::Header);
 
     if (payloadSize == 0) {
         return true;

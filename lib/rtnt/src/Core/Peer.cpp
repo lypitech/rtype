@@ -51,6 +51,7 @@ void Peer::receive()
             );
 
             if (bytesReceived > 0) {
+                // todo: optimization is possible by making a buffer pool (avoiding buffer recreation c;)
                 ByteBuffer data(
                     _receptionBuffer.begin(),
                     _receptionBuffer.begin() + bytesReceived
