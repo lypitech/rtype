@@ -165,7 +165,7 @@ public:
         return *this << data;
     }
 
-    void _internal_setPayload(const std::vector<uint8_t>& data)
+    void _internal_setPayload(std::vector<uint8_t>&& data)
     {
         _buffer = data;
         _readPosition = 0;

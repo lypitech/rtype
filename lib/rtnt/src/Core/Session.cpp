@@ -76,7 +76,7 @@ bool Session::handleIncoming(
         rawData.begin() + sizeof(packet::Header),
         rawData.end()
     );
-    outPacket._internal_setPayload(payload);
+    outPacket._internal_setPayload(std::move(payload));
     return true;
 }
 
