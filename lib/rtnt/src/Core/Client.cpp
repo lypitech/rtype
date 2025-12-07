@@ -11,14 +11,13 @@ void Client::connect(
 )
 {
     if (!_onDisconnect || !_onMessage) {
-        LOG_CRIT("Make sure you set the callback functions before trying to connect..");
+        LOG_CRIT("Make sure you set the callback functions before trying to connect.");
         return;
     }
 
-    LOG_INFO("Connecting to server {}:{}", ip, port);
+    LOG_INFO("Connecting to server {}:{}...", ip, port);
 
     asio::ip::address address = asio::ip::make_address(ip);
-    LOG_DEBUG(address.to_string());
 
     _serverEndpoint = udp::endpoint(address, port);
     _serverSession = std::make_shared<Session>(
@@ -28,8 +27,6 @@ void Client::connect(
         }
     );
     start();
-    Packet connectPacket(1, packet::Flag::kReliable);
-    _serverSession->send(connectPacket);
 }
 
 void Client::update(milliseconds timeout)

@@ -2,6 +2,7 @@
 
 #include "Peer.hpp"
 #include "Session.hpp"
+#include "logger/Logger.h"
 
 namespace rtnt::core
 {
@@ -23,7 +24,7 @@ public:
 
     void connect(const std::string& ip, unsigned short port);
 
-    void send(Packet packet) { _serverSession->send(packet); }
+    void send(Packet packet) { LOG_DEBUG("Sending a packet from client."); _serverSession->send(packet); }
 
     void update(milliseconds timeout = seconds(10));
 
@@ -36,7 +37,7 @@ protected:
 private:
     udp::endpoint _serverEndpoint;
     std::shared_ptr<Session> _serverSession;
-    bool _isConnected = false;
+    // bool _isConnected = false;
 
     OnDisconnectFunction _onDisconnect;
     OnMessageFunction _onMessage;

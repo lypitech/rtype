@@ -71,7 +71,7 @@ namespace packet
 
     /**
      * @brief Helper class that behaves like a Packet but Reads instead of Writing.
-     * This allows us to use the '&' operator for reading.
+     * This allows to use the '&' operator for reading.
      */
     struct Reader final
     {
@@ -92,7 +92,7 @@ inline std::string byteBufferToHexString(const ByteBuffer& buffer)
         if (i > 0) {
             result += " ";
         }
-        result += std::format("{:02x}", buffer[i]);
+        result += std::format("{:02X}", buffer[i]);
     }
     result += "]";
     return result;

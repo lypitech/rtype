@@ -30,7 +30,7 @@ void Peer::sendToTarget(
 
 void Peer::receive()
 {
-    LOG_DEBUG("Starting to receive...");
+    LOG_DEBUG("Listening...");
 
     _socket.async_receive_from(
         asio::buffer(_receptionBuffer),
