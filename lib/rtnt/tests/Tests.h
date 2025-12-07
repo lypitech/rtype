@@ -15,12 +15,16 @@ public:
     {
         const std::string projectName{ "rtnt (tests)" };
 
-        Logger::getInstance().addSink<logger::ConsoleSink>();
-        Logger::getInstance().addSink<logger::LogFileSink>("logs/latest.log");
+        logger::sink::Settings settings{
+            .showThreadId = false
+        };
+
+        Logger::getInstance().addSink<logger::ConsoleSink>(true, settings);
+        Logger::getInstance().addSink<logger::LogFileSink>("logs/latest.log", settings);
         Logger::getInstance().addSink<logger::LogFileSink>(std::format(
             "logs/{}",
             Logger::generateLogFileName(projectName, ".log")
-        ));
+        ), settings);
 
         Logger::initialize(
             projectName,
