@@ -5,7 +5,14 @@
 namespace rtnt
 {
 
-static const uint16_t PROTOCOL_ID = 0xfeed;
-static const uint16_t PROTOCOL_VER = 0x0001;
+/// @warning    Changing this is considered a breaking change.
+///
+/// todo: Prone to change
+static constexpr uint16_t PROTOCOL_ID = 0xfeed;
+
+/// @warning    Changing this is considered a breaking change.
+///
+/// todo: Prone to change
+static constexpr uint16_t PROTOCOL_VER = 0x0001;
 
 }
