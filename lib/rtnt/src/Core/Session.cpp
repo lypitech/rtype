@@ -1,5 +1,3 @@
-#include <utility>
-
 #include "logger/Logger.h"
 
 #include "rtnt/Core/Session.hpp"
@@ -20,37 +18,44 @@ bool Session::handleIncoming(
     Packet &outPacket
 )
 {
-    const packet::Header* header;
+    ByteBuffer buffer(rawData); // Packet copy
+    packet::Header* header;
     size_t payloadSize = 0;
 
     LOG_TRACE_R3(
         "Handling incoming raw data\n"
         "Size: {} bytes\n"
-        "Data: [{}]",
+        "Data (BE): {}",
         rawData.size(), rawData
     );
 
-    if (rawData.size() < sizeof(packet::Header)) {
+    if (buffer.size() < sizeof(packet::Header)) {
         LOG_TRACE_R3("Data received is too small to contain a header, probably random internet noise. Skipping...");
         return false;
     }
 
     _lastSeen = system_clock::now();
 
-    header = reinterpret_cast<const packet::Header*>(rawData.data());
+    header = reinterpret_cast<packet::Header*>(buffer.data());
 
-    if (ntohs(header->protocolId) != PROTOCOL_ID) {
-        LOG_TRACE_R2("Sender protocol ID doesn't match the local protocol ID.");
+    header->toHost();
+
+    if (header->protocolId != PROTOCOL_ID) {
+        LOG_TRACE_R2(
+            "Sender protocol ID doesn't match the local protocol ID (got {}, expected {}).",
+            header->protocolId,
+            PROTOCOL_ID
+        );
         return false;
     }
 
-    uint32_t incomingSeq = ntohl(header->sequenceId);
+    uint32_t incomingSeq = header->sequenceId;
     if (incomingSeq > _remoteSequenceId) {
         _remoteSequenceId = incomingSeq;
     }
 
     outPacket = Packet(
-        ntohs(header->messageId),
+        header->messageId,
         static_cast<packet::Flag>(header->flags)
     );
 
@@ -60,7 +65,7 @@ bool Session::handleIncoming(
         return true;
     }
 
-    if (payloadSize != ntohs(header->packetSize)) {
+    if (payloadSize != header->packetSize) {
         LOG_TRACE_R2("Raw data size doesn't match the packet size (corrupted packet).");
         return false;
     }
@@ -79,13 +84,12 @@ void Session::send(Packet &packet)
 {
     packet::Header header {};
 
-    header.protocolId = htons(PROTOCOL_ID);
-    header.sequenceId = htonl(_localSequenceId++);
-    header.acknowledgeId = htonl(_remoteSequenceId);
+    header.sequenceId = _localSequenceId++;
+    header.acknowledgeId = _remoteSequenceId;
     header.acknowledgeBitfield = 0; // todo: Implement ack bitfield
-    header.messageId = htons(packet.getId());
+    header.messageId = packet.getId();
     header.flags = static_cast<uint8_t>(packet.getReliability());
-    header.packetSize = htons(static_cast<uint16_t>(packet.getPayload().size()));
+    header.packetSize = static_cast<uint16_t>(packet.getPayload().size());
     header.checksum = 0; // todo: Implement CRC32 checksum
 
     ByteBuffer rawBuffer;
@@ -93,9 +97,11 @@ void Session::send(Packet &packet)
 
     rawBuffer.reserve(sizeof(packet::Header) + payload.size());
 
+    header.toNetwork();
     const auto* headerPtr = reinterpret_cast<const uint8_t*>(&header);
     rawBuffer.insert(rawBuffer.end(), headerPtr, headerPtr + sizeof(packet::Header));
     rawBuffer.insert(rawBuffer.end(), payload.begin(), payload.end());
+    header.toHost();
 
     LOG_TRACE_R3(
         "Preparing to send a packet.\n"
@@ -106,7 +112,7 @@ void Session::send(Packet &packet)
         "Flags: {}\n"
         "Payload Size: {}\n"
         "Checksum: {}\n"
-        "Buffer: [{}]",
+        "Buffer (BE): {}",
         header.sequenceId,
         header.acknowledgeId,
         header.acknowledgeBitfield,

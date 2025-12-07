@@ -31,6 +31,40 @@ namespace packet
         uint8_t  flags                  = static_cast<uint16_t>(Flag::kUnreliable); ///< Flags (cf. Flag)
         uint16_t packetSize             = 0; ///< Size of the packet
         uint32_t checksum               = 0; ///< CRC32 checksum to avoid corruption
+
+        /**
+         * @brief   Converts all fields from Host Byte Order (Little Endian)
+         *          to Network Byte Order (Big Endian) IN PLACE.
+         */
+        void toNetwork()
+        {
+            protocolId          = htons(protocolId);
+            protocolVersion     = htons(protocolVersion);
+            sequenceId          = htonl(sequenceId);
+            acknowledgeId       = htonl(acknowledgeId);
+            acknowledgeBitfield = htonl(acknowledgeBitfield);
+            messageId           = htons(messageId);
+            // flags is uint8_t, no conversion needed
+            packetSize          = htons(packetSize);
+            checksum            = htonl(checksum);
+        }
+
+        /**
+         * @brief   Converts all fields from Network Byte Order (Big Endian)
+         *          to Host Byte Order (Little Endian) IN PLACE.
+         */
+        void toHost()
+        {
+            protocolId          = ntohs(protocolId);
+            protocolVersion     = ntohs(protocolVersion);
+            sequenceId          = ntohl(sequenceId);
+            acknowledgeId       = ntohl(acknowledgeId);
+            acknowledgeBitfield = ntohl(acknowledgeBitfield);
+            messageId           = ntohs(messageId);
+            // flags is uint8_t, no conversion needed
+            packetSize          = ntohs(packetSize);
+            checksum            = ntohl(checksum);
+        }
     };
     #pragma pack(pop)
 
