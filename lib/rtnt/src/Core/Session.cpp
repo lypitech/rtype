@@ -1,3 +1,5 @@
+#include <ranges>
+
 #include "logger/Logger.h"
 
 #include "rtnt/Core/Session.hpp"
@@ -26,7 +28,8 @@ bool Session::handleIncoming(
         "Handling incoming raw data\n"
         "Size: {} bytes\n"
         "Data (BE): {}",
-        rawData.size(), rawData
+        rawData.size(),
+        byteBufferToHexString(rawData)
     );
 
     if (buffer.size() < sizeof(packet::Header)) {
@@ -120,7 +123,7 @@ void Session::send(Packet &packet)
         header.flags,
         header.packetSize,
         header.checksum,
-        rawBuffer
+        byteBufferToHexString(rawBuffer)
     );
 
     if (_sendToPeerFunction) {
