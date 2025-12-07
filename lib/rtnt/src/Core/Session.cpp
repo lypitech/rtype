@@ -3,6 +3,7 @@
 #include "logger/Logger.h"
 
 #include "rtnt/Core/Session.hpp"
+#include "rtnt/Common/Utils.hpp"
 
 namespace rtnt::core
 {
