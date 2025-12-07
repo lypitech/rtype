@@ -11,6 +11,15 @@ namespace rtnt::core
 using asio::ip::udp;
 using namespace std::chrono;
 
+/**
+ * @class   Session
+ * @brief   Basically a logical connection with a remote peer.
+ *
+ * The Session is the "Brain" of the connection. It acts as a translation layer:
+ * - INCOMING: Raw bytes -> Validation -> Header stripping -> Packet Object
+ * - OUTGOING: Packet object -> Header attachment -> Sequencing -> Raw Bytes
+ * It manages RUDP state (Sequence IDs, ACKs, Ordering buffers).
+ */
 class Session
 {
 
@@ -23,11 +32,18 @@ public:
     );
 
     /**
-     * @brief   Processes raw bytes coming from the Peer.
+     * @brief   Processes incoming raw data and attempts to construct a valid Packet.
      *
-     * @param   rawData     The raw buffer received from the network (coming from the Peer)
+     * This method performs several checks (in order):
+     * - Buffer size check (must be >= header size)
+     * - Protocol ID check (security)
+     * - RUDP Sequence update
+     *
+     * @param   rawData     The raw buffer received from the Peer
      * @param   outPacket   The clean packet to fill if parsing is successful
      * @return  @code true@endcode if the packet is valid and should be handled by the user.
+     * @return  @code false@endcode if the packet is either random internet noise, coming from an outdated Peer,
+     * corrupted or invalid.
      */
     bool handleIncoming(
         const ByteBuffer& rawData,
@@ -35,13 +51,21 @@ public:
     );
 
     /**
-     * @brief   Sends a packet to the network (will pass bytes to the Peer).
+     * @brief   Encapsulates a user-defined Packet into a protocol frame (RUDP) and sends it.
      *
-     * @param   packet  Packet to send
+     * This attaches the header (Sequence ID, ACK ID, etc.) and gives the result to the Peer for network transmission.
      */
     void send(Packet& packet);
 
+    /**
+     * @return  The endpoint associated with this Session (the remote Peer).
+     */
     [[nodiscard]] udp::endpoint getEndpoint() const { return _endpoint; }
+
+    /**
+     * @return The timestamp of the last valid packet received from this session.
+     * Used by the Server to timeout inactive clients.
+     */
     [[nodiscard]] time_point<steady_clock> getLastSeenTimestamp() const { return _lastSeen; }
 
 private:

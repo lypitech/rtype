@@ -7,6 +7,13 @@
 namespace rtnt::core
 {
 
+/**
+ * @class   Client
+ * @brief   Basically a client connected to a single host.
+ *
+ * The Client wraps a single Session object pointing to the remote server.
+ * It filters incoming traffic to ensure we only process packets from the host we connected to.
+ */
 class Client : public Peer
 {
 
@@ -22,10 +29,29 @@ public:
     void onDisconnect(OnDisconnectFunction callback) { _onDisconnect = std::move(callback); }
     void onMessage(OnMessageFunction callback) { _onMessage = std::move(callback); }
 
-    void connect(const std::string& ip, unsigned short port);
+    /**
+     * @brief   Initiates the connection handshake.
+     *
+     * This creates the Session and sends an initial 'CONNECT' packet to the server.
+     * @param   ip      The server IP address.
+     * @param   port    The server port.
+     */
+    void connect(
+        const std::string& ip,
+        unsigned short port
+    );
 
+    /**
+     * @brief   Quick helper to send a user-defined Packet to the server.
+     * @param   packet Packet to send to the server
+     */
     void send(Packet packet) { LOG_DEBUG("Sending a packet from client."); _serverSession->send(packet); }
 
+    /**
+     * @brief   Main maintenance loop. Checks for timeouts.
+     * @param   timeout The duration after which the server is considered unresponsive and so, dead
+     * @note    This should be called regularly (e.g., in a main game loop).
+     */
     void update(milliseconds timeout = seconds(10));
 
 protected:

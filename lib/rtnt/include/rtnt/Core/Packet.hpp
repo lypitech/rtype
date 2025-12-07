@@ -13,24 +13,35 @@ class Packet; // Forward declaration needed for packet::Reader
 namespace packet
 {
 
+    /**
+     * @enum    packet::Flag
+     * @brief   Flags defining the behavior of a packet delivery.
+     */
     enum class Flag : uint8_t
     {
-        kUnreliable     = 1 << 0,
-        kReliable       = 1 << 1,
-        kSynchronized   = 1 << 2,
+        kUnreliable     = 1 << 0, ///< Fire and forget. May be lost or arrive out of order.
+        kReliable       = 1 << 1, ///< Guaranteed delivery. Will be resent until ACKed.
+        kSynchronized   = 1 << 2, ///< Guaranteed order. Will be buffered until previous packets arrive.
     };
 
     #pragma pack(push, 1) // forcing strict alignment, no compiler padding
+    /**
+     * @struct  packet::Header
+     * @brief   The RUDP Wire Header.
+     * @note    This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
+     * @warning All multibyte fields MUST be converted to Network Byte Order (Big Endian) before sending
+     * (cf. toNetwork and toHost).
+     */
     struct Header
     {
-        uint16_t protocolId             = PROTOCOL_ID; ///< Unique ID of the protocol, to avoid internet noise
-        uint16_t protocolVersion        = PROTOCOL_VER; ///< Protocol version, to reject peers that have an older version
-        uint32_t sequenceId             = 0; ///< Packet ID
-        uint32_t acknowledgeId          = 0; ///< ID of the latest packet received
-        uint32_t acknowledgeBitfield    = 0; ///< Bitmask of the previous 32 received packets
-        uint16_t messageId              = 0x0; ///< Command type
-        uint8_t  flags                  = static_cast<uint16_t>(Flag::kUnreliable); ///< Flags (cf. Flag)
-        uint16_t packetSize             = 0; ///< Size of the packet
+        uint16_t protocolId             = PROTOCOL_ID; ///< Magic number representig unique ID of the protocol, to avoid internet noise
+        uint16_t protocolVersion        = PROTOCOL_VER; ///< Protocol version, to reject mismatch peers
+        uint32_t sequenceId             = 0; ///< The unique, incrementing ID of this packet
+        uint32_t acknowledgeId          = 0; ///< Sequence ID of the latest packet received
+        uint32_t acknowledgeBitfield    = 0; ///< Bitmask of the previous 32 received packets relative to acknowledge ID
+        uint16_t messageId              = 0x0; ///< Command type (user-defined)
+        uint8_t  flags                  = static_cast<uint16_t>(Flag::kUnreliable); ///< Reliability flags (cf. packet::Flag)
+        uint16_t packetSize             = 0; ///< Size of the payload
         uint32_t checksum               = 0; ///< CRC32 checksum to avoid corruption
 
         /**
@@ -70,7 +81,8 @@ namespace packet
     #pragma pack(pop)
 
     /**
-     * @brief Helper class that behaves like a Packet but Reads instead of Writing.
+     * @struct  packet::Reader
+     * @brief   Helper class that behaves like a Packet but Reads instead of Writing.
      * This allows to use the '&' operator for reading.
      */
     struct Reader final
@@ -85,9 +97,23 @@ namespace packet
 
 using ByteBuffer = std::vector<uint8_t>;
 
+/**
+ * @class   Packet
+ * @brief   A dynamic buffer wrapper for serializing and deserializing data.
+ *
+ * The Packet class acts as a stream. You can write data into it using the @code<< @endcode operator
+ * and read data from it using the @code>> @endcode operator. It handles endianness for internal
+ * headers but assumes payload data is handled by the user (or is POD, Plain Old Data).
+ */
 class Packet
 {
 public:
+    /**
+     * @brief   Constructs a new Packet
+     * @param   id          The user-defined message ID
+     * @param   flag        Reliability mode
+     * @param   channelId   Virtual channel ID
+     */
     explicit Packet(
         uint16_t id,
         packet::Flag flag = packet::Flag::kUnreliable,
@@ -97,7 +123,13 @@ public:
         , _channelId(channelId)
     {}
 
-    /* Deserializing methods */
+    /* Serializing methods */
+    /**
+     * @brief   Serializes a POD (Plain Old Data) type into the packet.
+     * @tparam  T   Type of data to write (@code int@endcode, @code float@endcode, @code struct@endcode, etc.)
+     * @note    This function is disabled for complex types (like @code std::string@endcode) to prevent unsafe
+     * memory copying. For strings, see the dedicated operator.
+     */
     template <typename T>
     std::enable_if<std::is_trivially_copyable<T>::value, Packet&>::type operator<<(const T& data)
     {
@@ -105,6 +137,10 @@ public:
         return *this;
     }
 
+    /**
+     * @brief   Specialization to safely write @code std::string@endcode.
+     * Writes a 2-byte length prefix followed by the characters.
+     */
     Packet& operator<<(const std::string& str)
     {
         auto size = static_cast<uint16_t>(str.size());
@@ -115,7 +151,13 @@ public:
     }
     /* --------------------- */
 
-    /* Serializing methods */
+    /* Deserializing methods */
+    /**
+     * @brief   Deserializes a POD (Plain Old Data) type from the packet.
+     * @tparam  T   Type of data to read (@code int@endcode, @code float@endcode, @code struct@endcode, etc.)
+     * @note    This function is disabled for complex types (like @code std::string@endcode) to prevent unsafe
+     * memory copying. For strings, see the dedicated operator.
+     */
     template <typename T>
     std::enable_if<std::is_trivially_copyable<T>::value, Packet&>::type operator>>(T& data)
     {
@@ -128,6 +170,10 @@ public:
         return *this;
     }
 
+    /**
+     * @brief   Specialization to safely read @code std::string@endcode.
+     * Reads a 2-byte length prefix followed by the characters.
+     */
     Packet& operator>>(std::string& str)
     {
         uint16_t size = 0;

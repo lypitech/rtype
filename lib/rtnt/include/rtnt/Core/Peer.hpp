@@ -13,13 +13,19 @@ namespace rtnt::core
 using asio::ip::udp;
 
 /**
- * @brief   Hardware Asio wrapper
+ * @class   Peer
+ * @brief   Abstract base class for any network entity (Client or Server).
  *
  * The Peer class is just an Asio wrapper that listens and speaks to targets
  * (can be clients or the server, depending on the selected mode).
  *
- * It doesn't parse anything. It sticks to raw bytes, both for receiving and
- * sending data.
+ * It handles raw I/O operations:
+ * - Binding to a port
+ * - Asynchronous receiving loop
+ * - Sending raw byte buffers
+ *
+ * @warning This class does NOT parse packets. It sticks to raw bytes, both for
+ * receiving and sending data.
  */
 class Peer
 {
@@ -58,7 +64,8 @@ public:
     {}
 
     /**
-     * Begin the bytes receive handling.
+     * @brief   Starts the asynchronous receive() loop.
+     * @note    Requires the associated `io_context` to be running.
      */
     void start() { receive(); }
 
@@ -67,6 +74,7 @@ public:
      *
      * @param   target  Target to send the data to
      * @param   data    Data to send (raw bytes)
+     * @note    This is a fire-and-forget operation. No delivery guarantee at this level (managed by RUDP, Session).
      */
     void sendToTarget(
         const udp::endpoint& target,
@@ -80,7 +88,9 @@ public:
 
 protected:
     /**
-     * @brief   Called whenever raw bytes arrive.
+     * @brief   Callback triggered when raw bytes are received.
+     * @param   sender  The endpoint that sent the data
+     * @param   data    The raw data received (raw bytes)
      */
     virtual void onReceive(
         const udp::endpoint& sender,
