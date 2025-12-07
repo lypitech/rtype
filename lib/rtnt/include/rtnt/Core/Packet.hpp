@@ -1,9 +1,8 @@
 #pragma once
 
-#include <cstdint>
 #include <vector>
 
-static const uint16_t PROTOCOL_ID = 0xfeed;
+#include "rtnt/Constants.hpp"
 
 namespace rtnt::core
 {
@@ -56,7 +55,7 @@ class Packet
 public:
     explicit Packet(
         uint16_t id,
-        packet::Flag flag = packet::Flag::kReliable,
+        packet::Flag flag = packet::Flag::kUnreliable,
         uint8_t channelId = 0
     )   : _messageId(id)
         , _flag(flag)
@@ -65,7 +64,7 @@ public:
 
     /* Deserializing methods */
     template <typename T>
-    std::enable_if<std::is_standard_layout<T>::value, Packet&>::type operator<<(const T& data)
+    std::enable_if<std::is_trivially_copyable<T>::value, Packet&>::type operator<<(const T& data)
     {
         append(&data, sizeof(T));
         return *this;
@@ -83,7 +82,7 @@ public:
 
     /* Serializing methods */
     template <typename T>
-    std::enable_if<std::is_standard_layout<T>::value, Packet&>::type operator>>(T& data)
+    std::enable_if<std::is_trivially_copyable<T>::value, Packet&>::type operator>>(T& data)
     {
         if (_readPosition + sizeof(T) > _buffer.size()) {
             throw std::runtime_error("Packet Underflow");
@@ -102,7 +101,11 @@ public:
         if (_readPosition + size > _buffer.size()) {
             throw std::runtime_error("Packet Underflow");
         }
-        str.assign(_buffer.begin() + _readPosition, _buffer.begin() + _readPosition + size);
+
+        str.assign(
+            _buffer.begin() + static_cast<long>(_readPosition),
+            _buffer.begin() + static_cast<long>(_readPosition) + size
+        );
         _readPosition += size;
         return *this;
     }
