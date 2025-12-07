@@ -7,7 +7,7 @@ namespace rtnt::core
 
 void Server::update(milliseconds timeout)
 {
-    auto now = system_clock::now();
+    auto now = steady_clock::now();
 
     for (auto it = _sessions.begin(); it != _sessions.end(); ) {
         auto& session = it->second;
