@@ -1,5 +1,6 @@
 #pragma once
 
+#include <format>
 #include <vector>
 
 #include "rtnt/Constants.hpp"
@@ -83,6 +84,19 @@ namespace packet
 }
 
 using ByteBuffer = std::vector<uint8_t>;
+
+inline std::string byteBufferToHexString(const ByteBuffer& buffer)
+{
+    std::string result = "[";
+    for (size_t i = 0; i < buffer.size(); ++i) {
+        if (i > 0) {
+            result += " ";
+        }
+        result += std::format("{:02x}", buffer[i]);
+    }
+    result += "]";
+    return result;
+}
 
 class Packet
 {
