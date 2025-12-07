@@ -1,0 +1,24 @@
+#pragma once
+
+#include "rtnt/Core/InternalPackets.hpp"
+#include "rtnt/Core/Packet.hpp"
+
+namespace rtnt::core::packet::internal
+{
+
+struct ConnectAck
+{
+    static constexpr Id   kId   = static_cast<uint16_t>(SystemMessageId::kConnectAck);
+    static constexpr Flag kFlag = Flag::kReliable;
+    static constexpr Name kName = "__rtnt_internal_CONNECT_ACK";
+
+    uint32_t assignedSessionId;
+
+    template<typename Archive>
+    void serialize(Archive& ar)
+    {
+        ar & assignedSessionId;
+    }
+};
+
+}
