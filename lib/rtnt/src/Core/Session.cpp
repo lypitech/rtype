@@ -21,6 +21,9 @@ bool Session::handleIncoming(
     Packet &outPacket
 )
 {
+    packet::Header header;
+    size_t payloadSize = 0;
+
     LOG_TRACE_R3(
         "Handling incoming raw data\n"
         "Size: {} bytes\n"
@@ -29,7 +32,7 @@ bool Session::handleIncoming(
         byteBufferToHexString(rawData)
     );
 
-    if (buffer.size() < sizeof(packet::Header)) {
+    if (rawData.size() < sizeof(packet::Header)) {
         LOG_TRACE_R3("Data received is too small to contain a header, probably random internet noise. Skipping...");
         return false;
     }
