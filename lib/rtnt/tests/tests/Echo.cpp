@@ -22,7 +22,16 @@ TEST(echo, basic)
 
     LOG_DEBUG("Setting onMessage function of server");
     server.onMessage([](const auto& session, auto& packet) {
+        LOG_DEBUG("Server received a message!");
         session->send(packet);
+    });
+
+    server.onDisconnect([](const auto& session) {
+        LOG_DEBUG("Session {} disconnected", session.get()->getEndpoint().address().to_string());
+    });
+
+    server.onConnect([](const auto& session) {
+        LOG_DEBUG("Session {} connected", session.get()->getEndpoint().address().to_string());
     });
 
     LOG_DEBUG("Starting server");
@@ -42,14 +51,21 @@ TEST(echo, basic)
         LOG_DEBUG("Client disconnected");
     });
 
-    client.onMessage([](auto& /*packet*/) {
-        LOG_DEBUG("Message!!");
+    client.onMessage([&](auto& packet) {
+        std::string response;
+        try {
+            packet >> response;
+            promise.set_value(response);
+            LOG_DEBUG("Message!! {}", response);
+        } catch (const std::exception& e) {
+            LOG_ERR("{}", e.what());
+        }
     });
 
     LOG_DEBUG("Will connect");
     client.connect("127.0.0.1", 4242);
 
-    rtnt::core::Packet p(10, rtnt::core::packet::Flag::kReliable);
+    rtnt::core::Packet p(10, rtnt::core::packet::Flag::kUnreliable);
     std::string message = "Hello GoogleTest";
     p << message;
 
