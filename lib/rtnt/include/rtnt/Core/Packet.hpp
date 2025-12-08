@@ -23,9 +23,9 @@ namespace packet
      */
     enum class Flag : uint8_t
     {
-        kUnreliable     = 1 << 0, ///< Fire and forget. May be lost or arrive out of order.
-        kReliable       = 1 << 1, ///< Guaranteed delivery. Will be resent until ACKed.
-        kSynchronized   = 1 << 2, ///< Guaranteed order. Will be buffered until previous packets arrive.
+        kUnreliable = 1 << 0, ///< Fire and forget. May be lost or arrive out of order.
+        kReliable   = 1 << 1, ///< Guaranteed delivery. Will be resent until ACKed.
+        kOrdered    = 1 << 2, ///< Guaranteed order. Will be buffered until previous packets arrive.
     };
 
     #pragma pack(push, 1) // forcing strict alignment, no compiler padding
@@ -43,7 +43,7 @@ namespace packet
         uint32_t sequenceId             = 0; ///< The unique, incrementing ID of this packet
         uint32_t acknowledgeId          = 0; ///< Sequence ID of the latest packet received
         uint32_t acknowledgeBitfield    = 0; ///< Bitmask of the previous 32 received packets relative to acknowledge ID
-        Id messageId                    = 0x0; ///< Command type (user-defined)
+        Id       messageId              = 0x0; ///< Command type (user-defined)
         uint8_t  flags                  = static_cast<uint8_t>(Flag::kUnreliable); ///< Reliability flags (cf. packet::Flag)
         uint16_t packetSize             = 0; ///< Size of the payload
         uint32_t checksum               = 0; ///< CRC32 checksum to avoid corruption
@@ -266,7 +266,7 @@ public:
 
     void _internal_setPayload(std::vector<uint8_t>&& data)
     {
-        _buffer = data;
+        _buffer = std::move(data);
         _readPosition = 0;
     }
 
