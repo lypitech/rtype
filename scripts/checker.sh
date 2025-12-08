@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 COLOR_RESET="\033[0m"
 COLOR_RED="\033[31m"
