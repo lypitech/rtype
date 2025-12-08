@@ -85,7 +85,7 @@ namespace packet
 
     /**
      * @struct  packet::Reader
-     * @brief   Helper class that behaves like a Packet but Reads instead of Writing.
+     * @brief   Helper class that behaves like a Packet but reads instead of writing.
      * This allows to use the '&' operator for reading.
      */
     struct Reader final
@@ -95,6 +95,16 @@ namespace packet
         template <typename T>
         Reader& operator&(T& data);
     };
+
+    template <typename T>
+    constexpr std::string_view getPacketName()
+    {
+        if constexpr (requires { T::kName; }) {
+            return T::kName;
+        } else {
+            return UNKNOWN_PACKET_NAME;
+        }
+    }
 
 }
 
