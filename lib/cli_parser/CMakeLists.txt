@@ -8,7 +8,7 @@ project(cli_parser
 )
 
 # --- Options ---
-option(CLIPRS_BUILD_TESTS "Build the test suite" OFF)
+option(CLI_PARSER_BUILD_TESTS "Build the test suite" OFF)
 
 # --- Sources / Headers ---
 add_library(${PROJECT_NAME} STATIC
@@ -42,7 +42,7 @@ else()
 endif()
 
 # --- Tests ---
-if(CLIPRS_BUILD_TESTS OR PROJECT_IS_TOP_LEVEL)
+if(CLI_PARSER_BUILD_TESTS OR PROJECT_IS_TOP_LEVEL)
     enable_testing()
     add_subdirectory(tests)
 endif()
