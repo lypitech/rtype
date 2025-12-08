@@ -10,11 +10,11 @@ struct PingPacket
 {
     static constexpr Id   kId   = static_cast<uint16_t>(SystemMessageId::kPing);
     static constexpr Flag kFlag = Flag::kUnreliable;
-    static constexpr Name kName = "__rtnt_internal_PING";
+    static constexpr Name kName = INTERNAL_PACKET_NAME("PING");
 
     uint64_t timestamp;
 
-    template<typename Archive>
+    template <typename Archive>
     void serialize(Archive& ar)
     {
         ar & timestamp;
