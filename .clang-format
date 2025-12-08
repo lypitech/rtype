@@ -176,7 +176,7 @@ IntegerLiteralSeparator:
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLines:
-  AtEndOfFile:     false
+  AtEndOfFile:     true
   AtStartOfBlock:  false
   AtStartOfFile:   true
 LambdaBodyIndentation: Signature
