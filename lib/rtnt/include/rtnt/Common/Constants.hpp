@@ -15,4 +15,17 @@ static constexpr uint16_t PROTOCOL_ID = 0xfeed;
 /// todo: Prone to change
 static constexpr uint16_t PROTOCOL_VER = 0x0001;
 
+namespace core::packet
+{
+
+    enum class SystemMessageId : uint16_t
+    {
+        kConnect = 0x01,
+        kConnectAck,
+        kPing,
+        kPong,
+    };
+
+}
+
 }

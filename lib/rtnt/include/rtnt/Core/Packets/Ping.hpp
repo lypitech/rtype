@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rtnt/Core/InternalPackets.hpp"
+#include "rtnt/Common/Constants.hpp"
 #include "rtnt/Core/Packet.hpp"
 
 namespace rtnt::core::packet::internal
