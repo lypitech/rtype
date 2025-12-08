@@ -12,6 +12,12 @@ declare -a DIRS
 VERBOSE="false"
 FLAG="-n"
 
+if [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
+    echo -e "${BOLD}${COLOR_RED}ERROR: This script needs bash 4 or upper.${COLOR_RESET}"
+    echo "current version : $BASH_VERSION"
+    exit 1
+fi
+
 for arg in $@; do
 
   if [[ "$arg" == -* ]]; then
