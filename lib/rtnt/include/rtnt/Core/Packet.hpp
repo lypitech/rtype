@@ -106,6 +106,16 @@ namespace packet
         }
     }
 
+    template <typename T>
+    constexpr Flag getFlag()
+    {
+        if constexpr (requires { T::kFlag; }) {
+            return T::kFlag;
+        } else {
+            return Flag::kUnreliable;
+        }
+    }
+
 }
 
 using ByteBuffer = std::vector<uint8_t>;
