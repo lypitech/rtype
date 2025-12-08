@@ -6,12 +6,12 @@ namespace rtnt::core
 namespace packet
 {
 
-template <typename T>
-Reader& Reader::operator&(T& data)
-{
-    _packet >> data; // Redirects '&' to Packet's read logic
-    return *this;
-}
+    template <typename T>
+    Reader& Reader::operator&(T& data)
+    {
+        _packet >> data; // Redirects '&' to Packet's read logic
+        return *this;
+    }
 
 }
 
