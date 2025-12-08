@@ -43,9 +43,15 @@ public:
 
     /**
      * @brief   Quick helper to send a user-defined Packet to the server.
-     * @param   packet Packet to send to the server
+     * @tparam  T           Type of user-defined packet (automatically resolved with variable)
+     * @param   packetData  Packet to send
      */
-    void send(Packet packet) { LOG_DEBUG("Sending a packet from client."); _serverSession->send(packet); }
+    template <typename T>
+    void send(const T& packetData)
+    {
+        packet::verifyUserPacketData<T>();
+        sendInternal<T>(packetData);
+    }
 
     /**
      * @brief   Main maintenance loop. Checks for timeouts.
@@ -67,6 +73,28 @@ private:
 
     OnDisconnectFunction _onDisconnect;
     OnMessageFunction _onMessage;
+
+    /**
+     * @brief   Sends a packet to the connected server.
+     * @tparam  T           Type of packet to send (automatically resolved with variable)
+     * @param   packetData  Packet to send
+     */
+    template <typename T>
+    void sendInternal(const T& packetData)
+    {
+        packet::verifyPacketData<T>();
+
+        LOG_DEBUG(
+            "Client sending Packet #{} {}...",
+            T::kId,
+            packet::getPacketName<T>()
+        );
+
+        Packet packetToSend(T::kId, packet::getFlag<T>());
+        packetToSend << packetData;
+        _serverSession->send(packetToSend);
+    }
+
 };
 
 }
