@@ -1,5 +1,7 @@
 #pragma once
 
+#define INTERNAL_PACKET_NAME(name) "__rtnt_internal_" name
+
 #include <cstdint>
 
 namespace rtnt

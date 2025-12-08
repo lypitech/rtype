@@ -10,11 +10,11 @@ struct PongPacket
 {
     static constexpr Id   kId   = static_cast<uint16_t>(SystemMessageId::kPong);
     static constexpr Flag kFlag = Flag::kUnreliable;
-    static constexpr Name kName = "__rtnt_internal_PONG";
+    static constexpr Name kName = INTERNAL_PACKET_NAME("PONG");
 
     uint64_t timestamp;
 
-    template<typename Archive>
+    template <typename Archive>
     void serialize(Archive& ar)
     {
         ar & timestamp;
