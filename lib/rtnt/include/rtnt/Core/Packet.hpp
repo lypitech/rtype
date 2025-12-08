@@ -3,6 +3,7 @@
 #include <format>
 #include <vector>
 
+#include "logger/Logger.h"
 #include "rtnt/Common/Constants.hpp"
 
 namespace rtnt::core
@@ -114,6 +115,48 @@ namespace packet
         } else {
             return Flag::kUnreliable;
         }
+    }
+
+    template <typename T>
+    void verifyPacketData()
+    {
+        static_assert(
+            std::is_class_v<T>,
+            "Packet data must be a struct."
+        );
+
+        static_assert(
+            requires { T::kId; },
+            "Packet struct is missing 'static constexpr uint16_t kId'."
+        );
+
+        using IdType = decltype(T::kId);
+
+        static_assert(
+            std::is_same_v<const Id, IdType>,
+            "Packet kId must be a 16-bit unsigned integer (uint16_t)."
+        );
+
+        if constexpr (!requires { T::kName; }) {
+            LOG_WARN(
+                "Warning for Packet #{}: "
+                "It is strongly recommended to give a name to the packets you define. "
+                "Fallback to \"{}\".",
+                T::kId,
+                UNKNOWN_PACKET_NAME
+            );
+        }
+    }
+
+    template <typename T>
+    void verifyUserPacketData()
+    {
+        verifyPacketData<T>();
+
+        static_assert(
+            static_cast<const Id>(T::kId) >= 128, // fixme: fix magic number
+            "User-defined packet IDs must be >= 128."
+        );
     }
 
 }
