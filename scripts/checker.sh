@@ -44,7 +44,7 @@ fi
 
 declare -a FILES
 mapfile -t FILES < <(find "${DIRS[@]}" \
-    \( -path "*test*" -o -path "*build*" \) -prune -false -o \
+    \( -path "*build*" \) -prune -false -o \
     \( -iname "*.cpp" -o -iname "*.hpp" \))
 
 if [ "${#FILES[@]}" -eq 0 ]; then
