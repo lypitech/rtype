@@ -1,13 +1,13 @@
 # --- Sources ---
-set(CLIPRS_TEST_SOURCES
+set(CLI_PARSER_TEST_SOURCES
     Main.cpp
     tests/Initialization.cpp
 )
 
-add_executable(cliprs_tests ${CLIPRS_TEST_SOURCES})
+add_executable(cli_parser_tests ${CLI_PARSER_TEST_SOURCES})
 
 # --- Shuvlog build info fetch ---
-target_compile_definitions(cliprs_tests PRIVATE
+target_compile_definitions(cli_parser_tests PRIVATE
     SHLG_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
     SHLG_BUILD_VERSION="${PROJECT_VERSION}"
     SHLG_COMPILER_ID="${CMAKE_CXX_COMPILER_ID}"
@@ -17,19 +17,19 @@ target_compile_definitions(cliprs_tests PRIVATE
 )
 
 # Shuvlog: For relative paths in sources.
-target_compile_options(cliprs_tests PRIVATE
+target_compile_options(cli_parser_tests PRIVATE
     -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=.
 )
 
 # --- Headers ---
-target_include_directories(cliprs_tests PRIVATE
+target_include_directories(cli_parser_tests PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../include
 )
 
 # --- Dependencies ---
 find_package(GTest REQUIRED)
 
-target_link_libraries(cliprs_tests
+target_link_libraries(cli_parser_tests
     PRIVATE
     GTest::gtest
     GTest::gtest_main
@@ -38,4 +38,4 @@ target_link_libraries(cliprs_tests
 
 # --- GTest setup ---
 include(GoogleTest)
-gtest_discover_tests(cliprs_tests)
+gtest_discover_tests(cli_parser_tests)
