@@ -1,4 +1,4 @@
-#include "../include/cli_parser.hpp"
+#include "cli_parser.hpp"
 
 #include <iostream>
 
