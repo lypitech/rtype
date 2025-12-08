@@ -18,6 +18,8 @@ static constexpr uint16_t PROTOCOL_VER = 0x0001;
 namespace core::packet
 {
 
+    static constexpr std::string_view UNKNOWN_PACKET_NAME = "__rtnt_UNKNOWN";
+
     enum class SystemMessageId : uint16_t
     {
         kConnect = 0x01,
