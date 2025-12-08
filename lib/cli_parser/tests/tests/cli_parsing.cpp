@@ -1,6 +1,6 @@
-#include "cli_parser.hpp"
-
 #include <gtest/gtest.h>
+
+#include "cli_parser.hpp"
 
 TEST(cli_parsing, empty) {
     const char *argv[] = {"prog_name", nullptr};
