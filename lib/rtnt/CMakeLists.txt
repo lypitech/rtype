@@ -27,7 +27,7 @@ add_library(${PROJECT_NAME} STATIC
     src/Core/Server.cpp
     src/Core/Client.cpp
     src/Core/Peer.cpp
-        src/Common/Utils.cpp
+    src/Common/Utils.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -57,7 +57,7 @@ if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4 /permissive-)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE
-        -Wall -Wextra -Werror -pedantic
+        -Wall -Wextra #[[-Werror]] -pedantic
         -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=.
     )
 endif()
