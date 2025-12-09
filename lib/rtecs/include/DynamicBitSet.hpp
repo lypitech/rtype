@@ -61,6 +61,7 @@ class DynamicBitSet {
     DynamicBitSet operator|(DynamicBitSet &other) const;
     BitRef operator[](size_t i);
     bool operator[](size_t i) const;
+    bool operator==(const DynamicBitSet &) const;
 };
 
 }  // namespace rtecs
