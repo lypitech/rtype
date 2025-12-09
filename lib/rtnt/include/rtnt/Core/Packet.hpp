@@ -159,6 +159,17 @@ namespace packet
         );
     }
 
+    template <typename T>
+    void verifyInternalPacketData()
+    {
+        verifyPacketData<T>();
+
+        static_assert(
+            static_cast<const Id>(T::kId) < 128, // fixme: fix magic number
+            "Internal packet IDs must be < 128."
+        );
+    }
+
 }
 
 using ByteBuffer = std::vector<uint8_t>;
