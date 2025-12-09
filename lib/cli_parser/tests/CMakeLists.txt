@@ -1,7 +1,7 @@
 # --- Sources ---
 set(CLI_PARSER_TEST_SOURCES
     Main.cpp
-        tests/cli_parsing.cpp
+    tests/cli_parsing.cpp
 )
 
 add_executable(cli_parser_tests ${CLI_PARSER_TEST_SOURCES})
