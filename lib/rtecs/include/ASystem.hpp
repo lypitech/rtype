@@ -1,24 +1,28 @@
 #pragma once
 
-#include "rtecs/types.hpp"
+#include "ECS.hpp"
 
 namespace rtecs {
 
-class ECS;  // Forward declaration
-
 class ASystem {
    private:
-    const BitMask _mask;
+    DynamicBitSet _mask;
 
    protected:
     [[nodiscard]]
-    BitMask getMask() const noexcept {
+    const DynamicBitSet &getMask() const noexcept {
         return _mask;
     };
 
+    explicit ASystem() : _mask() {};
+
+    template <typename... Components>
+    explicit ASystem(const ECS &ecs)
+        : _mask(ecs.getComponentsBitSet<Components...>()){};
+
    public:
-    explicit ASystem(const BitMask mask) : _mask(mask) {};
     virtual ~ASystem() = default;
+
     virtual void apply(ECS &ecs) = 0;
 };
 
