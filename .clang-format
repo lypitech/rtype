@@ -89,7 +89,7 @@ BraceWrapping:
   AfterControlStatement: Never
   AfterEnum:       true
   AfterExternBlock: false
-  AfterFunction:   false
+  AfterFunction:   true
   AfterNamespace:  false
   AfterObjCDeclaration: false
   AfterStruct:     true
