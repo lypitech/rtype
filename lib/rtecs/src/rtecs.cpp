@@ -1,4 +1,4 @@
-#include "rtecs/rtecs.h"
+#include "rtecs/rtecs.hpp"
 
 #include "logger/Logger.h"
 
