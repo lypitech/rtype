@@ -34,18 +34,22 @@ class ASystem
 
 namespace rtecs {
 
-class ECS; // Forward declaration
+class ECS;  // Forward declaration
 
 class ASystem {
-private:
+   private:
     const BitMask _mask;
-protected:
+
+   protected:
     [[nodiscard]]
-    BitMask getMask() const noexcept { return _mask; };
-public:
-    explicit ASystem(const BitMask mask): _mask(mask) {};
+    BitMask getMask() const noexcept {
+        return _mask;
+    };
+
+   public:
+    explicit ASystem(const BitMask mask) : _mask(mask) {};
     virtual ~ASystem() = default;
     virtual void apply(ECS &ecs) = 0;
 };
 
-}
+}  // namespace rtecs
