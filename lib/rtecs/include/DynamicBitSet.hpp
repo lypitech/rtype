@@ -17,12 +17,28 @@ class DynamicBitSet
         std::bitset<64> mask;
 
        public:
+#include <vector>
+#include <bitset>
+
+namespace rtecs {
+
+class DynamicBitSet {
+    std::vector<std::bitset<64>> _bitsets;
+    size_t _nbits = 0;
+public:
+
+    class BitRef {
+        std::bitset<64>& block;
+        std::bitset<64> mask;
+    public:
         explicit BitRef(std::bitset<64> &b, std::bitset<64> m);
 
         explicit operator bool() const;
 
         BitRef &operator=(bool v);
         bool operator==(const BitRef &) const;
+        BitRef& operator=(bool v);
+        BitRef& operator&(BitRef &other);
     };
 
     [[nodiscard]] bool any() const;
@@ -39,3 +55,10 @@ class DynamicBitSet
 };
 
 }  // namespace rtecs
+    DynamicBitSet operator&(DynamicBitSet &other) const;
+    DynamicBitSet operator|(DynamicBitSet &other) const;
+    BitRef operator[](size_t i);
+    bool operator[](size_t i) const;
+};
+
+}
