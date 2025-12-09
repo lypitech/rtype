@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Dispatcher.hpp"
 #include "Peer.hpp"
 #include "Session.hpp"
 #include "logger/Logger.h"
@@ -60,6 +61,8 @@ public:
      */
     void update(milliseconds timeout = seconds(10));
 
+    [[nodiscard]] Dispatcher& getPacketDispatcher() { return this->_packetDispatcher; }
+
 protected:
     void onReceive(
         const udp::endpoint& sender,
@@ -70,6 +73,8 @@ private:
     udp::endpoint _serverEndpoint;
     std::shared_ptr<Session> _serverSession;
     // bool _isConnected = false;
+
+    Dispatcher _packetDispatcher;
 
     OnDisconnectFunction _onDisconnect;
     OnMessageFunction _onMessage;
