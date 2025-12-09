@@ -2,25 +2,23 @@
 
 #include <sys/types.h>
 
-#include <iostream>
 #include <memory>
 #include <optional>
 #include <vector>
 
-#include "rtecs/types.h"
+#include "ISparseSet.hpp"
+#include "rtecs/types.hpp"
 
 namespace rtecs {
 
-#ifndef PAGED_ARRAY
-    #define PAGE_OF(id, page_size) (id / page_size)
-    #define INDEX_OF(id, page_size) (id % page_size)
-#endif // PAGED_ARRAY
+#define PAGE_OF(id, page_size) (id / page_size)
+#define INDEX_OF(id, page_size) (id % page_size
 
 // ================================
 //      SparseSet - Definition
 // ================================
 template <typename Component>
-class SparseSet {
+class SparseSet final : public ISparseSet {
 public:
     static constexpr size_t kPageSize = 2048;
 
@@ -34,8 +32,10 @@ private:
     std::vector<EntityID> _entities;
     std::vector<Sparse> _sparsePages;
 
-    [[nodiscard]] static size_t getPage(EntityID id);
-    [[nodiscard]] static size_t getSparseIndex(EntityID id);
+    [[nodiscard]]
+    static size_t getPage(EntityID id);
+    [[nodiscard]]
+    static size_t getSparseIndex(EntityID id);
 
 public:
     /**
@@ -44,7 +44,8 @@ public:
      * @param id The id of the entity.
      * @return A reference to the component of the entity.
      */
-    [[nodiscard]] OptionalRef<Component> getComponent(EntityID id) noexcept;
+    [[nodiscard]]
+    OptionalRef<Component> getComponent(EntityID id) noexcept;
 
     /**
      * @brief Get a const-reference of the entity.
@@ -52,37 +53,49 @@ public:
      * @param id The id of the entity.
      * @return A const-reference to the component of the entity.
      */
-    [[nodiscard]] OptionalCRef<Component> getComponent(EntityID id) const noexcept;
+    [[nodiscard]]
+    OptionalCRef<Component> getComponent(EntityID id) const noexcept;
+
+    /**
+     * @brief Get all the components instances present in this sparse-set.
+     *
+     * @return A reference to all the components instances.
+     */
+    [[nodiscard]]
+    std::vector<Component> &getComponents() noexcept;
 
     /**
      * @brief Check if the sparse-set has the given entity.
      *
      * @param id The id of the entity.
-     * @return `true` if the entity is present in the sparse-set, `false` otherwise.
+     * @return `true` if the entity is present in the sparse-set, `false`
+     * otherwise.
      */
-    [[nodiscard]] bool has(EntityID id) const noexcept;
+    [[nodiscard]]
+    bool has(EntityID id) const noexcept override;
 
     /**
-     * @brief Create / Overwrite the component of the entity to the sparse-set.<br>
-     * Note: The first entity id is 1, not 0 !
+     * @brief Create / Overwrite the component of the entity to the
+     * sparse-set.<br> Note: The first entity id is 1, not 0 !
      *
      * @param id The entity ID to add.
-     * @param component The component to create (optional; defaults to a value-initialized Component).
+     * @param component The component to create (optional; defaults to a
+     * value-initialized Component).
      * @return `true` if the entity has been created, `false` otherwise.
      */
-    bool create(EntityID id, Component component = Component{}) noexcept;
+    bool put(EntityID id, Component component = Component{}) noexcept;
 
     /**
      * @brief Remove the entity associated component from the sparse-set.
      *
      * @param id The entity to remove from the sparse-set.
      */
-    void destroy(EntityID id) noexcept;
+    void remove(EntityID id) noexcept override;
 
     /**
      * Clear the sparse-set.
      */
-    void clear() noexcept;
+    void clear() noexcept override;
 };
 
 // ====================================
@@ -131,6 +144,11 @@ OptionalCRef<Component> SparseSet<Component>::getComponent(const EntityID id) co
 }
 
 template <typename Component>
+std::vector<Component> &SparseSet<Component>::getComponents() noexcept {
+    return _dense;
+}
+
+template <typename Component>
 bool SparseSet<Component>::has(const EntityID id) const noexcept {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = INDEX_OF(id, kPageSize);
@@ -141,7 +159,7 @@ bool SparseSet<Component>::has(const EntityID id) const noexcept {
 }
 
 template <typename Component>
-bool SparseSet<Component>::create(const EntityID id, Component component) noexcept {
+bool SparseSet<Component>::put(const EntityID id, Component component) noexcept {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = INDEX_OF(id, kPageSize);
 
@@ -165,30 +183,30 @@ bool SparseSet<Component>::create(const EntityID id, Component component) noexce
 }
 
 template <typename Component>
-void SparseSet<Component>::destroy(const EntityID id) noexcept {
+void SparseSet<Component>::remove(const EntityID id) noexcept {
     if (!has(id))
         return;
 
-    const size_t toDestroyPage = PAGE_OF(id, kPageSize);
-    const size_t toDestroySparseIndex = INDEX_OF(id, kPageSize);
-    OptionalSparseElement optionalToDestroyIndex = _sparsePages[toDestroyPage][toDestroySparseIndex];
+    const size_t targetPage = PAGE_OF(id, kPageSize);
+    const size_t targetSparseIndex = INDEX_OF(id, kPageSize);
+    OptionalSparseElement optionalTargetIndex = _sparsePages[targetPage][targetSparseIndex];
 
-    if (!optionalToDestroyIndex.has_value())
+    if (!optionalTargetIndex.has_value())
         return;
 
-    const size_t toDestroyIndex = optionalToDestroyIndex.value();
-    Component &toDestroyComponent = _dense[toDestroyIndex];
-    EntityID &toDestroyEntity = _entities[toDestroyIndex];
+    const size_t targetIndex = optionalTargetIndex.value();
+    Component &targetComponent = _dense[targetIndex];
+    EntityID &targetEntity = _entities[targetIndex];
 
     Component &lastComponent = _dense.back();
     EntityID &lastEntity = _entities.back();
 
-    std::swap(lastComponent, toDestroyComponent);
-    std::swap(lastEntity, toDestroyEntity);
+    std::swap(lastComponent, targetComponent);
+    std::swap(lastEntity, targetEntity);
 
     _dense.pop_back();
     _entities.pop_back();
-    _sparsePages[toDestroyPage][toDestroySparseIndex] = kNullSparseElement;
+    _sparsePages[targetPage][targetSparseIndex] = kNullSparseElement;
 }
 
 template <typename Component>

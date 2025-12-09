@@ -18,6 +18,8 @@ endif()
 # --- Sources / Headers ---
 add_library(${PROJECT_NAME} STATIC
     src/rtecs.cpp
+    src/internal/DynamicBitSet.cpp
+    src/system/ASystem.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

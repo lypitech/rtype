@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "logger/Logger.h"
-#include "rtecs/rtecs.h"
+#include "rtecs/rtecs.hpp"
 
 TEST(SparseSet_create, create_single_entity_without_auto_initializer) {
     struct MyComponent {
@@ -10,7 +10,7 @@ TEST(SparseSet_create, create_single_entity_without_auto_initializer) {
     };
 
     rtecs::SparseSet<MyComponent> sparseSet;
-    sparseSet.create(1, { .name = std::string("Hello world"), .age = 42 });
+    sparseSet.put(1, { .name = std::string("Hello world"), .age = 42 });
 
     const rtecs::OptionalRef<MyComponent> first = sparseSet.getComponent(1);
 
@@ -24,7 +24,7 @@ TEST(SparseSet_create, create_single_entity_with_auto_initializer) {
     };
 
     rtecs::SparseSet<MyComponent> sparseSet;
-    sparseSet.create(1);
+    sparseSet.put(1);
 
     const rtecs::OptionalRef<MyComponent> component = sparseSet.getComponent(1);
 
@@ -38,7 +38,7 @@ TEST(SparseSet_create, create_entity_with_id_zero) {
     };
 
     rtecs::SparseSet<MyComponent> sparseSet;
-    sparseSet.create(0, { .name = std::string("Hello world"), .age = 42 });
+    sparseSet.put(0, { .name = std::string("Hello world"), .age = 42 });
 
     const rtecs::OptionalRef<MyComponent> component = sparseSet.getComponent(0);
 
@@ -54,7 +54,7 @@ TEST(SparseSet_create, create_multiple_ordered_entities) {
     rtecs::SparseSet<MyComponent> sparseSet;
 
     for (int id = 0; id < 10; id++) {
-        sparseSet.create(id);
+        sparseSet.put(id);
     }
     for (int id = 0; id < 10; id++) {
         const rtecs::OptionalRef<MyComponent> component = sparseSet.getComponent(id);
@@ -69,11 +69,11 @@ TEST(SparseSet_create, create_multiple_entities_with_random_id) {
         int age;
     };
 
-    std::vector<size_t> entities{ 1, 20, 3400, 4297, 9821, 12023 };
+    const std::vector<size_t> entities{ 1, 20, 3400, 4297, 9821, 12023 };
     rtecs::SparseSet<MyComponent> sparseSet;
 
     for (const size_t id : entities) {
-        sparseSet.create(id);
+        sparseSet.put(id);
     }
     for (const auto id : entities) {
         const rtecs::OptionalRef<MyComponent> component = sparseSet.getComponent(id);
@@ -103,7 +103,7 @@ TEST(SparseSet_clear, clear_filled_sparseset) {
     rtecs::SparseSet<MyComponent> sparseSet;
 
     for (int id = 0; id < 10; id++) {
-        sparseSet.create(id);
+        sparseSet.put(id);
     }
 
     for (int id = 0; id < 10; id++) {
@@ -117,7 +117,7 @@ TEST(SparseSet_clear, clear_filled_sparseset) {
     }
 }
 
-TEST(SparseSet_destroy, destroy_entity) {
+TEST(SparseSet_remove, remove_entity) {
     struct MyComponent {
         std::string name;
         int age;
@@ -126,20 +126,33 @@ TEST(SparseSet_destroy, destroy_entity) {
     rtecs::SparseSet<MyComponent> sparseSet;
 
     for (int id = 0; id < 10; id++) {
-        sparseSet.create(id);
+        sparseSet.put(id);
     }
 
     for (int id = 0; id < 10; id++) {
         EXPECT_TRUE(sparseSet.has(id));
     }
 
-    sparseSet.destroy(2);
-    ASSERT_FALSE(sparseSet.has(2));
+    sparseSet.remove(2);
 
-    for (int id = 0; id < 2; id++) {
-        ASSERT_TRUE(sparseSet.has(id));
+    for (int id = 0; id < 10; id++) {
+        if (id == 2) ASSERT_FALSE(sparseSet.has(id));
+        else ASSERT_TRUE(sparseSet.has(id));
     }
-    for (int id = 3; id < 10; id++) {
-        ASSERT_TRUE(sparseSet.has(id));
+}
+
+TEST(SparseSet_remove, remove_undefined_entity) {
+    struct MyComponent {
+        std::string name;
+        int age;
+    };
+
+    rtecs::SparseSet<MyComponent> sparseSet;
+
+    for (int id = 0; id < 10; id++) {
+        sparseSet.put(id);
     }
+
+    sparseSet.remove(2);
+    ASSERT_FALSE(sparseSet.has(2));
 }
