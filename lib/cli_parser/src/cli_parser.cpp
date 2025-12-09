@@ -1,7 +1,5 @@
 #include "cli_parser.hpp"
 
-#include <iostream>
-
 namespace cli_parser {
 
 Parser::Parser(const int argc, const char* argv[]) {
@@ -12,27 +10,34 @@ Parser::Parser(const int argc, const char* argv[]) {
         }
         i++;
         if (i >= argc) {
-            _flags.emplace(arg, "");
+            _flags.emplace_back(arg, "");
             break;
         }
         if (argv[i][0] == '-') {
             i--;
-            _flags.emplace(arg, "");
+            _flags.emplace_back(arg, "");
         } else {
-            _flags.emplace(arg, std::string(argv[i]));
+            _flags.emplace_back(arg, std::string(argv[i]));
         }
     }
 }
 
-std::string Parser::getValue(const std::string& flag) {
-    if (_flags.contains(flag)) {
-        return _flags.at(flag);
+Flag Parser::getValue(const std::string& flag) {
+    for (auto& f : _flags) {
+        if (f == flag) {
+            return f;
+        }
     }
-    return "";
+    return Flag{"", ""};
 }
 
 bool Parser::hasFlag(const std::string& flag) const {
-    return _flags.contains(flag);
+    for (auto& f : _flags) {
+        if (f == flag) {
+            return true;
+        }
+    }
+    return false;
 }
 
 }  // namespace cli_parser
