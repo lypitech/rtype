@@ -27,10 +27,10 @@ class SparseSet final : public ISparseSet
    private:
 template <typename Component>
 class SparseSet final : public ISparseSet {
-public:
+   public:
     static constexpr size_t kPageSize = 2048;
 
-private:
+   private:
     using SparseElement = size_t;
     using OptionalSparseElement = std::optional<SparseElement>;
     using Sparse = std::array<OptionalSparseElement, kPageSize>;
@@ -55,7 +55,7 @@ private:
     [[nodiscard]]
     static size_t getSparseIndex(EntityID id);
 
-public:
+   public:
     /**
      * @brief Get a reference of the entity.
      *
@@ -150,7 +150,8 @@ OptionalRef<Component> SparseSet<Component>::getComponent(const EntityID id) noe
         return std::nullopt;
     }
 
-    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
+    const OptionalSparseElement optionalDenseIndex =
+        _sparsePages[page][sparseIndex];
 
     if (!optionalDenseIndex.has_value()) {
         return std::nullopt;
@@ -171,7 +172,8 @@ OptionalCRef<Component> SparseSet<Component>::getComponent(const EntityID id) co
         return std::nullopt;
     }
 
-    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
+    const OptionalSparseElement optionalDenseIndex =
+        _sparsePages[page][sparseIndex];
 
     if (!optionalDenseIndex.has_value()) {
         return std::nullopt;
@@ -208,7 +210,8 @@ bool SparseSet<Component>::put(const size_t id, Component component) noexcept
         _sparsePages[page].fill(kNullSparseElement);
     }
 
-    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
+    const OptionalSparseElement optionalDenseIndex =
+        _sparsePages[page][sparseIndex];
 
     if (!optionalDenseIndex.has_value()) {
         _dense.push_back(component);
@@ -231,7 +234,8 @@ void SparseSet<Component>::remove(const size_t id) noexcept
 
     const size_t targetPage = PAGE_OF(id, kPageSize);
     const size_t targetSparseIndex = INDEX_OF(id, kPageSize);
-    OptionalSparseElement optionalTargetIndex = _sparsePages[targetPage][targetSparseIndex];
+    OptionalSparseElement optionalTargetIndex =
+        _sparsePages[targetPage][targetSparseIndex];
 
     if (!optionalTargetIndex.has_value()) {
         return;

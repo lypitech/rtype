@@ -19,18 +19,20 @@ class DynamicBitSet
        public:
 #include <vector>
 #include <bitset>
+#include <vector>
 
 namespace rtecs {
 
 class DynamicBitSet {
     std::vector<std::bitset<64>> _bitsets;
     size_t _nbits = 0;
-public:
 
+   public:
     class BitRef {
-        std::bitset<64>& block;
+        std::bitset<64> &block;
         std::bitset<64> mask;
-    public:
+
+       public:
         explicit BitRef(std::bitset<64> &b, std::bitset<64> m);
 
         explicit operator bool() const;
@@ -61,4 +63,4 @@ public:
     bool operator[](size_t i) const;
 };
 
-}
+}  // namespace rtecs
