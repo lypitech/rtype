@@ -30,13 +30,13 @@ class SparseSet final : public ISparseSet
     static constexpr OptionalSparseElement kNullSparseElement = std::nullopt;
 
     std::vector<T> _dense;
-    std::vector<EntityID> _entities;
+    std::vector<size_t> _entities;
     std::vector<Sparse> _sparsePages;
 
     [[nodiscard]]
-    static size_t getPage(EntityID id);
+    static size_t getPage(size_t id);
     [[nodiscard]]
-    static size_t getSparseIndex(EntityID id);
+    static size_t getSparseIndex(size_t id);
 
    public:
     /**
@@ -46,7 +46,7 @@ class SparseSet final : public ISparseSet
      * @return A reference to the component of the entity.
      */
     [[nodiscard]]
-    OptionalRef<T> get(EntityID id) noexcept;
+    OptionalRef<T> get(size_t id) noexcept;
 
     /**
      * @brief Get a const-reference of the entity.
@@ -55,7 +55,7 @@ class SparseSet final : public ISparseSet
      * @return A const-reference to the component of the entity.
      */
     [[nodiscard]]
-    OptionalCRef<T> get(EntityID id) const noexcept;
+    OptionalCRef<T> get(size_t id) const noexcept;
 
     /**
      * @brief Get all the components instances present in this sparse-set.
@@ -73,7 +73,7 @@ class SparseSet final : public ISparseSet
      * otherwise.
      */
     [[nodiscard]]
-    bool has(EntityID id) const noexcept override;
+    bool has(size_t id) const noexcept override;
 
     /**
      * @brief Create / Overwrite the component of the entity to the
@@ -84,14 +84,14 @@ class SparseSet final : public ISparseSet
      * value-initialized Component).
      * @return `true` if the entity has been created, `false` otherwise.
      */
-    bool put(EntityID id, T component = T{}) noexcept;
+    bool put(size_t id, T component = T{}) noexcept;
 
     /**
      * @brief Remove the entity associated component from the sparse-set.
      *
      * @param id The entity to remove from the sparse-set.
      */
-    void remove(EntityID id) noexcept override;
+    void remove(size_t id) noexcept override;
 
     /**
      * Clear the sparse-set.
@@ -103,19 +103,19 @@ class SparseSet final : public ISparseSet
 //      SparseSet - Implementation
 // ====================================
 template <typename Component>
-size_t SparseSet<Component>::getPage(const EntityID id)
+size_t SparseSet<Component>::getPage(const size_t id)
 {
     return id / kPageSize;
 }
 
 template <typename Component>
-size_t SparseSet<Component>::getSparseIndex(const EntityID id)
+size_t SparseSet<Component>::getSparseIndex(const size_t id)
 {
     return id % kPageSize;
 }
 
 template <typename Component>
-OptionalRef<Component> SparseSet<Component>::get(const EntityID id) noexcept
+OptionalRef<Component> SparseSet<Component>::get(const size_t id) noexcept
 {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = INDEX_OF(id, kPageSize);
@@ -133,7 +133,7 @@ OptionalRef<Component> SparseSet<Component>::get(const EntityID id) noexcept
 }
 
 template <typename Component>
-OptionalCRef<Component> SparseSet<Component>::get(const EntityID id) const noexcept
+OptionalCRef<Component> SparseSet<Component>::get(const size_t id) const noexcept
 {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = INDEX_OF(id, kPageSize);
@@ -157,7 +157,7 @@ std::vector<Component> &SparseSet<Component>::getAll() noexcept
 }
 
 template <typename Component>
-bool SparseSet<Component>::has(const EntityID id) const noexcept
+bool SparseSet<Component>::has(const size_t id) const noexcept
 {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = INDEX_OF(id, kPageSize);
@@ -169,7 +169,7 @@ bool SparseSet<Component>::has(const EntityID id) const noexcept
 }
 
 template <typename Component>
-bool SparseSet<Component>::put(const EntityID id, Component component) noexcept
+bool SparseSet<Component>::put(const size_t id, Component component) noexcept
 {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = INDEX_OF(id, kPageSize);
@@ -194,7 +194,7 @@ bool SparseSet<Component>::put(const EntityID id, Component component) noexcept
 }
 
 template <typename Component>
-void SparseSet<Component>::remove(const EntityID id) noexcept
+void SparseSet<Component>::remove(const size_t id) noexcept
 {
     if (!has(id)) {
         return;
@@ -210,10 +210,10 @@ void SparseSet<Component>::remove(const EntityID id) noexcept
 
     const size_t targetIndex = optionalTargetIndex.value();
     Component &targetComponent = _dense[targetIndex];
-    EntityID &targetEntity = _entities[targetIndex];
+    size_t &targetEntity = _entities[targetIndex];
 
     Component &lastComponent = _dense.back();
-    EntityID &lastEntity = _entities.back();
+    size_t &lastEntity = _entities.back();
 
     std::swap(lastComponent, targetComponent);
     std::swap(lastEntity, targetEntity);
