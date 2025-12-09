@@ -10,11 +10,10 @@
 namespace cli_parser {
 
 class Flag {
-   public:
+public:
     explicit Flag(std::string flag, std::string value);
     ~Flag() = default;
 
-    void detectType();
 
     template <typename T>
     T as() const {
@@ -33,7 +32,8 @@ class Flag {
     bool operator==(const std::string& other) const;
     bool operator!=(const std::string& other) const;
 
-   private:
+private:
+    void detectType();
     std::string _flag;
     std::string _value;
     std::type_index _type = std::type_index(typeid(std::string));
