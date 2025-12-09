@@ -6,7 +6,7 @@
 namespace rtnt::core::packet::internal
 {
 
-struct PongPacket
+struct Pong
 {
     static constexpr Id   kId   = static_cast<uint16_t>(SystemMessageId::kPong);
     static constexpr Flag kFlag = Flag::kUnreliable;
