@@ -146,6 +146,7 @@ namespace rtecs {
 class ASystem;  // Forward declaration for system type
 
 using Entity = DynamicBitSet;
+using EntityID = size_t;
 using SystemID = size_t;
 using ComponentID = decltype(typeid(ISparseSet).hash_code());
 
