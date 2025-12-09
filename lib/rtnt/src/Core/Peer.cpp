@@ -20,9 +20,10 @@ void Peer::sendToTarget(
             }
 
             LOG_TRACE_R3(
-                "Sent {} bytes to {}.",
+                "Sent {} bytes to {}:{}.",
                 bytesSent,
-                target.address().to_string()
+                target.address().to_string(),
+                target.port()
             );
         }
     );
@@ -45,9 +46,10 @@ void Peer::receive()
             }
 
             LOG_TRACE_R3(
-                "Received {} bytes from {}.",
+                "Received {} bytes from {}:{}.",
                 bytesReceived,
-                _tmpEndpoint.address().to_string()
+                _tmpEndpoint.address().to_string(),
+                _tmpEndpoint.port()
             );
 
             if (bytesReceived > 0) {
