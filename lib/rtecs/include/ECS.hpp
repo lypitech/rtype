@@ -1,13 +1,9 @@
 #pragma once
 
-#include <bitset>
-#include <map>
-
 #include "DynamicBitSet.hpp"
 #include "ISparseSet.hpp"
 #include "SparseSet.hpp"
 #include "SparseVectorView.hpp"
-#include "rtecs/types.hpp"
 
 namespace rtecs {
 
@@ -36,6 +32,8 @@ class ECS final
         bitset[_componentView.getDenseIndex(hashcode)] = true;
         return bitset;
     }
+
+    void applySystem(const SystemID id);
 
    public:
     explicit ECS() = default;
@@ -76,9 +74,22 @@ class ECS final
         return _entityList.size() - 1;
     }
 
-    void registerSystem(SystemID id, std::unique_ptr<ASystem> system);
+    template <typename System>
+    void registerSystem(std::unique_ptr<System> system)
+    {
+        static_assert(std::is_base_of<ASystem, System>::value, "System must inherit from ASystem");
+        const size_t hashcode = typeid(System).hash_code();
+        _systemView[hashcode] = std::move(system);
+    }
 
-    void applySystem(SystemID id);
+    template <typename System>
+    void applySystem()
+    {
+        static_assert(std::is_base_of<ASystem, System>::value, "System must inherit from ASystem");
+        const size_t hashcode = typeid(System).hash_code();
+        applySystem(hashcode);
+    }
+
     void applyAllSystems();
 
     template <typename Component>
