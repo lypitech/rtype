@@ -13,6 +13,7 @@ option(CLI_PARSER_BUILD_TESTS "Build the test suite" OFF)
 # --- Sources / Headers ---
 add_library(${PROJECT_NAME} STATIC
     src/cli_parser.cpp
+    src/flag.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
