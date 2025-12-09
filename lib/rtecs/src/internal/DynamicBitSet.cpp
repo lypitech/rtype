@@ -9,50 +9,54 @@ using namespace rtecs;
 //         BitRef
 // =======================
 DynamicBitSet::BitRef::BitRef(std::bitset<64>& b, const std::bitset<64> m)
-    : block(b), mask(m) {}
+    : block(b), mask(m)
+{
+}
 
 DynamicBitSet::BitRef::operator bool() const { return (block & mask).any(); }
 
-DynamicBitSet::BitRef& DynamicBitSet::BitRef::operator=(const bool v) {
-    if (v)
+DynamicBitSet::BitRef& DynamicBitSet::BitRef::operator=(const bool v)
+{
+    if (v) {
         block |= mask;
-    else
+    } else {
         block &= ~mask;
+    }
     return *this;
 }
 
-bool DynamicBitSet::BitRef::operator==(const BitRef& other) const {
-    return block == other.block;
-}
+bool DynamicBitSet::BitRef::operator==(const BitRef& other) const { return block == other.block; }
 
 // =======================
 //      DynamicBitSet
 // =======================
-bool DynamicBitSet::any() const {
-    return std::ranges::any_of(
-        _bitsets.begin(), _bitsets.end(),
-        [](const std::bitset<64> bitset) { return bitset.any(); });
+bool DynamicBitSet::any() const
+{
+    return std::ranges::any_of(_bitsets.begin(), _bitsets.end(),
+                               [](const std::bitset<64> bitset) { return bitset.any(); });
 };
 
-bool DynamicBitSet::all() const {
-    return std::ranges::all_of(
-        _bitsets.begin(), _bitsets.end(),
-        [](const std::bitset<64> bitset) { return bitset.all(); });
+bool DynamicBitSet::all() const
+{
+    return std::ranges::all_of(_bitsets.begin(), _bitsets.end(),
+                               [](const std::bitset<64> bitset) { return bitset.all(); });
 }
 
-bool DynamicBitSet::none() const {
-    return std::ranges::none_of(
-        _bitsets.begin(), _bitsets.end(),
-        [](const std::bitset<64> bitset) { return bitset.none(); });
+bool DynamicBitSet::none() const
+{
+    return std::ranges::none_of(_bitsets.begin(), _bitsets.end(),
+                                [](const std::bitset<64> bitset) { return bitset.none(); });
 };
 
-void DynamicBitSet::clear() {
+void DynamicBitSet::clear()
+{
     for (auto& bitset : _bitsets) {
         bitset.reset();
     }
 }
 
-DynamicBitSet DynamicBitSet::operator&(const DynamicBitSet& other) const {
+DynamicBitSet DynamicBitSet::operator&(const DynamicBitSet& other) const
+{
     DynamicBitSet result;
 
     for (size_t i = 0; i < std::min(_nbits, other._nbits); i++) {
@@ -61,7 +65,8 @@ DynamicBitSet DynamicBitSet::operator&(const DynamicBitSet& other) const {
     return result;
 }
 
-DynamicBitSet DynamicBitSet::operator|(const DynamicBitSet& other) const {
+DynamicBitSet DynamicBitSet::operator|(const DynamicBitSet& other) const
+{
     DynamicBitSet result;
 
     for (size_t i = 0; i < std::min(_nbits, other._nbits); i++) {
@@ -70,21 +75,32 @@ DynamicBitSet DynamicBitSet::operator|(const DynamicBitSet& other) const {
     return result;
 }
 
-DynamicBitSet::BitRef DynamicBitSet::operator[](const size_t i) {
-    if (i >= _nbits) _bitsets.resize(i / 64);
+DynamicBitSet::BitRef DynamicBitSet::operator[](const size_t i)
+{
+    if (i >= _nbits) {
+        _bitsets.resize(i / 64);
+    }
     return BitRef{_bitsets[i / 64], std::bitset<64>(i % 64)};
 }
 
-bool DynamicBitSet::operator[](const size_t i) const {
-    if (i >= _nbits) return false;
+bool DynamicBitSet::operator[](const size_t i) const
+{
+    if (i >= _nbits) {
+        return false;
+    }
     return _bitsets[i / 64][i % 64];
 }
 
-bool DynamicBitSet::operator==(const DynamicBitSet& other) const {
-    if (other._nbits != _nbits) return false;
+bool DynamicBitSet::operator==(const DynamicBitSet& other) const
+{
+    if (other._nbits != _nbits) {
+        return false;
+    }
 
     for (const auto& [a, b] : std::views::zip(_bitsets, other._bitsets)) {
-        if (a != b) return false;
+        if (a != b) {
+            return false;
+        }
     }
     return true;
 }

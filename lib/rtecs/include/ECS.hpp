@@ -23,10 +23,12 @@ using ComponentGroup = std::vector<std::reference_wrapper<Component>>;
 template <typename... Components>
 using ComponentGroupList = std::tuple<ComponentGroup<Components>...>;
 
-class ECS final {
+class ECS final
+{
    private:
     template <typename Component>
-    DynamicBitSet getComponentBitSet() const {
+    DynamicBitSet getComponentBitSet() const
+    {
         DynamicBitSet bitset;
         const size_t hashcode = typeid(Component).hash_code();
 
@@ -38,31 +40,35 @@ class ECS final {
     explicit ECS() = default;
 
     template <typename... Components>
-    explicit ECS() {
+    explicit ECS()
+    {
         (registerComponent<Components>(), ...);
     }
 
     ~ECS() = default;
 
     template <typename... Components>
-    DynamicBitSet getComponentsBitSet() const {
+    DynamicBitSet getComponentsBitSet() const
+    {
         return (getComponentBitSet<Components>(), ...);
     }
 
     template <typename Component, typename... TupleTypes>
-    static constexpr ComponentGroup<Component> &getComponentGroup(
-        std::tuple<TupleTypes...> &tuple) {
+    static constexpr ComponentGroup<Component> &getComponentGroup(std::tuple<TupleTypes...> &tuple)
+    {
         return std::get<ComponentGroup<Component>>(tuple);
     }
 
     template <typename Component>
-    void registerComponent() {
+    void registerComponent()
+    {
         const size_t hashcode = typeid(Component).hash_code();
         _componentView[hashcode] = SparseSet<Component>();
     }
 
     template <typename... Components>
-    EntityID registerEntity() {
+    EntityID registerEntity()
+    {
         const DynamicBitSet entity(getComponentsBitSet<Components...>());
 
         _entityList.push_back(entity);
@@ -75,31 +81,32 @@ class ECS final {
     void applyAllSystems();
 
     template <typename Component>
-    ISparseSet &getComponent() {
+    ISparseSet &getComponent()
+    {
         const size_t hashcode = typeid(Component).hash_code();
         return _componentView[hashcode];
     };
 
     template <typename... Components>
-    ComponentGroupList<Components...> getMultipleComponents() {
+    ComponentGroupList<Components...> getMultipleComponents()
+    {
         std::tuple<std::vector<Components>...> tuple{};
         DynamicBitSet bitset;
 
         ((bitset |= getComponentBitSet<Components>()), ...);
         for (const auto &entity : _entityList) {
-            if ((entity & bitset) == bitset)
-                (std::get<std::vector<Components>>(tuple).push_back(
-                     getComponentOf<Components>(entity)),
-                 ...);
+            if ((entity & bitset) == bitset) {
+                (std::get<std::vector<Components>>(tuple).push_back(getComponentOf<Components>(entity)), ...);
+            }
         }
         return tuple;
     }
 
     template <typename Component>
-    Component &getComponentOf(EntityID entity) {
+    Component &getComponentOf(EntityID entity)
+    {
         const ComponentID componentId = typeid(Component).hash_code();
-        auto sparseSet = dynamic_cast<SparseSet<Component>>(
-            _componentView.getDenseIndex(componentId));
+        auto sparseSet = dynamic_cast<SparseSet<Component>>(_componentView.getDenseIndex(componentId));
 
         return sparseSet.get(entity);
     }

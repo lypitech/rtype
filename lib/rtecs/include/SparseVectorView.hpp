@@ -6,7 +6,8 @@
 namespace rtecs {
 
 template <typename Key, typename T>
-class SparseVectorView {
+class SparseVectorView
+{
    private:
     std::unordered_map<Key, size_t> _map;
     std::vector<T> _vector;
@@ -15,12 +16,14 @@ class SparseVectorView {
     explicit SparseVectorView() = default;
     ~SparseVectorView() = default;
 
-    T &operator[](Key key) {
+    T &operator[](Key key)
+    {
         size_t index = _map.at(key);
         return _vector[index];
     }
 
-    const T &operator[](Key key) const {
+    const T &operator[](Key key) const
+    {
         size_t index = _map.at(key);
         return _vector[index];
     }

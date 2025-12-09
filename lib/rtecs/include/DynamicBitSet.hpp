@@ -5,12 +5,14 @@
 
 namespace rtecs {
 
-class DynamicBitSet {
+class DynamicBitSet
+{
     std::vector<std::bitset<64>> _bitsets;
     size_t _nbits = 0;
 
    public:
-    class BitRef {
+    class BitRef
+    {
         std::bitset<64> &block;
         std::bitset<64> mask;
 
