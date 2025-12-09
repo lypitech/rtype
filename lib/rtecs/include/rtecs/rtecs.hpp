@@ -4,8 +4,7 @@
 #include "../SparseSet.hpp"
 #include "types.hpp"
 
-namespace rtecs
-{
+namespace rtecs {
 
 void hello();
 

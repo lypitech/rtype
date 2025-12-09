@@ -19,10 +19,10 @@ namespace rtecs {
 // ================================
 template <typename Component>
 class SparseSet final : public ISparseSet {
-public:
+   public:
     static constexpr size_t kPageSize = 2048;
 
-private:
+   private:
     using SparseElement = size_t;
     using OptionalSparseElement = std::optional<SparseElement>;
     using Sparse = std::array<OptionalSparseElement, kPageSize>;
@@ -37,7 +37,7 @@ private:
     [[nodiscard]]
     static size_t getSparseIndex(EntityID id);
 
-public:
+   public:
     /**
      * @brief Get a reference of the entity.
      *
@@ -112,7 +112,8 @@ size_t SparseSet<Component>::getSparseIndex(const EntityID id) {
 }
 
 template <typename Component>
-OptionalRef<Component> SparseSet<Component>::getComponent(const EntityID id) noexcept {
+OptionalRef<Component> SparseSet<Component>::getComponent(
+    const EntityID id) noexcept {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = INDEX_OF(id, kPageSize);
 
@@ -120,15 +121,16 @@ OptionalRef<Component> SparseSet<Component>::getComponent(const EntityID id) noe
         return std::nullopt;
     }
 
-    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
+    const OptionalSparseElement optionalDenseIndex =
+        _sparsePages[page][sparseIndex];
 
-    if (!optionalDenseIndex.has_value())
-        return std::nullopt;
+    if (!optionalDenseIndex.has_value()) return std::nullopt;
     return _dense[optionalDenseIndex.value()];
 }
 
 template <typename Component>
-OptionalCRef<Component> SparseSet<Component>::getComponent(const EntityID id) const noexcept {
+OptionalCRef<Component> SparseSet<Component>::getComponent(
+    const EntityID id) const noexcept {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = INDEX_OF(id, kPageSize);
 
@@ -136,10 +138,10 @@ OptionalCRef<Component> SparseSet<Component>::getComponent(const EntityID id) co
         return std::nullopt;
     }
 
-    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
+    const OptionalSparseElement optionalDenseIndex =
+        _sparsePages[page][sparseIndex];
 
-    if (!optionalDenseIndex.has_value())
-        return std::nullopt;
+    if (!optionalDenseIndex.has_value()) return std::nullopt;
     return std::cref(_dense[optionalDenseIndex.value()]);
 }
 
@@ -153,13 +155,13 @@ bool SparseSet<Component>::has(const EntityID id) const noexcept {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = INDEX_OF(id, kPageSize);
 
-    if (page >= _sparsePages.size())
-        return false;
+    if (page >= _sparsePages.size()) return false;
     return _sparsePages[page][sparseIndex].has_value();
 }
 
 template <typename Component>
-bool SparseSet<Component>::put(const EntityID id, Component component) noexcept {
+bool SparseSet<Component>::put(const EntityID id,
+                               Component component) noexcept {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = INDEX_OF(id, kPageSize);
 
@@ -168,7 +170,8 @@ bool SparseSet<Component>::put(const EntityID id, Component component) noexcept 
         _sparsePages[page].fill(kNullSparseElement);
     }
 
-    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
+    const OptionalSparseElement optionalDenseIndex =
+        _sparsePages[page][sparseIndex];
 
     if (!optionalDenseIndex.has_value()) {
         _dense.push_back(component);
@@ -184,15 +187,14 @@ bool SparseSet<Component>::put(const EntityID id, Component component) noexcept 
 
 template <typename Component>
 void SparseSet<Component>::remove(const EntityID id) noexcept {
-    if (!has(id))
-        return;
+    if (!has(id)) return;
 
     const size_t targetPage = PAGE_OF(id, kPageSize);
     const size_t targetSparseIndex = INDEX_OF(id, kPageSize);
-    OptionalSparseElement optionalTargetIndex = _sparsePages[targetPage][targetSparseIndex];
+    OptionalSparseElement optionalTargetIndex =
+        _sparsePages[targetPage][targetSparseIndex];
 
-    if (!optionalTargetIndex.has_value())
-        return;
+    if (!optionalTargetIndex.has_value()) return;
 
     const size_t targetIndex = optionalTargetIndex.value();
     Component &targetComponent = _dense[targetIndex];
@@ -216,4 +218,4 @@ void SparseSet<Component>::clear() noexcept {
     _sparsePages.clear();
 }
 
-}
+}  // namespace rtecs

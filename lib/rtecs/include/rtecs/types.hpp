@@ -19,4 +19,4 @@ using OptionalCRef = std::optional<std::reference_wrapper<const T>>;
 
 static constexpr EntityID kNullEntity = 0;
 
-}
+}  // namespace rtecs
