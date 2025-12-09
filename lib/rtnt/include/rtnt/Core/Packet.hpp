@@ -10,6 +10,7 @@ namespace rtnt::core
 {
 
 class Packet; // Forward declaration needed for packet::Reader
+class Session;
 
 namespace packet
 {
@@ -167,6 +168,15 @@ namespace packet
         static_assert(
             static_cast<const Id>(T::kId) < 128, // fixme: fix magic number
             "Internal packet IDs must be < 128."
+        );
+    }
+
+    template <typename T>
+    void verifyPacketIntegratedCallback()
+    {
+        static_assert(
+            requires(std::shared_ptr<Session> s, const T& t) { T::onReceive(s, t); },
+            "Packet is missing 'static void onReceive(std::shared_ptr<Session>, const T&)'"
         );
     }
 
