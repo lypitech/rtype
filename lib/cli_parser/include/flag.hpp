@@ -9,12 +9,31 @@
 
 namespace cli_parser {
 
+/**
+ * @class Flag
+ *
+ * @brief An encapsulation of the concept of flag.
+ *
+ * This class is mainly there for the value to be cast to the wanted type.
+ */
 class Flag {
 public:
+    /**
+     * @brief Creates an instance of the class Flag and recover its type.
+     * @warning This class is not supposed to be instantiated by the user.
+     *
+     * @param flag The "key" of the flag to create
+     * @param value The "value" of the flag to create
+     */
     explicit Flag(std::string flag, std::string value);
     ~Flag() = default;
 
-
+    /**
+     * @brief Converts the value of the flag to required type.
+     * @tparam T The type to convert the value to.
+     * @return The value converted to the requested type, an empty instance of
+     * the requested type if incompatible type.
+     */
     template <typename T>
     T as() const {
         IF_T_IS_TYPE(bool) { return _value == "true" || _value == "1"; }
@@ -29,7 +48,17 @@ public:
         return T();
     }
 
+    /**
+     * @brief Compares the "key" of the flag to the other operand.
+     * @param other A string corresponding to the researched key.
+     * @return A boolean corresponding to the equality of the operands.
+     */
     bool operator==(const std::string& other) const;
+    /**
+     * @brief Compares the "key" of the flag to the other operand.
+     * @param other A string corresponding to the researched key.
+     * @return A boolean corresponding to the inequality of the operands.
+     */
     bool operator!=(const std::string& other) const;
 
 private:
