@@ -1,4 +1,5 @@
 #include "rtnt/Core/Client.hpp"
+#include "rtnt/Core/Packets/Connect.hpp"
 
 #include "logger/Logger.h"
 
@@ -27,6 +28,9 @@ void Client::connect(
         }
     );
     start();
+
+    packet::internal::Connect packet;
+    sendInternal(packet);
 }
 
 void Client::update(milliseconds timeout)
