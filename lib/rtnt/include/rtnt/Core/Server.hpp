@@ -61,6 +61,16 @@ public:
      */
     void update(milliseconds timeout = seconds(10));
 
+    template <typename T>
+    void sendTo(
+        const std::shared_ptr<Session>& session,
+        const T& packetData
+    )
+    {
+        packet::verifyUserPacketData<T>();
+        internal_sendTo(session, packetData);
+    }
+
     // todo: maybe a broadcast function to send a packet to everyone?
 
     [[nodiscard]] Dispatcher& getPacketDispatcher() { return this->_packetDispatcher; }
@@ -79,6 +89,25 @@ private:
     OnConnectFunction _onConnect;
     OnDisconnectFunction _onDisconnect;
     OnMessageFunction _onMessage;
+
+    template <typename T>
+    void internal_sendTo(
+        const std::shared_ptr<Session>& session,
+        const T& packetData
+    )
+    {
+        packet::verifyPacketData<T>();
+
+        LOG_DEBUG(
+            "Server sending Packet #{} {}...",
+            T::kId,
+            packet::getPacketName<T>()
+        );
+
+        Packet packetToSend(T::kId, packet::getFlag<T>());
+        packetToSend << packetData;
+        session->send(packetToSend);
+    }
 };
 
 }
