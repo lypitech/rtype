@@ -3,6 +3,7 @@
 #include <map>
 #include <utility>
 
+#include "Dispatcher.hpp"
 #include "Peer.hpp"
 #include "Session.hpp"
 
@@ -62,6 +63,8 @@ public:
 
     // todo: maybe a broadcast function to send a packet to everyone?
 
+    [[nodiscard]] Dispatcher& getPacketDispatcher() { return this->_packetDispatcher; }
+
 protected:
     void onReceive(
         const udp::endpoint& sender,
@@ -70,6 +73,8 @@ protected:
 
 private:
     std::map<udp::endpoint, std::shared_ptr<Session>> _sessions;
+
+    Dispatcher _packetDispatcher;
 
     OnConnectFunction _onConnect;
     OnDisconnectFunction _onDisconnect;

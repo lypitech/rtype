@@ -54,6 +54,7 @@ void Server::onReceive(
     Packet packet(0);
 
     if (session->handleIncoming(data, packet)) {
+        _packetDispatcher.dispatch(session, packet);
         if (_onMessage) {
             _onMessage(session, packet);
         }
