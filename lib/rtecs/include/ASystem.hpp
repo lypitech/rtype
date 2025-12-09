@@ -4,17 +4,20 @@
 
 namespace rtecs {
 
-class ASystem {
+class ASystem
+{
    private:
     DynamicBitSet _mask;
 
    protected:
     [[nodiscard]]
-    const DynamicBitSet &getMask() const noexcept {
+    const DynamicBitSet &getMask() const noexcept
+    {
         return _mask;
     };
 
-    explicit ASystem() : _mask() {};
+    explicit ASystem()
+        : _mask() {};
 
     template <typename... Components>
     explicit ASystem(const ECS &ecs)

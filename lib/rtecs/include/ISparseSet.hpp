@@ -4,7 +4,8 @@
 
 namespace rtecs {
 
-class ISparseSet {
+class ISparseSet
+{
    public:
     virtual ~ISparseSet() = default;
 
