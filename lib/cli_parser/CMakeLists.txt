@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(cli_parser
-    VERSION 0.0.1
+    VERSION 1.0.0
     DESCRIPTION "Cli parsing library"
     HOMEPAGE_URL "https://github.com/lypitech/rtype"
     LANGUAGES CXX
