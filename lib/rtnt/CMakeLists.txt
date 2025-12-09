@@ -28,6 +28,7 @@ add_library(${PROJECT_NAME} STATIC
     src/Core/Client.cpp
     src/Core/Peer.cpp
     src/Common/Utils.cpp
+    src/Core/Dispatcher.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
