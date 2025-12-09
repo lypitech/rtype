@@ -28,7 +28,8 @@ class DynamicBitSet {
     size_t _nbits = 0;
 
    public:
-    class BitRef {
+    class BitRef
+    {
         std::bitset<64> &block;
         std::bitset<64> mask;
 

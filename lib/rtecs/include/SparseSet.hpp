@@ -150,8 +150,7 @@ OptionalRef<Component> SparseSet<Component>::getComponent(const EntityID id) noe
         return std::nullopt;
     }
 
-    const OptionalSparseElement optionalDenseIndex =
-        _sparsePages[page][sparseIndex];
+    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
 
     if (!optionalDenseIndex.has_value()) {
         return std::nullopt;
@@ -172,8 +171,7 @@ OptionalCRef<Component> SparseSet<Component>::getComponent(const EntityID id) co
         return std::nullopt;
     }
 
-    const OptionalSparseElement optionalDenseIndex =
-        _sparsePages[page][sparseIndex];
+    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
 
     if (!optionalDenseIndex.has_value()) {
         return std::nullopt;
@@ -210,8 +208,7 @@ bool SparseSet<Component>::put(const size_t id, Component component) noexcept
         _sparsePages[page].fill(kNullSparseElement);
     }
 
-    const OptionalSparseElement optionalDenseIndex =
-        _sparsePages[page][sparseIndex];
+    const OptionalSparseElement optionalDenseIndex = _sparsePages[page][sparseIndex];
 
     if (!optionalDenseIndex.has_value()) {
         _dense.push_back(component);
@@ -234,8 +231,7 @@ void SparseSet<Component>::remove(const size_t id) noexcept
 
     const size_t targetPage = PAGE_OF(id, kPageSize);
     const size_t targetSparseIndex = INDEX_OF(id, kPageSize);
-    OptionalSparseElement optionalTargetIndex =
-        _sparsePages[targetPage][targetSparseIndex];
+    OptionalSparseElement optionalTargetIndex = _sparsePages[targetPage][targetSparseIndex];
 
     if (!optionalTargetIndex.has_value()) {
         return;
