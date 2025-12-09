@@ -8,14 +8,16 @@
 namespace cli_parser {
 
 class Parser {
-   public:
+public:
     explicit Parser(int argc, const char* argv[]);
     ~Parser() = default;
 
-    [[nodiscard]] Flag getValue(const std::string& flag);
-    [[nodiscard]] bool hasFlag(const std::string& flag) const;
+    [[nodiscard]]
+    Flag getValue(const std::string& flag);
+    [[nodiscard]]
+    bool hasFlag(const std::string& flag) const;
 
-   private:
+private:
     std::vector<Flag> _flags{};
 };
 
