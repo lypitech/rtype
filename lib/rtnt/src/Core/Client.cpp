@@ -30,7 +30,7 @@ void Client::connect(
     start();
 
     packet::internal::Connect packet;
-    sendInternal(packet);
+    internal_send(packet);
 }
 
 void Client::update(milliseconds timeout)
