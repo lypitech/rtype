@@ -1,9 +1,13 @@
 #include "DynamicBitSet.hpp"
 
 #include <algorithm>
+#include <ranges>
 
 using namespace rtecs;
 
+// =======================
+//         BitRef
+// =======================
 DynamicBitSet::BitRef::BitRef(std::bitset<64>& b, const std::bitset<64> m)
     : block(b), mask(m) {}
 
@@ -17,8 +21,13 @@ DynamicBitSet::BitRef& DynamicBitSet::BitRef::operator=(const bool v) {
     return *this;
 }
 
-bool DynamicBitSet::BitRef::operator&(const BitRef& other) {}
+bool DynamicBitSet::BitRef::operator==(const BitRef& other) const {
+    return block == other.block;
+}
 
+// =======================
+//      DynamicBitSet
+// =======================
 bool DynamicBitSet::any() const {
     return std::ranges::any_of(
         _bitsets.begin(), _bitsets.end(),
@@ -43,21 +52,39 @@ void DynamicBitSet::clear() {
     }
 }
 
-DynamicBitSet DynamicBitSet::operator&(DynamicBitSet& other) const {
+DynamicBitSet DynamicBitSet::operator&(const DynamicBitSet& other) const {
     DynamicBitSet result;
 
     for (size_t i = 0; i < std::min(_nbits, other._nbits); i++) {
-        result[i] = this[i] & other[i];
+        result[i] = _bitsets[i / 64][i % 64] && other._bitsets[i / 64][i % 64];
     }
     return result;
 }
 
-DynamicBitSet DynamicBitSet::operator|(DynamicBitSet& other) const {}
+DynamicBitSet DynamicBitSet::operator|(const DynamicBitSet& other) const {
+    DynamicBitSet result;
+
+    for (size_t i = 0; i < std::min(_nbits, other._nbits); i++) {
+        result[i] = _bitsets[i / 64][i % 64] || other._bitsets[i / 64][i % 64];
+    }
+    return result;
+}
 
 DynamicBitSet::BitRef DynamicBitSet::operator[](const size_t i) {
+    if (i >= _nbits) _bitsets.resize(i / 64);
     return BitRef{_bitsets[i / 64], std::bitset<64>(i % 64)};
 }
 
 bool DynamicBitSet::operator[](const size_t i) const {
+    if (i >= _nbits) return false;
     return _bitsets[i / 64][i % 64];
+}
+
+bool DynamicBitSet::operator==(const DynamicBitSet& other) const {
+    if (other._nbits != _nbits) return false;
+
+    for (const auto& [a, b] : std::views::zip(_bitsets, other._bitsets)) {
+        if (a != b) return false;
+    }
+    return true;
 }

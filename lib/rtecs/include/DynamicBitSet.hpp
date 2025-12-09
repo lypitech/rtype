@@ -20,7 +20,7 @@ class DynamicBitSet {
         explicit operator bool() const;
 
         BitRef &operator=(bool v);
-        BitRef &operator&(BitRef &other);
+        bool operator==(const BitRef &) const;
     };
 
     [[nodiscard]] bool any() const;
@@ -29,10 +29,11 @@ class DynamicBitSet {
 
     void clear();
 
-    DynamicBitSet operator&(DynamicBitSet &other) const;
-    DynamicBitSet operator|(DynamicBitSet &other) const;
+    DynamicBitSet operator&(const DynamicBitSet &other) const;
+    DynamicBitSet operator|(const DynamicBitSet &other) const;
     BitRef operator[](size_t i);
     bool operator[](size_t i) const;
+    bool operator==(const DynamicBitSet &) const;
 };
 
 }  // namespace rtecs

@@ -8,7 +8,7 @@ class ISparseSet {
    public:
     virtual ~ISparseSet() = default;
 
-    BitMask getMask();
+    DynamicBitSet getMask();
 
     /**
      * @brief Check if the sparse-set has the given entity.

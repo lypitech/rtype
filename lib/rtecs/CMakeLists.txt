@@ -16,11 +16,8 @@ if(PROJECT_IS_TOP_LEVEL)
 endif()
 
 # --- Sources / Headers ---
-add_library(${PROJECT_NAME} STATIC
-    src/rtecs.cpp
-    src/internal/DynamicBitSet.cpp
-    src/system/ASystem.cpp
-)
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
+add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
