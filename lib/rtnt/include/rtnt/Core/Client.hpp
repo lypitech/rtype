@@ -51,7 +51,7 @@ public:
     void send(const T& packetData)
     {
         packet::verifyUserPacketData<T>();
-        sendInternal<T>(packetData);
+        internal_send<T>(packetData);
     }
 
     /**
@@ -85,7 +85,7 @@ private:
      * @param   packetData  Packet to send
      */
     template <typename T>
-    void sendInternal(const T& packetData)
+    void internal_send(const T& packetData)
     {
         packet::verifyPacketData<T>();
 
