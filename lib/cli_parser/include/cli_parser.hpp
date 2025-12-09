@@ -9,6 +9,7 @@ class Parser {
    public:
     explicit Parser(int argc, const char* argv[]);
     ~Parser() = default;
+
     [[nodiscard]] std::string getValue(const std::string& flag);
     [[nodiscard]] bool hasFlag(const std::string& flag) const;
 
