@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rtecs/types.hpp"
-
 namespace rtecs {
 
 class ISparseSet

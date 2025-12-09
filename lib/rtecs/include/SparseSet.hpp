@@ -51,9 +51,9 @@ class SparseSet final : public ISparseSet {
     std::vector<Sparse> _sparsePages;
 
     [[nodiscard]]
-    static size_t getPage(EntityID id);
+    static size_t getPage(size_t id);
     [[nodiscard]]
-    static size_t getSparseIndex(EntityID id);
+    static size_t getSparseIndex(size_t id);
 
    public:
     /**
