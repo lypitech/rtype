@@ -70,6 +70,7 @@ void Client::onReceive(
     Packet packet(0);
 
     if (_serverSession->handleIncoming(data, packet)) {
+        _packetDispatcher.dispatch(_serverSession, packet);
         if (_onMessage) {
             _onMessage(packet);
         }
