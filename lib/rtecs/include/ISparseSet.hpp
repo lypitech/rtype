@@ -4,9 +4,8 @@
 
 namespace rtecs {
 
-class ISparseSet
-{
-public:
+class ISparseSet {
+   public:
     virtual ~ISparseSet() = default;
 
     BitMask getMask();
@@ -34,4 +33,4 @@ public:
     virtual void clear() noexcept = 0;
 };
 
-}
+}  // namespace rtecs
