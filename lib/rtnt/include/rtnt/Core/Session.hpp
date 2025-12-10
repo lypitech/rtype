@@ -50,6 +50,18 @@ public:
         Packet& outPacket
     );
 
+    template <typename T>
+    void send(const T& packetData)
+    {
+        packet::verifyPacketData<T>();
+
+        LOG_DEBUG("Session sending packet #{} {}...", T::kId, packet::getName<T>());
+
+        Packet packet(T::kId, packet::getFlag<T>());
+        packet << packetData;
+        send(packet);
+    }
+
     /**
      * @brief   Encapsulates a user-defined Packet into a protocol frame (RUDP) and sends it.
      *
