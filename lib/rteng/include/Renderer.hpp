@@ -9,9 +9,6 @@ namespace graphics {
 
 class RaylibRenderer : public IRenderer
 {
-   private:
-    Color MapColor(int colorId);
-
    public:
     std::unordered_map<int, Texture2D> m_textures;
     int m_nextTextureId = 1;
@@ -24,9 +21,9 @@ class RaylibRenderer : public IRenderer
 
     void drawTexture(int textureId, const Rect& source, const Rect& dest, float rotation) override;
 
-    void drawRectangle(const Rect& rect, int colorId) override;
+    void drawRectangle(const Rect& rect, Color color) override;
 
-    void drawText(const std::string& text, int posX, int posY, int fontSize, int colorId) override;
+    void drawText(const std::string& text, int posX, int posY, int fontSize, Color color) override;
 
     int loadTexture(const std::string& filePath) override;
 

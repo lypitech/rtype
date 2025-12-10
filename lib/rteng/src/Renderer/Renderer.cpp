@@ -6,26 +6,6 @@
 namespace rteng {
 namespace graphics {
 
-Color RaylibRenderer::MapColor(int colorId)
-{
-    switch (colorId) {
-        case 1:
-            return RED;
-        case 2:
-            return GREEN;
-        case 3:
-            return BLUE;
-        case 4:
-            return YELLOW;
-        case 5:
-            return ORANGE;
-        case 6:
-            return PINK;
-        default:
-            return WHITE;
-    }
-}
-
 void RaylibRenderer::clearBackground() { ClearBackground(RAYWHITE); }
 
 void RaylibRenderer::drawTexture(int textureId, const Rect& source, const Rect& dest, float rotation)
@@ -39,15 +19,15 @@ void RaylibRenderer::drawTexture(int textureId, const Rect& source, const Rect& 
     }
 }
 
-void RaylibRenderer::drawRectangle(const Rect& rect, int colorId)
+void RaylibRenderer::drawRectangle(const Rect& rect, Color color)
 {
-    Color raylibColor = MapColor(colorId);
+    Color raylibColor = color;
     DrawRectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height, raylibColor);
 }
 
-void RaylibRenderer::drawText(const std::string& text, int posX, int posY, int fontSize, int colorId)
+void RaylibRenderer::drawText(const std::string& text, int posX, int posY, int fontSize, Color color)
 {
-    Color raylibColor = MapColor(colorId);
+    Color raylibColor = color;
     DrawText(text.c_str(), posX, posY, fontSize, raylibColor);
 }
 
