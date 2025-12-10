@@ -1,0 +1,25 @@
+#pragma once
+#include "enums/packets.hpp"
+#include "rtnt/Core/Packet.hpp"
+
+namespace packet {
+
+struct JoinAck
+{
+    static constexpr auto kId = type::Server::kPlayerJoin;
+    static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
+    static constexpr auto kName = "PLAYER_JOIN";
+
+    uint32_t id;
+    uint8_t team;
+    uint8_t status;
+
+    template <typename Archive>
+    void serialize(Archive& ar)
+    {
+        ar & id & status;
+    }
+};
+
+}  // namespace packet
+
