@@ -92,7 +92,7 @@ private:
         LOG_DEBUG(
             "Client sending Packet #{} {}...",
             T::kId,
-            packet::getPacketName<T>()
+            packet::getName<T>()
         );
 
         Packet packetToSend(T::kId, packet::getFlag<T>());

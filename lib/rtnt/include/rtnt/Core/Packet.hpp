@@ -99,7 +99,7 @@ namespace packet
     };
 
     template <typename T>
-    constexpr std::string_view getPacketName()
+    constexpr std::string_view getName()
     {
         if constexpr (requires { T::kName; }) {
             return T::kName;
