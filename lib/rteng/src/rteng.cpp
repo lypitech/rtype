@@ -1,17 +1,18 @@
-#include "../include/rteng.hpp"  // La déclaration de la classe
+#include "../include/rteng.hpp"
 
 #include "raylib.h"
 
-using namespace rteng;
+namespace rteng {
 
-GameEngine::GameEngine(int screenWidth, int screenHeight,
-                       const std::string& title) {
+GameEngine::GameEngine(int screenWidth, int screenHeight, const std::string& title)
+{
     InitWindow(screenWidth, screenHeight, title.c_str());
     SetTargetFPS(60);
     m_running = true;
 }
 
-void GameEngine::run() {
+void GameEngine::run()
+{
     while (!WindowShouldClose() && m_running) {
         // 1. Input (Input System)
         // 2. Update (Update System)
@@ -33,3 +34,4 @@ void GameEngine::run() {
     // Nettoyage de Raylib
     CloseWindow();
 }
+}  // namespace rteng
