@@ -12,6 +12,8 @@ namespace rtnt::core
 class Packet; // Forward declaration needed for packet::Reader
 class Session;
 
+using ByteBuffer = std::vector<uint8_t>;
+
 namespace packet
 {
 
@@ -37,7 +39,7 @@ namespace packet
      * @warning All multibyte fields MUST be converted to Network Byte Order (Big Endian) before sending
      * (cf. toNetwork and toHost).
      */
-    struct Header
+    struct Header final
     {
         uint16_t protocolId             = PROTOCOL_ID; ///< Magic number representig unique ID of the protocol, to avoid internet noise
         uint16_t protocolVersion        = PROTOCOL_VER; ///< Protocol version, to reject mismatch peers
@@ -182,7 +184,6 @@ namespace packet
 
 }
 
-using ByteBuffer = std::vector<uint8_t>;
 
 /**
  * @class   Packet
@@ -192,19 +193,19 @@ using ByteBuffer = std::vector<uint8_t>;
  * and read data from it using the @code >>@endcode operator. It handles endianness for internal
  * headers but assumes payload data is handled by the user (or is POD, Plain Old Data).
  */
-class Packet
+class Packet final
 {
 public:
     /**
      * @brief   Constructs a new Packet
      * @param   id          The user-defined message ID
      * @param   flag        Reliability mode
-     * @param   channelId   Virtual channel ID
+     * @param   channelId   Virtual channel ID // todo: implement channel id lol
      */
     explicit Packet(
-        packet::Id id,
-        packet::Flag flag = packet::Flag::kUnreliable,
-        uint8_t channelId = 0
+        const packet::Id id,
+        const packet::Flag flag = packet::Flag::kUnreliable,
+        const uint8_t channelId = 0
     )   : _messageId(id)
         , _flag(flag)
         , _channelId(channelId)
