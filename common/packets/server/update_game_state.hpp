@@ -7,19 +7,24 @@ namespace packet {
 
 // Changing this is considered breaking changes.
 #pragma pack(push, 1)
+/**
+ * @struct packet::UpdateGameState
+ *
+ * @brief Updates the state of the game.
+ * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
+ */
 struct UpdateGameState
 {
     static constexpr auto kId = type::Server::kUpdateGameState;
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr auto kName = "UPDATE_GAME_STATE";
 
-    uint32_t id;
-    uint8_t gameState;
+    uint8_t gameState;  ///< The current state of the game.
 
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        ar & id & gameState;
+        ar & gameState;
     }
 };
 #pragma pack(pop)

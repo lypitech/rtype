@@ -6,6 +6,12 @@ namespace packet {
 
 // Changing this is considered breaking changes.
 #pragma pack(push, 1)
+/**
+ * @struct packet::UpdateHealth
+ *
+ * @brief Update the health of an entity.
+ * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
+ */
 struct UpdateHealth
 {
     static constexpr auto kId = type::Server::kUpdateHealth;
