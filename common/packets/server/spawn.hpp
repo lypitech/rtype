@@ -6,6 +6,7 @@ namespace packet {
 
 // Changing this is considered breaking changes.
 // TODO: add entity attributes.
+#pragma pack(push, 1)
 struct Spawn
 {
     static constexpr auto kId = type::Server::kSpawn;
@@ -20,6 +21,7 @@ struct Spawn
         ar & id;
     }
 };
+#pragma pack(pop)
 
 }  // namespace packet
 

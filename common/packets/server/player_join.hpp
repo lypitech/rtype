@@ -4,6 +4,7 @@
 
 namespace packet {
 
+#pragma pack(push, 1)
 struct JoinAck
 {
     static constexpr auto kId = type::Server::kPlayerJoin;
@@ -20,6 +21,7 @@ struct JoinAck
         ar & id & status;
     }
 };
+#pragma pack(pop)
 
 }  // namespace packet
 

@@ -5,6 +5,7 @@
 namespace packet {
 
 // Changing this is considered breaking changes.
+#pragma pack(push, 1)
 struct UpdateEntityState
 {
     static constexpr auto kId = type::Server::kUpdateEntityState;
@@ -20,6 +21,7 @@ struct UpdateEntityState
         ar & id & state;
     }
 };
+#pragma pack(pop)
 
 }  // namespace packet
 

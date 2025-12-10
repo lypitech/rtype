@@ -4,7 +4,7 @@
 
 namespace packet {
 
-// Changing this is considered breaking changes.
+#pragma pack(push, 1)
 struct Destroy
 {
     static constexpr auto kId = type::Server::kDestroy;
@@ -20,6 +20,7 @@ struct Destroy
         ar & id & earned_points;
     }
 };
+#pragma pack(pop)
 
 }  // namespace packet
 
