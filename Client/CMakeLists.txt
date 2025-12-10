@@ -40,7 +40,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     asio::asio
     rtnt
     shuvlog
-    cli_parser
 )
 
 # --- Output ---
