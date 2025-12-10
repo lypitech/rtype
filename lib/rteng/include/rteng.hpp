@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "ECS.hpp"
 #include "Renderer.hpp"
 
 namespace rteng {
@@ -17,6 +18,7 @@ class GameEngine
 
    private:
     graphics::Renderer _renderer;
+    rtecs::ECS _ecs;
     bool _isRunning = false;
 };
 }  // namespace rteng
