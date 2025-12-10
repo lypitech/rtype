@@ -23,9 +23,7 @@ using OnDisconnectFunction = std::function<void()>;
 using OnMessageFunction = std::function<void(Packet&)>;
 
 public:
-    explicit Client(asio::io_context& context)
-        : Peer(context)
-    {}
+    explicit Client(asio::io_context& context);
 
     void onConnect(OnConnectFunction callback) { _onConnect = std::move(callback); }
     void onDisconnect(OnDisconnectFunction callback) { _onDisconnect = std::move(callback); }
@@ -62,6 +60,7 @@ public:
      */
     void update(milliseconds timeout = seconds(10));
 
+    [[nodiscard]] bool isConnected() const { return _isConnected; }
     [[nodiscard]] Dispatcher& getPacketDispatcher() { return this->_packetDispatcher; }
 
 protected:
@@ -73,13 +72,15 @@ protected:
 private:
     udp::endpoint _serverEndpoint;
     std::shared_ptr<Session> _serverSession;
-    // bool _isConnected = false;
+    bool _isConnected = false;
 
     Dispatcher _packetDispatcher;
 
     OnConnectFunction _onConnect;
     OnDisconnectFunction _onDisconnect;
     OnMessageFunction _onMessage;
+
+    void internal_registerInternalPacketHandlers();
 
     /**
      * @brief   Sends a packet to the connected server.
