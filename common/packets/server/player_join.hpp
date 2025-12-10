@@ -5,15 +5,21 @@
 namespace packet {
 
 #pragma pack(push, 1)
-struct JoinAck
+/**
+ * @struct packet::PlayerJoin
+ *
+ * @brief Notify a client about a joining player.
+ * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
+ */
+struct PlayerJoin
 {
     static constexpr auto kId = type::Server::kPlayerJoin;
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr auto kName = "PLAYER_JOIN";
 
-    uint32_t id;
-    uint8_t team;
-    uint8_t status;
+    uint32_t id;     ///< The id assigned to this entity.
+    uint8_t team;    ///< The team assigned to this player.
+    uint8_t status;  ///< The status of this player.
 
     template <typename Archive>
     void serialize(Archive& ar)
