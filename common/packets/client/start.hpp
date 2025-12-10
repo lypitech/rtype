@@ -5,6 +5,12 @@
 namespace packet {
 
 #pragma pack(push, 1)
+/**
+ * @struct packet::Start
+ *
+ * @brief Ask the server to start the game in the current lobby.
+ * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
+ */
 struct Start
 {
     static constexpr auto kId = type::Client::kStart;
