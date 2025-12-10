@@ -3,7 +3,8 @@
 #include <string>
 
 namespace rteng {
-class GameEngine {
+class GameEngine
+{
    public:
     GameEngine(int screenWidth, int screenHeight, const std::string& title);
 
