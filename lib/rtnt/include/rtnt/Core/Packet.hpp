@@ -3,6 +3,13 @@
 #include <format>
 #include <vector>
 
+#if defined(_WIN32)
+#include <winsock2.h>
+#elif defined(__linux__)
+#include <arpa/inet.h>
+#include <cstring>
+#endif
+
 #include "logger/Logger.h"
 #include "rtnt/Common/Constants.hpp"
 
