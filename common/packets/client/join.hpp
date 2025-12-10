@@ -5,6 +5,7 @@
 
 namespace packet {
 
+#pragma pack(push, 1)  // forcing strict alignment, no compiler padding
 struct Join
 {
     static constexpr auto kId = type::Client::kJoin;
@@ -20,5 +21,6 @@ struct Join
         ar & username & room_id;
     }
 };
+#pragma pack(pop)
 
 }  // namespace packet

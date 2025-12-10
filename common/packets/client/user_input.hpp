@@ -4,6 +4,7 @@
 
 namespace packet {
 
+#pragma pack(push, 1)
 struct UserInput
 {
     static constexpr auto kId = type::Client::kUserInput;
@@ -18,5 +19,6 @@ struct UserInput
         ar & input_mask;
     }
 };
+#pragma pack(pop)
 
 }  // namespace packet

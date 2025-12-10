@@ -4,6 +4,7 @@
 
 namespace packet {
 
+#pragma pack(push, 1)
 struct Start
 {
     static constexpr auto kId = type::Client::kStart;
@@ -16,5 +17,6 @@ struct Start
         ar;
     }
 };
+#pragma pack(pop)
 
 }  // namespace packet
