@@ -67,7 +67,7 @@ std::weak_ptr<Texture2D> Renderer::loadTexture(const std::string& filePath)
         return {};
     }
 
-    _textures.push_back(std::make_shared<Texture2D>(reinterpret_cast<Texture2D&>(tex)));
+    _textures.push_back(std::make_shared<Texture2D>(Texture2D{tex.id, tex.width, tex.height, tex.mipmaps, tex.format}));
     return _textures.back();
 }
 
