@@ -6,9 +6,29 @@
 
 namespace rteng::graphics {
 
+Renderer::Renderer(int screenWidth, int screenHeight, const std::string& title, int fps)
+{
+    InitWindow(screenWidth, screenHeight, title.c_str());
+    SetTargetFPS(fps);
+}
+
+Renderer::~Renderer()
+{
+    for (auto& texture : m_textures) {
+        if (m_textures.contains(texture.second.id)) {
+            const ::Texture2D& tex = reinterpret_cast<::Texture2D&>(m_textures.at(texture.second.id));
+            UnloadTexture(tex);
+            m_textures.erase(texture.second.id);
+        }
+    }
+    CloseWindow();
+}
+
 void Renderer::beginDrawing() { BeginDrawing(); }
 
 void Renderer::endDrawing() { EndDrawing(); }
+
+bool Renderer::windowShouldClose() { return WindowShouldClose(); }
 
 void Renderer::clearBackground() { ClearBackground(::RAYWHITE); }
 
@@ -46,15 +66,6 @@ int Renderer::loadTexture(const std::string& filePath)
     int id = m_nextTextureId++;
     m_textures[id] = reinterpret_cast<Texture2D&>(tex);
     return id;
-}
-
-void Renderer::unloadTexture(int textureId)
-{
-    if (m_textures.contains(textureId)) {
-        const ::Texture2D& tex = reinterpret_cast<::Texture2D&>(m_textures.at(textureId));
-        UnloadTexture(tex);
-        m_textures.erase(textureId);
-    }
 }
 
 }  // namespace rteng::graphics
