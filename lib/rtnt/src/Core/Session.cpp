@@ -29,25 +29,16 @@ bool Session::handleIncoming(
         byteBufferToHexString(rawData)
     );
 
-    if (rawData.size() < sizeof(packet::Header)) {
-        LOG_TRACE_R3("Data received is too small to contain a header, probably random internet noise. Skipping...");
+    const packet::parsing::Result headerParsingResult = packet::Header::parse(rawData);
+
+    if (!headerParsingResult) {
+        LOG_TRACE_R3("Error while handling packet: {}", packet::parsing::to_string(headerParsingResult.error));
         return false;
     }
+
+    const packet::Header& header = *headerParsingResult.header;
 
     _lastSeen = steady_clock::now();
-
-    packet::Header header;
-    std::memcpy(&header, rawData.data(), sizeof(packet::Header));
-    header.toHost();
-
-    if (header.protocolId != PROTOCOL_ID) {
-        LOG_TRACE_R2(
-            "Sender protocol ID doesn't match the local protocol ID (got {}, expected {}).",
-            header.protocolId,
-            PROTOCOL_ID
-        );
-        return false;
-    }
 
     if (header.sequenceId > _remoteSequenceId) {
         _remoteSequenceId = header.sequenceId;
@@ -64,13 +55,7 @@ bool Session::handleIncoming(
         return true;
     }
 
-    if (payloadSize != header.packetSize) {
-        LOG_TRACE_R2("Raw data size doesn't match the packet size (corrupted packet).");
-        return false;
-    }
-
     ByteBuffer payload;
-
     payload.assign(
         rawData.begin() + sizeof(packet::Header),
         rawData.end()
