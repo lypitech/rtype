@@ -24,7 +24,7 @@ bool Session::handleIncoming(
     LOG_TRACE_R3(
         "Handling incoming raw data\n"
         "Size: {} bytes\n"
-        "Data (BE): {}",
+        "Data (N): {}",
         rawData.size(),
         byteBufferToHexString(rawData)
     );
@@ -111,7 +111,8 @@ void Session::send(Packet &packet)
         "Flags: {}\n"
         "Payload Size: {}\n"
         "Checksum: {}\n"
-        "Buffer (BE): {}",
+        "Raw header (H): {}\n"
+        "Raw buffer (N): {}",
         header.sequenceId,
         header.acknowledgeId,
         header.acknowledgeBitfield,
@@ -119,7 +120,8 @@ void Session::send(Packet &packet)
         header.flags,
         header.packetSize,
         header.checksum,
-        byteBufferToHexString(rawBuffer)
+        byteBufferToHexString(rawBuffer.begin(), rawBuffer.begin() + sizeof(packet::Header)),
+        byteBufferToHexString(rawBuffer.begin() + sizeof(packet::Header), rawBuffer.end())
     );
 
     if (_sendToPeerFunction) {
