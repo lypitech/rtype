@@ -228,8 +228,15 @@ namespace packet
         );
     }
 
-}
+    template <typename T>
+    bool is(const ByteBuffer& rawData)
+    {
+        verifyPacketData<T>();
+        parsing::Result res = Header::parse(rawData);
+        return res && res.header->messageId == T::kId;
+    }
 
+}
 
 /**
  * @class   Packet
