@@ -1,7 +1,7 @@
 # --- Sources ---
 set(RTNT_TEST_SOURCES
     Main.cpp
-    tests/Echo.cpp
+    tests/Handshake.cpp
 )
 
 add_executable(rtnt_tests ${RTNT_TEST_SOURCES})
