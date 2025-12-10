@@ -1,6 +1,5 @@
 #include "rteng.hpp"
 
-#include "ASystem.hpp"
 #include "Renderer.hpp"
 
 namespace rteng {
@@ -21,7 +20,7 @@ void GameEngine::run()
         _renderer.beginDrawing();
         _renderer.clearBackground();
 
-        _ecs.applyAllSystems();
+        _ecs->applyAllSystems();
 
         // 4. Render (Rendering System)
 

@@ -1,9 +1,11 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "ECS.hpp"
 #include "Renderer.hpp"
+#include "comp/Transform.hpp"
 
 namespace rteng {
 class GameEngine
@@ -18,7 +20,7 @@ class GameEngine
 
    private:
     graphics::Renderer _renderer;
-    rtecs::ECS _ecs;
+    std::unique_ptr<rtecs::ECS> _ecs = rtecs::ECS::createWithComponents<Transform>();
     bool _isRunning = false;
 };
 }  // namespace rteng
