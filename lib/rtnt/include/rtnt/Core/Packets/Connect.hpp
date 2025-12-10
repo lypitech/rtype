@@ -18,7 +18,7 @@ struct Connect
     {
     }
 
-    static void onReceive(std::shared_ptr<Session> /*session*/, const Connect& /*packet*/)
+    static void onReceive(const std::shared_ptr<Session>& session, const Connect& /*packet*/)
     {
         LOG_DEBUG("Hello from Connect::onReceive!!!");
     }
