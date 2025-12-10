@@ -28,7 +28,7 @@ void Server::update(milliseconds timeout)
 
 void Server::onReceive(
     const udp::endpoint& sender,
-    ByteBuffer& data
+    std::shared_ptr<ByteBuffer> data
 )
 {
     std::shared_ptr<Session> session;
@@ -38,7 +38,7 @@ void Server::onReceive(
     if (it != _sessions.end()) { // Session found
         session = it->second;
     } else { // New connection
-        if (!packet::is<packet::internal::Connect>(data)) { // todo: you can optimize this because another call to Header::parse is made in Session::handleIncoming.
+        if (!packet::is<packet::internal::Connect>(*data)) { // todo: you can optimize this because another call to Header::parse is made in Session::handleIncoming.
             LOG_TRACE_R3("Not CONNECT packet, ignoring...");
             return;
         }

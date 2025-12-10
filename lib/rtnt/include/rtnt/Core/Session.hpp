@@ -46,7 +46,7 @@ public:
      * corrupted or invalid.
      */
     bool handleIncoming(
-        const ByteBuffer& rawData,
+        std::shared_ptr<ByteBuffer> rawData,
         Packet& outPacket
     );
 
