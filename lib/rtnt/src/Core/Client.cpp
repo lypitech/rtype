@@ -61,8 +61,8 @@ void Client::update(milliseconds timeout)
 }
 
 void Client::onReceive(
-    const udp::endpoint &sender,
-    ByteBuffer &data
+    const udp::endpoint& sender,
+    std::shared_ptr<ByteBuffer> data
 )
 {
     if (sender != _serverEndpoint || !_serverSession) {
