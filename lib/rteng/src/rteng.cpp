@@ -1,37 +1,32 @@
-#include "../include/rteng.hpp"
+#include "rteng.hpp"
 
-#include "raylib.h"
+#include "Renderer.hpp"
 
 namespace rteng {
 
-GameEngine::GameEngine(int screenWidth, int screenHeight, const std::string& title)
+GameEngine::GameEngine(int screenWidth, int screenHeight, const std::string &title, int fps)
+    : _renderer(screenWidth, screenHeight, title, fps)
 {
-    InitWindow(screenWidth, screenHeight, title.c_str());
-    SetTargetFPS(60);
-    m_running = true;
+    _isRunning = true;
 }
 
 void GameEngine::run()
 {
-    while (!WindowShouldClose() && m_running) {
+    while (!_renderer.windowShouldClose() && _isRunning) {
         // 1. Input (Input System)
         // 2. Update (Update System)
         // 3. ECS
 
-        BeginDrawing();
+        _renderer.beginDrawing();
 
-        ClearBackground(RAYWHITE);
+        _renderer.clearBackground();
 
         // 4. Render (Rendering System)
 
-        DrawText("Hello R-Type Engine!", 190, 200, 20, LIGHTGRAY);
+        _renderer.drawText("Hello R-Type Engine!", 190, 200, 20, graphics::LIGHTGRAY);
 
-        EndDrawing();
-
+        _renderer.endDrawing();
         // 5. Timer (Timer System)
     }
-
-    // Nettoyage de Raylib
-    CloseWindow();
 }
 }  // namespace rteng
