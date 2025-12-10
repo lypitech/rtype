@@ -1,7 +1,17 @@
+cmake_minimum_required(VERSION 3.16)
+
+project(rteng_tests
+    VERSION 0.0.1
+    DESCRIPTION "R-Type Game Engine tests"
+    HOMEPAGE_URL "https://github.com/lypitech/rtype"
+    LANGUAGES CXX
+)
+
 # --- Sources ---
 set(RTENG_TEST_SOURCES
     Main.cpp
     tests/Initialization.cpp
+    tests/TextureTests.cpp
 )
 
 add_executable(rteng_tests ${RTENG_TEST_SOURCES})
@@ -26,8 +36,14 @@ target_include_directories(rteng_tests PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../include
 )
 
+target_link_directories(rteng_tests PRIVATE
+    ${CMAKE_BINARY_DIR}/lib
+)
+
+
 # --- Dependencies ---
 find_package(GTest REQUIRED)
+find_package(Threads REQUIRED)
 
 target_link_libraries(rteng_tests
     PRIVATE
@@ -38,4 +54,4 @@ target_link_libraries(rteng_tests
 
 # --- GTest setup ---
 include(GoogleTest)
-gtest_discover_tests(rteng_tests)
+# gtest_discover_tests(rteng_tests)

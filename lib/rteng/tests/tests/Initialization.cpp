@@ -1,18 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "rteng.h"
-#include "logger/Logger.h"
+#include "../../include/rteng.hpp"
 
-TEST(a, a) {
-    LOG_DEBUG("HI FROM TESTS");
-    rteng::hello();
-
-    EXPECT_TRUE(true);
-}
-
-TEST(a, a2) {
-    LOG_DEBUG("SECOND HI FROM TESTS LOL");
-    LOG_FATAL(":(");
+TEST(Initialisation, EngineConstructor) {
+    rteng::GameEngine game(800, 600, "rteng Test Runner");
 
     EXPECT_TRUE(true);
 }
