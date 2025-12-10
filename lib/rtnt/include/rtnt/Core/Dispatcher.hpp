@@ -13,13 +13,13 @@ class Client;
 
 class Dispatcher final
 {
-using PacketHandler = std::function<void(std::shared_ptr<Session>, Packet&)>;
+using PacketHandler = std::function<void(const std::shared_ptr<Session>&, Packet&)>;
 
 public:
     Dispatcher();
 
     template <typename T>
-    void bind(std::function<void(std::shared_ptr<Session>, const T&)> callback)
+    void bind(std::function<void(const std::shared_ptr<Session>&, const T&)> callback)
     {
         packet::verifyUserPacketData<T>();
         registerHandler<T>(callback);
@@ -35,12 +35,12 @@ public:
     /**
      * @brief   Routes an incoming packet to the correct handler.
      */
-    void dispatch(std::shared_ptr<Session> session, Packet& packet)
+    void dispatch(const std::shared_ptr<Session>& session, Packet& packet)
     {
         auto it = _handlers.find(packet.getId());
 
         if (it != _handlers.end()) {
-            it->second(std::move(session), packet);
+            it->second(session, packet);
         } else {
             LOG_ERR("Trying to dispatch an unknown packet (#{}).", packet.getId()); // todo: better logging
         }
@@ -53,7 +53,7 @@ private:
     std::unordered_map<packet::Id, PacketHandler> _handlers;
 
     template <typename T>
-    void internal_bind(std::function<void(std::shared_ptr<Session>, const T&)> callback)
+    void internal_bind(std::function<void(const std::shared_ptr<Session>&, const T&)> callback)
     {
         packet::verifyPacketData<T>();
         registerHandler<T>(callback);
@@ -67,11 +67,11 @@ private:
     }
 
     template <typename T>
-    void registerHandler(std::function<void(std::shared_ptr<Session>, const T&)> callback)
+    void registerHandler(std::function<void(const std::shared_ptr<Session>&, const T&)> callback)
     {
         packet::Id packetId = T::kId;
 
-        if (_handlers.count(packetId)) {
+        if (_handlers.contains(packetId)) {
             LOG_CRIT(
                 "Error binding Packet #{}: ID is already registered.",
                 packetId
