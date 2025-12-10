@@ -47,7 +47,7 @@ void Server::onReceive(
 
         session = std::make_shared<Session>(
             sender,
-            [this, sender](const ByteBuffer& rawBytes) {
+            [this, sender](std::shared_ptr<ByteBuffer> rawBytes) {
                 this->sendToTarget(sender, rawBytes);
             }
         );

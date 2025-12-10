@@ -23,7 +23,7 @@ using namespace std::chrono;
 class Session
 {
 
-using SendToPeerFunction = std::function<void(const ByteBuffer&)>;
+using SendToPeerFunction = std::function<void(std::shared_ptr<ByteBuffer>)>;
 
 public:
     explicit Session(

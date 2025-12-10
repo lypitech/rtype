@@ -29,7 +29,7 @@ void Client::connect(
     _serverEndpoint = udp::endpoint(address, port);
     _serverSession = std::make_shared<Session>(
         _serverEndpoint,
-        [this](const ByteBuffer& rawBytes) {
+        [this](std::shared_ptr<ByteBuffer> rawBytes) {
             this->sendToTarget(_serverEndpoint, rawBytes);
         }
     );
