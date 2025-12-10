@@ -11,14 +11,14 @@ void Client::connect(
     unsigned short port
 )
 {
-    if (!_onDisconnect || !_onMessage) {
+    if (!_onConnect || !_onDisconnect || !_onMessage) {
         LOG_CRIT("Make sure you set the callback functions before trying to connect.");
         return;
     }
 
     LOG_INFO("Connecting to server {}:{}...", ip, port);
 
-    asio::ip::address address = asio::ip::make_address(ip);
+    const asio::ip::address address = asio::ip::make_address(ip);
 
     _serverEndpoint = udp::endpoint(address, port);
     _serverSession = std::make_shared<Session>(
@@ -59,11 +59,7 @@ void Client::onReceive(
     ByteBuffer &data
 )
 {
-    if (sender != _serverEndpoint) {
-        return;
-    }
-
-    if (!_serverSession) {
+    if (sender != _serverEndpoint || !_serverSession) {
         return;
     }
 
