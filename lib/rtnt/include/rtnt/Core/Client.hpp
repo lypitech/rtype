@@ -18,15 +18,16 @@ namespace rtnt::core
 class Client : public Peer
 {
 
-using OnMessageFunction = std::function<void(Packet&)>;
 using OnConnectFunction = std::function<void()>;
 using OnDisconnectFunction = std::function<void()>;
+using OnMessageFunction = std::function<void(Packet&)>;
 
 public:
     explicit Client(asio::io_context& context)
         : Peer(context)
     {}
 
+    void onConnect(OnConnectFunction callback) { _onConnect = std::move(callback); }
     void onDisconnect(OnDisconnectFunction callback) { _onDisconnect = std::move(callback); }
     void onMessage(OnMessageFunction callback) { _onMessage = std::move(callback); }
 
@@ -76,6 +77,7 @@ private:
 
     Dispatcher _packetDispatcher;
 
+    OnConnectFunction _onConnect;
     OnDisconnectFunction _onDisconnect;
     OnMessageFunction _onMessage;
 
