@@ -7,6 +7,9 @@ project(rteng
     LANGUAGES CXX
 )
 
+find_package(Threads REQUIRED)
+find_package(raylib REQUIRED)
+
 # --- Options ---
 option(RTENG_BUILD_TESTS "Build the test suite" OFF)
 
@@ -31,6 +34,11 @@ target_include_directories(${PROJECT_NAME}
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME}
     PUBLIC shuvlog
+)
+
+target_link_libraries(rteng PUBLIC
+    raylib
+    Threads::Threads
 )
 
 # --- Output ---
