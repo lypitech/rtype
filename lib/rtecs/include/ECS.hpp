@@ -1,13 +1,14 @@
 #pragma once
 
+#include <memory>
+
+#include "ASystem.hpp"
 #include "DynamicBitSet.hpp"
 #include "ISparseSet.hpp"
 #include "SparseSet.hpp"
 #include "SparseVectorView.hpp"
 
 namespace rtecs {
-
-class ASystem;  // Forward declaration for system type
 
 using Entity = DynamicBitSet;
 using EntityID = size_t;
@@ -33,15 +34,21 @@ class ECS final
         return bitset;
     }
 
-    void applySystem(const SystemID id);
+    void applySystem(SystemID id);
 
    public:
     explicit ECS() = default;
+    ECS(const ECS &) = delete;
+    ECS &operator=(const ECS &) = delete;
+    ECS(ECS &&) = default;
+    ECS &operator=(ECS &&) = default;
 
     template <typename... Components>
-    explicit ECS()
+    static std::unique_ptr<ECS> createWithComponents()
     {
-        (registerComponent<Components>(), ...);
+        std::unique_ptr<ECS> e = std::make_unique<ECS>();
+        (e->registerComponent<Components>(), ...);
+        return e;
     }
 
     ~ECS() = default;
@@ -62,7 +69,7 @@ class ECS final
     void registerComponent()
     {
         const size_t hashcode = typeid(Component).hash_code();
-        _componentView[hashcode] = SparseSet<Component>();
+        _componentView[hashcode] = std::make_unique<SparseSet<Component>>();
     }
 
     template <typename... Components>
@@ -77,7 +84,7 @@ class ECS final
     template <typename System>
     void registerSystem(std::unique_ptr<System> system)
     {
-        static_assert(std::is_base_of<ASystem, System>::value, "System must inherit from ASystem");
+        static_assert(std::is_base_of_v<ASystem, System>, "System must inherit from ASystem");
         const size_t hashcode = typeid(System).hash_code();
         _systemView[hashcode] = std::move(system);
     }
@@ -96,7 +103,7 @@ class ECS final
     ISparseSet &getComponent()
     {
         const size_t hashcode = typeid(Component).hash_code();
-        return _componentView[hashcode];
+        return *_componentView[hashcode];
     };
 
     template <typename... Components>
@@ -125,7 +132,7 @@ class ECS final
 
    private:
     std::vector<Entity> _entityList;
-    SparseVectorView<ComponentID, ISparseSet> _componentView;
+    SparseVectorView<ComponentID, std::unique_ptr<ISparseSet>> _componentView;
     SparseVectorView<SystemID, std::unique_ptr<ASystem>> _systemView;
 };
 

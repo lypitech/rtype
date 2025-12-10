@@ -1,8 +1,12 @@
 #pragma once
 
-#include "ECS.hpp"
+#include <utility>
+
+#include "DynamicBitSet.hpp"
 
 namespace rtecs {
+
+class ECS;  // Forward declaration for ECS type
 
 class ASystem
 {
@@ -16,12 +20,8 @@ class ASystem
         return _mask;
     };
 
-    explicit ASystem()
-        : _mask() {};
-
-    template <typename... Components>
-    explicit ASystem(const ECS &ecs)
-        : _mask(ecs.getComponentsBitSet<Components...>()){};
+    explicit ASystem(DynamicBitSet mask)
+        : _mask(std::move(mask)) {};
 
    public:
     virtual ~ASystem() = default;
