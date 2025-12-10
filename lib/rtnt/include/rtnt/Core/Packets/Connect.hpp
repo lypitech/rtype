@@ -1,7 +1,9 @@
 #pragma once
 
+#include "ConnectAck.hpp"
 #include "rtnt/Common/Constants.hpp"
 #include "rtnt/Core/Packet.hpp"
+#include "rtnt/Core/Session.hpp"
 
 namespace rtnt::core::packet::internal
 {
@@ -20,7 +22,11 @@ struct Connect
 
     static void onReceive(const std::shared_ptr<Session>& session, const Connect& /*packet*/)
     {
-        LOG_DEBUG("Hello from Connect::onReceive!!!");
+        const ConnectAck response{
+            .assignedSessionId = 88 // todo: fix magic number
+        };
+
+        session->send(response);
     }
 
 };
