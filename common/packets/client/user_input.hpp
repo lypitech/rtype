@@ -17,7 +17,7 @@ struct UserInput
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr auto kName = "USER_INPUT";
 
-    uint8_t input_mask;  ///< The input mask of the currently pressed actions.
+    uint8_t input_mask;  ///< The input bitmask of the currently pressed actions.
 
     template <typename Archive>
     void serialize(Archive& ar)
