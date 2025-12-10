@@ -2,6 +2,11 @@
 
 namespace game {
 
+/**
+ * @class State
+ *
+ * @brief The possible states of a game.
+ */
 enum class State
 {
     kGameOver = 1,   // The game is lost.
