@@ -1,5 +1,8 @@
+#pragma once
+
+#include <memory>
 #include <string>
-#include <unordered_map>
+#include <vector>
 
 namespace rteng::graphics {
 
@@ -63,7 +66,7 @@ class Renderer
 
     ~Renderer();
 
-    std::unordered_map<int, Texture2D> m_textures;
+    std::vector<std::shared_ptr<Texture2D>> _textures;
     int m_nextTextureId = 1;
 
     static void beginDrawing();
@@ -80,9 +83,7 @@ class Renderer
 
     static void drawText(const std::string& text, int posX, int posY, int fontSize, const Color& color);
 
-    int loadTexture(const std::string& filePath);
-
-    void unloadTexture(int textureId);
+    std::weak_ptr<Texture2D> loadTexture(const std::string& filePath);
 };
 
 }  // namespace rteng::graphics
