@@ -2,6 +2,11 @@
 
 namespace game {
 
+/**
+ * @class Input
+ *
+ * @brief Contains the different input a player can use.
+ */
 enum class Input
 {
     kNone = 0,        // No input.

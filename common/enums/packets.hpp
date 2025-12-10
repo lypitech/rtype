@@ -3,6 +3,11 @@
 
 namespace packet::type {
 
+/**
+ * @class Client
+ *
+ * @brief The id of the packet sent by the client.
+ */
 enum class Client : uint16_t
 {
     kJoin = 0x128,       // Ask to join a game.
@@ -10,6 +15,11 @@ enum class Client : uint16_t
     kUserInput = 0x130,  // Send the bitmask of the input.
 };
 
+/**
+ * @class Server
+ *
+ * @brief The id of the packet sent by the server.
+ */
 enum class Server : uint16_t
 {
     kJoinAck = 0x150,            // Notify the status of a join request.
