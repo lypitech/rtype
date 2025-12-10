@@ -76,15 +76,15 @@ void Session::send(Packet &packet)
     header.packetSize = static_cast<uint16_t>(packet.getPayload().size());
     header.checksum = 0; // todo: Implement CRC32 checksum
 
-    ByteBuffer rawBuffer;
+    auto rawBuffer = std::make_shared<ByteBuffer>();
     const auto& payload = packet.getPayload();
 
-    rawBuffer.reserve(sizeof(packet::Header) + payload.size());
+    rawBuffer->reserve(sizeof(packet::Header) + payload.size());
 
     header.toNetwork();
     const auto* headerPtr = reinterpret_cast<const uint8_t*>(&header);
-    rawBuffer.insert(rawBuffer.end(), headerPtr, headerPtr + sizeof(packet::Header));
-    rawBuffer.insert(rawBuffer.end(), payload.begin(), payload.end());
+    rawBuffer->insert(rawBuffer->end(), headerPtr, headerPtr + sizeof(packet::Header));
+    rawBuffer->insert(rawBuffer->end(), payload.begin(), payload.end());
     header.toHost();
 
     LOG_TRACE_R3(
@@ -105,8 +105,8 @@ void Session::send(Packet &packet)
         header.flags,
         header.packetSize,
         header.checksum,
-        byteBufferToHexString(rawBuffer.begin(), rawBuffer.begin() + sizeof(packet::Header)),
-        byteBufferToHexString(rawBuffer.begin() + sizeof(packet::Header), rawBuffer.end())
+        byteBufferToHexString(rawBuffer->begin(), rawBuffer->begin() + sizeof(packet::Header)),
+        byteBufferToHexString(rawBuffer->begin() + sizeof(packet::Header), rawBuffer->end())
     );
 
     if (_sendToPeerFunction) {
