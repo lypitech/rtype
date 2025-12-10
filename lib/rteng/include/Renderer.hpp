@@ -1,34 +1,55 @@
 #include <string>
 #include <unordered_map>
 
-#include "Graphics.hpp"
-#include "raylib.h"
+namespace rteng::graphics {
 
-namespace rteng {
-namespace graphics {
+struct Color
+{
+    unsigned char r;  // Color red value
+    unsigned char g;  // Color green value
+    unsigned char b;  // Color blue value
+    unsigned char a;  // Color alpha value
+};
 
-class RaylibRenderer : public IRenderer
+struct Rect
+{
+    float x;
+    float y;
+    float width;
+    float height;
+};
+
+struct Texture2D
+{
+    unsigned int id;  // OpenGL texture id
+    int width;        // Texture base width
+    int height;       // Texture base height
+    int mipmaps;      // Mipmap levels, 1 by default
+    int format;       // Data format (PixelFormat type)
+};
+
+class Renderer
 {
    public:
     std::unordered_map<int, Texture2D> m_textures;
     int m_nextTextureId = 1;
 
-    void beginDrawing() override { BeginDrawing(); }
+    static void beginDrawing();
 
-    void endDrawing() override { EndDrawing(); }
+    static void endDrawing();
 
-    void clearBackground() override;
+    static void clearBackground();
 
-    void drawTexture(int textureId, const Rect& source, const Rect& dest, float rotation) override;
+    void drawTexture(int textureId, const Rect& source, const Rect& dest, float rotation);
 
-    void drawRectangle(const Rect& rect, Color color) override;
+    static void drawRectangle(const Rect& rect, const Color& color);
 
-    void drawText(const std::string& text, int posX, int posY, int fontSize, Color color) override;
+    static void drawText(const std::string& text, int posX, int posY, int fontSize, const Color& color);
 
-    int loadTexture(const std::string& filePath) override;
+    int loadTexture(const std::string& filePath);
 
-    void unloadTexture(int textureId) override;
+    void unloadTexture(int textureId);
 };
 
-}  // namespace graphics
-}  // namespace rteng
+}  // namespace rteng::graphics
+
