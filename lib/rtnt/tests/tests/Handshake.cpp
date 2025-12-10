@@ -8,8 +8,7 @@
 #include "rtnt/Core/Client.hpp"
 #include "rtnt/Core/Server.hpp"
 
-TEST(echo, basic)
-{
+TEST(handshake, basic) {
     asio::io_context context;
     auto workGuard = asio::make_work_guard(context);
 
@@ -17,14 +16,13 @@ TEST(echo, basic)
     rtnt::core::Server server(context, 4242);
     rtnt::core::Client client(context);
 
-    std::promise<std::string> promise;
+    std::promise<bool> promise;
     auto future = promise.get_future();
 
     LOG_DEBUG("Setting onMessage function of server");
-    server.onMessage([](const auto& session, auto& packet) {
-        LOG_DEBUG("Server received a message!");
-        session->send(packet);
-    });
+    // server.onMessage([](const auto& session, auto& packet) {
+    //     LOG_DEBUG("Server received a message!");
+    // });
 
     server.onDisconnect([](const auto& session) {
         LOG_DEBUG("Session {} disconnected", session.get()->getEndpoint().address().to_string());
@@ -47,36 +45,26 @@ TEST(echo, basic)
     LOG_DEBUG("Now waiting 400ms");
     std::this_thread::sleep_for(std::chrono::milliseconds(400));
 
+    client.onConnect([&]() {
+        LOG_DEBUG("Handshake is done, client is connected!");
+        promise.set_value(true);
+    });
+
     client.onDisconnect([]() {
         LOG_DEBUG("Client disconnected");
     });
 
-    client.onMessage([&](auto& packet) {
-        std::string response;
-        try {
-            packet >> response;
-            promise.set_value(response);
-            LOG_DEBUG("Message!! {}", response);
-        } catch (const std::exception& e) {
-            LOG_ERR("{}", e.what());
-        }
-    });
+    client.onMessage([](rtnt::core::Packet&) {});
 
     LOG_DEBUG("Will connect");
     client.connect("127.0.0.1", 4242);
 
-    rtnt::core::Packet p(10, rtnt::core::packet::Flag::kUnreliable);
-    std::string message = "Hello GoogleTest";
-    p << message;
-
-    client.send(p);
-
-    std::future_status status = future.wait_for(std::chrono::seconds(2));
+    const std::future_status status = future.wait_for(std::chrono::seconds(2));
 
     EXPECT_EQ(status, std::future_status::ready) << "Test timed out!";
 
     if (status == std::future_status::ready) {
-        EXPECT_EQ(future.get(), "Hello GoogleTest");
+        EXPECT_TRUE(future.get());
     }
 
     context.stop();
