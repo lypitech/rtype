@@ -1,14 +1,26 @@
 #include <gtest/gtest.h>
 
-#include "Tests.h"
+#include "../include/rteng.hpp"
+#include "TestEnvironment.hpp"
 
-int main(int argc, char **argv)
+// Add a flag or argument to control execution type
+int main(int argc, char* argv[])
 {
-    testing::InitGoogleTest(&argc, argv);
+    bool is_automated_test = false;  // Implement a check here if possible
 
-    testing::AddGlobalTestEnvironment(new LogEnvironment(argc, argv));
-    testing::TestEventListeners& listeners = testing::UnitTest::GetInstance()->listeners();
-    listeners.Append(new LoggingListener);
+    if (argc == 2 && strcmp(argv[1], "--test") == 0) {
+        is_automated_test = true;
+    }
 
-    return RUN_ALL_TESTS();
+    if (is_automated_test) {
+        testing::AddGlobalTestEnvironment(new RaylibTestEnvironment);
+        testing::InitGoogleTest(&argc, argv);
+        return RUN_ALL_TESTS();
+    }
+
+    // --- Interactive Mode ---
+    rteng::GameEngine engine(800, 600, "R-Type Client Interactive");
+    engine.run();
+
+    return 0;
 }
