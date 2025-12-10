@@ -6,6 +6,29 @@ namespace rtnt::core
 namespace packet
 {
 
+    using namespace parsing;
+
+    Result Header::parse(const ByteBuffer& data)
+    {
+        if (data.size() < sizeof(Header)) {
+            return Result::failure(Error::kDataTooSmall);
+        }
+
+        Header header;
+        std::memcpy(&header, data.data(), sizeof(Header));
+        header.toHost();
+
+        if (header.protocolId != PROTOCOL_ID) {
+            return Result::failure(Error::kProtocolMismatch);
+        }
+
+        if (data.size() - sizeof(Header) < header.packetSize) {
+            return Result::failure(Error::kPayloadSizeMismatch);
+        }
+
+        return Result::success(header);
+    }
+
     template <typename T>
     Reader& Reader::operator&(T& data)
     {
