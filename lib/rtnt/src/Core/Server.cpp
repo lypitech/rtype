@@ -1,6 +1,7 @@
 #include "rtnt/Core/Server.hpp"
 
 #include "logger/Logger.h"
+#include "rtnt/Core/Packets/Connect.hpp"
 
 namespace rtnt::core
 {
@@ -37,7 +38,13 @@ void Server::onReceive(
     if (it != _sessions.end()) { // Session found
         session = it->second;
     } else { // New connection
-        // todo: only create a session if packet received is internal packet CONNECT (0x01).
+        if (!packet::is<packet::internal::Connect>(data)) { // todo: you can optimize this because another call to Header::parse is made in Session::handleIncoming.
+            LOG_TRACE_R3("Not CONNECT packet, ignoring...");
+            return;
+        }
+
+        LOG_TRACE_R3("Is CONNECT packet, creating session.");
+
         session = std::make_shared<Session>(
             sender,
             [this, sender](const ByteBuffer& rawBytes) {
