@@ -17,7 +17,7 @@ Session::Session(
 {}
 
 bool Session::handleIncoming(
-    const ByteBuffer &rawData,
+    std::shared_ptr<ByteBuffer> rawData,
     Packet &outPacket
 )
 {
@@ -25,11 +25,11 @@ bool Session::handleIncoming(
         "Handling incoming raw data\n"
         "Size: {} bytes\n"
         "Data (N): {}",
-        rawData.size(),
-        byteBufferToHexString(rawData)
+        rawData->size(),
+        byteBufferToHexString(*rawData)
     );
 
-    const packet::parsing::Result headerParsingResult = packet::Header::parse(rawData);
+    const packet::parsing::Result headerParsingResult = packet::Header::parse(*rawData);
 
     if (!headerParsingResult) {
         LOG_TRACE_R3("Error while handling packet: {}", packet::parsing::to_string(headerParsingResult.error));
@@ -49,7 +49,7 @@ bool Session::handleIncoming(
         static_cast<packet::Flag>(header.flags)
     );
 
-    size_t payloadSize = rawData.size() - sizeof(packet::Header);
+    size_t payloadSize = rawData->size() - sizeof(packet::Header);
 
     if (payloadSize == 0) {
         return true;
@@ -57,8 +57,8 @@ bool Session::handleIncoming(
 
     ByteBuffer payload;
     payload.assign(
-        rawData.begin() + sizeof(packet::Header),
-        rawData.end()
+        rawData->begin() + sizeof(packet::Header),
+        rawData->end()
     );
     outPacket._internal_setPayload(std::move(payload));
     return true;

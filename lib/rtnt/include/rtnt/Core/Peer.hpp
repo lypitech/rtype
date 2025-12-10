@@ -94,7 +94,7 @@ protected:
      */
     virtual void onReceive(
         const udp::endpoint& sender,
-        ByteBuffer& data
+        std::shared_ptr<ByteBuffer> data
     ) = 0;
 
 private:

@@ -13,7 +13,7 @@ void Peer::sendToTarget(
     _socket.async_send_to(
         asio::buffer(*data),
         target,
-        [target](std::error_code ec, size_t bytesSent) {
+        [target, data](std::error_code ec, size_t bytesSent) {
             if (ec) {
                 LOG_WARN("Encountered an error while sending data: {}.", ec.message());
                 return;
@@ -54,10 +54,11 @@ void Peer::receive()
 
             if (bytesReceived > 0) {
                 // todo: optimization is possible by making a buffer pool (avoiding buffer recreation c;)
-                ByteBuffer data(
+                auto data = std::make_shared<ByteBuffer>(
                     _receptionBuffer.begin(),
                     _receptionBuffer.begin() + bytesReceived
                 );
+
                 onReceive(_tmpEndpoint, data);
             }
             receive();
