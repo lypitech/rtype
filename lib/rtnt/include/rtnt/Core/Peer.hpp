@@ -78,7 +78,7 @@ public:
      */
     void sendToTarget(
         const udp::endpoint& target,
-        const ByteBuffer& data
+        std::shared_ptr<ByteBuffer> data
     );
 
     /**

@@ -7,11 +7,11 @@ namespace rtnt::core
 
 void Peer::sendToTarget(
     const udp::endpoint &target,
-    const ByteBuffer &data
+    std::shared_ptr<ByteBuffer> data
 )
 {
     _socket.async_send_to(
-        asio::buffer(data),
+        asio::buffer(*data),
         target,
         [target](std::error_code ec, size_t bytesSent) {
             if (ec) {
