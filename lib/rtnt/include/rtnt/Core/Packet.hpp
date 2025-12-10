@@ -31,6 +31,34 @@ namespace packet
         kOrdered    = 1 << 2, ///< Guaranteed order. Will be buffered until previous packets arrive.
     };
 
+    struct Header;
+
+    namespace parsing
+    {
+
+        struct Result;
+
+        enum class Error : uint8_t
+        {
+            kNone = 0x0,            ///< a
+            kDataTooSmall,          ///< a
+            kProtocolMismatch,      ///< a
+            kPayloadSizeMismatch,   ///< a
+        };
+
+        inline std::string_view to_string(Error error)
+        {
+            switch (error) {
+                case Error::kNone:                  return "Success";
+                case Error::kDataTooSmall:          return "Data is too small to contain a RTNT header.";
+                case Error::kProtocolMismatch:      return "Protocol ID mismatch.";
+                case Error::kPayloadSizeMismatch:   return "Corrupted packet: Payload size does not match header.";
+                default:                            return "Unknown error.";
+            }
+        }
+
+    }
+
     #pragma pack(push, 1) // forcing strict alignment, no compiler padding
     /**
      * @struct  packet::Header
@@ -84,8 +112,26 @@ namespace packet
             packetSize          = ntohs(packetSize);
             checksum            = ntohl(checksum);
         }
+
+        static parsing::Result parse(const ByteBuffer& data);
     };
     #pragma pack(pop)
+
+    namespace parsing
+    {
+
+        struct Result final
+        {
+            std::optional<Header> header;
+            Error error;
+
+            explicit operator bool() const { return error == Error::kNone; }
+
+            static Result success(Header header) { return { header, Error::kNone }; }
+            static Result failure(Error error)   { return { std::nullopt, error }; }
+        };
+
+    }
 
     /**
      * @struct  packet::Reader
