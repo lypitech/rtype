@@ -6,6 +6,12 @@
 namespace rtnt::core
 {
 
+Client::Client(asio::io_context &context)
+    : Peer(context)
+{
+    internal_registerInternalPacketHandlers();
+}
+
 void Client::connect(
     const std::string &ip,
     unsigned short port
@@ -67,10 +73,25 @@ void Client::onReceive(
 
     if (_serverSession->handleIncoming(data, packet)) {
         _packetDispatcher.dispatch(_serverSession, packet);
-        if (_onMessage) {
+
+        if (_isConnected && _onMessage) {
             _onMessage(packet);
         }
     }
+}
+
+void Client::internal_registerInternalPacketHandlers()
+{
+    _packetDispatcher.internal_bind<packet::internal::ConnectAck>(
+        [this](const std::shared_ptr<Session>& /*session*/, const packet::internal::ConnectAck& packet) {
+            LOG_DEBUG("Received ID: {}", packet.assignedSessionId);
+            this->_isConnected = true;
+
+            if (_onConnect) {
+                _onConnect();
+            }
+        }
+    );
 }
 
 }
