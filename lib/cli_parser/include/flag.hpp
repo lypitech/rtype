@@ -16,8 +16,9 @@ namespace cli_parser {
  *
  * This class is mainly there for the value to be cast to the wanted type.
  */
-class Flag {
-   public:
+class Flag
+{
+public:
     /**
      * @brief Creates an instance of the class Flag and recover its type.
      * @warning This class is not supposed to be instantiated by the user.
@@ -35,11 +36,13 @@ class Flag {
      * the requested type if incompatible type.
      */
     template <typename T>
-    T as() const {
+    T as() const
+    {
         IF_T_IS_TYPE(bool) { return _value == "true" || _value == "1"; }
         IF_T_IS_TYPE(std::string) { return _value; }
         IF_T_IS_TYPE(int) { return std::stoi(_value); }
-        IF_T_IS_TYPE(double) {
+        IF_T_IS_TYPE(double)
+        {
             if (_type != typeid(int) && _type != typeid(double)) {
                 return T();
             }
@@ -61,7 +64,7 @@ class Flag {
      */
     bool operator!=(const std::string& other) const;
 
-   private:
+private:
     std::string _flag;
     std::string _value;
     std::type_index _type = std::type_index(typeid(std::string));

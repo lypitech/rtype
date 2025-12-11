@@ -7,11 +7,13 @@
 namespace cli_parser {
 
 Flag::Flag(std::string flag, std::string value)
-    : _flag(std::move(flag)), _value(std::move(value)) {
+    : _flag(std::move(flag)), _value(std::move(value))
+{
     detectType();
 }
 
-void Flag::detectType() {
+void Flag::detectType()
+{
     if (_value.empty()) {
         _type = std::type_index(typeid(std::string));
         return;

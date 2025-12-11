@@ -2,7 +2,8 @@
 
 namespace cli_parser {
 
-Parser::Parser(const int argc, const char* argv[]) {
+Parser::Parser(const int argc, const char* argv[])
+{
     for (int i = 1; i < argc; ++i) {
         const std::string arg = argv[i];
         if (arg[0] != '-') {
@@ -22,7 +23,8 @@ Parser::Parser(const int argc, const char* argv[]) {
     }
 }
 
-Flag Parser::getValue(const std::string& flag) {
+Flag Parser::getValue(const std::string& flag)
+{
     for (auto& f : _flags) {
         if (f == flag) {
             return f;
@@ -31,7 +33,8 @@ Flag Parser::getValue(const std::string& flag) {
     return Flag{"", ""};
 }
 
-bool Parser::hasFlag(const std::string& flag) const {
+bool Parser::hasFlag(const std::string& flag) const
+{
     for (auto& f : _flags) {
         if (f == flag) {
             return true;
