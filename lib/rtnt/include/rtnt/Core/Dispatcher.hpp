@@ -11,13 +11,29 @@ namespace rtnt::core
 class Server;
 class Client;
 
+/**
+ * @class   Dispatcher
+ * @brief   Router for incoming packets
+ *
+ * The Dispatcher class is responsible for dispatching incoming packets to their respective
+ * handler.
+ *
+ * Handlers must be bound with the @code bind@endcode function. Everything else is automatically
+ * managed by Dispatcher, Server and Client classes.
+ */
 class Dispatcher final
 {
+
 using PacketHandler = std::function<void(const std::shared_ptr<Session>&, Packet&)>;
 
 public:
     Dispatcher();
 
+    /**
+     * @brief   Binds a packet type to a certain callback.
+     * @tparam  T           Type of packet to bind
+     * @param   callback    Function to call whenever a packet of type T is received
+     */
     template <typename T>
     void bind(std::function<void(const std::shared_ptr<Session>&, const T&)> callback)
     {
@@ -25,6 +41,13 @@ public:
         registerHandler<T>(callback);
     }
 
+    /**
+     * @brief   Binds a packet type to a certain callback.
+     *
+     * In this overload, callback is automatically resolved from the Packet struct.
+     *
+     * @tparam  T   Type of packet to bind
+     */
     template <typename T>
     void bind()
     {
@@ -66,6 +89,11 @@ private:
         _internal_bind<T>(T::onReceive);
     }
 
+    /**
+     * @brief   Binds a packet type to a certain callback.
+     * @tparam  T           Type of packet to register
+     * @param   callback    Function to call whenever a packet of type T is received
+     */
     template <typename T>
     void registerHandler(std::function<void(const std::shared_ptr<Session>&, const T&)> callback)
     {

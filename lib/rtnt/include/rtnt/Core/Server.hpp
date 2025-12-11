@@ -27,7 +27,7 @@ using OnMessageFunction = std::function<void(std::shared_ptr<Session>, Packet&)>
 public:
     explicit Server(
         asio::io_context& context,
-        unsigned short port
+        const unsigned short port
     )   : Peer(context, port)
     {}
 
