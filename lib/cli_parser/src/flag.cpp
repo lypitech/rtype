@@ -18,7 +18,7 @@ void Flag::detectType()
         _type = std::type_index(typeid(std::string));
         return;
     }
-    if (_value == "true" || _value == "false") {
+    if (_value == "false" || _value == "true") {
         _type = std::type_index(typeid(bool));
     } else if (_value.find('.') != std::string::npos) {
         std::istringstream iss(_value);
