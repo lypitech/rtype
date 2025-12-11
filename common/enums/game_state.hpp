@@ -9,9 +9,9 @@ namespace game {
  */
 enum class State
 {
-    kGameOver = 1,   ///< The game is lost.
-    kGameStart = 2,  ///< Start the game.
-    kGameEnd = 3,    ///< The game is won.
+    kGameOver = 0x01,  ///< The game is lost.
+    kGameStart,        ///< Start the game.
+    kGameEnd,          ///< The game is won.
 };
 
 }  // namespace game
