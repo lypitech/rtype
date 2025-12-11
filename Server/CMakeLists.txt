@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
+include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+
 project(r-type_server
     VERSION 0.0.1
     DESCRIPTION "R-Type Server"
@@ -11,21 +13,30 @@ project(r-type_server
 if(PROJECT_IS_TOP_LEVEL)
     message(WARNING "Building Server standalone, adding Shuvlog and rtnt manually")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/shuvlog shuvlog)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/cli_parser cli_parser)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rtnt rtnt)
 endif()
+
+find_package(asio REQUIRED)
 
 # --- Sources / Headers ---
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/callbacks/on_connect.cpp
+    src/callbacks/on_disconnect.cpp
+    src/callbacks/on_message.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common
 )
 
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    asio::asio
     rtnt
+    cli_parser
 )
 
 # --- Output ---
