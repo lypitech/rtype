@@ -7,7 +7,7 @@ namespace rtnt::core
 
 Dispatcher::Dispatcher()
 {
-    internal_bind<packet::internal::Connect>();
+    _internal_bind<packet::internal::Connect>();
 }
 
 }
