@@ -53,17 +53,17 @@ private:
     std::unordered_map<packet::Id, PacketHandler> _handlers;
 
     template <typename T>
-    void internal_bind(std::function<void(const std::shared_ptr<Session>&, const T&)> callback)
+    void _internal_bind(std::function<void(const std::shared_ptr<Session>&, const T&)> callback)
     {
         packet::verifyPacketData<T>();
         registerHandler<T>(callback);
     }
 
     template <typename T>
-    void internal_bind()
+    void _internal_bind()
     {
         packet::verifyInternalPacketData<T>();
-        internal_bind<T>(T::onReceive);
+        _internal_bind<T>(T::onReceive);
     }
 
     template <typename T>

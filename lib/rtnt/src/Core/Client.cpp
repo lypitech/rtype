@@ -9,7 +9,7 @@ namespace rtnt::core
 Client::Client(asio::io_context &context)
     : Peer(context)
 {
-    internal_registerInternalPacketHandlers();
+    _internal_registerInternalPacketHandlers();
 }
 
 void Client::connect(
@@ -36,7 +36,7 @@ void Client::connect(
     start();
 
     packet::internal::Connect packet;
-    internal_send(packet);
+    _internal_send(packet);
 }
 
 void Client::update(milliseconds timeout)
@@ -80,9 +80,9 @@ void Client::onReceive(
     }
 }
 
-void Client::internal_registerInternalPacketHandlers()
+void Client::_internal_registerInternalPacketHandlers()
 {
-    _packetDispatcher.internal_bind<packet::internal::ConnectAck>(
+    _packetDispatcher._internal_bind<packet::internal::ConnectAck>(
         [this](const std::shared_ptr<Session>& /*session*/, const packet::internal::ConnectAck& packet) {
             LOG_DEBUG("Received ID: {}", packet.assignedSessionId);
             this->_isConnected = true;
