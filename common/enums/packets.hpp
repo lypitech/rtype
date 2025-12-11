@@ -1,5 +1,6 @@
 #pragma once
-#include <cstdint>
+
+#include "rtnt/Core/packet.hpp"
 
 namespace packet::type {
 
