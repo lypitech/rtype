@@ -17,7 +17,7 @@ struct PlayerJoin
 {
     static constexpr auto kId = static_cast<packetId>(type::Server::kPlayerJoin);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
-    static constexpr auto kName = "PLAYER_JOIN";
+    static constexpr std::string kName = "PLAYER_JOIN";
 
     uint32_t id;     ///< The id assigned to this entity.
     uint8_t team;    ///< The team assigned to this player.

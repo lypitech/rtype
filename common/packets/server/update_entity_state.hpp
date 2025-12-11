@@ -17,7 +17,7 @@ struct UpdateEntityState
 {
     static constexpr auto kId = static_cast<packetId>(type::Server::kUpdateEntityState);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
-    static constexpr auto kName = "UPDATE_ENTITY_STATE";
+    static constexpr std::string kName = "UPDATE_ENTITY_STATE";
 
     uint32_t id;    ///< The id of the entity to update.
     uint8_t state;  ///< The current state of the entity.
