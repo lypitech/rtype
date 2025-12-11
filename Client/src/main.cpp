@@ -6,7 +6,7 @@
 #include "logger/Sinks/LogFileSink.h"
 #include "logger/Thread.h"
 #include "packets/client/join.hpp"
-#include "rtnt/Core/Client.hpp"
+#include "rtnt/Core/client.hpp"
 
 int main(const int argc, const char* argv[])
 {
