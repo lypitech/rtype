@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rtnt/Core/Packet.hpp"
+#include "rtnt/Core/packet.hpp"
 
 namespace rtnt {
 

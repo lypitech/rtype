@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ConnectAck.hpp"
-#include "rtnt/Common/Constants.hpp"
-#include "rtnt/Core/Packet.hpp"
-#include "rtnt/Core/Session.hpp"
+#include "connect_ack.hpp"
+#include "rtnt/Common/constants.hpp"
+#include "rtnt/Core/packet.hpp"
+#include "rtnt/Core/session.hpp"
 
 namespace rtnt::core::packet::internal {
 

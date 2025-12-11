@@ -3,7 +3,7 @@
 #include <asio/io_context.hpp>
 #include <asio/ip/udp.hpp>
 
-#include "Packet.hpp"
+#include "packet.hpp"
 
 static constexpr size_t BUFFER_SIZE = USHRT_MAX;
 

@@ -3,9 +3,9 @@
 #include <map>
 #include <utility>
 
-#include "Dispatcher.hpp"
-#include "Peer.hpp"
-#include "Session.hpp"
+#include "dispatcher.hpp"
+#include "peer.hpp"
+#include "session.hpp"
 
 namespace rtnt::core {
 
