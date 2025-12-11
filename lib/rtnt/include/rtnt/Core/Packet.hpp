@@ -304,6 +304,9 @@ namespace packet
     /**
      * @brief   Verifies if a given struct has an integrated callback.
      *
+     * More precisely, it verifies that the struct contains a function that have this signature:
+     * @code static void onReceive(const std::shared_ptr<Session>& session, const T& packet)@endcode.
+     *
      * @tparam  T   Packet struct to verify
      */
     template <typename T>
