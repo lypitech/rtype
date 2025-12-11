@@ -4,10 +4,10 @@
 #include <vector>
 
 #if defined(_WIN32)
-#include <winsock2.h>
+    #include <winsock2.h>
 #elif defined(__linux__)
-#include <arpa/inet.h>
-#include <cstring>
+    #include <arpa/inet.h>
+    #include <cstring>
 #endif
 
 #include "logger/Logger.h"
@@ -84,15 +84,15 @@ namespace packet
      */
     struct Header final
     {
-        uint16_t protocolId             = PROTOCOL_ID; ///< Magic number representig unique ID of the protocol, to avoid internet noise
-        uint16_t protocolVersion        = PROTOCOL_VER; ///< Protocol version, to reject mismatch peers
-        uint32_t sequenceId             = 0; ///< The unique, incrementing ID of this packet
-        uint32_t acknowledgeId          = 0; ///< Sequence ID of the latest packet received
-        uint32_t acknowledgeBitfield    = 0; ///< Bitmask of the previous 32 received packets relative to acknowledge ID
-        Id       messageId              = 0x0; ///< Command type (user-defined)
-        uint8_t  flags                  = static_cast<uint8_t>(Flag::kUnreliable); ///< Reliability flags (cf. packet::Flag)
-        uint16_t packetSize             = 0; ///< Size of the payload
-        uint32_t checksum               = 0; ///< CRC32 checksum to avoid corruption
+        uint16_t protocolId             = PROTOCOL_ID;                              ///< Magic number representig unique ID of the protocol, to avoid internet noise
+        uint16_t protocolVersion        = PROTOCOL_VER;                             ///< Protocol version, to reject mismatch peers
+        uint32_t sequenceId             = 0;                                        ///< The unique, incrementing ID of this packet
+        uint32_t acknowledgeId          = 0;                                        ///< Sequence ID of the latest packet received
+        uint32_t acknowledgeBitfield    = 0;                                        ///< Bitmask of the previous 32 received packets relative to acknowledge ID
+        Id       messageId              = 0x0;                                      ///< Command type (user-defined)
+        uint8_t  flags                  = static_cast<uint8_t>(Flag::kUnreliable);  ///< Reliability flags (cf. packet::Flag)
+        uint16_t packetSize             = 0;                                        ///< Size of the payload
+        uint32_t checksum               = 0;                                        ///< CRC32 checksum to avoid corruption
 
         /**
          * @brief   Converts all fields from Host Byte Order (Little Endian)
