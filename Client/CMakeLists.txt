@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
+include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+
 project(r-type_client
     VERSION 0.0.1
     DESCRIPTION "R-Type Client"
@@ -16,14 +18,16 @@ if (PROJECT_IS_TOP_LEVEL)
 endif ()
 
 # --- Dependencies ---
-include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
-
+find_package(asio REQUIRED)
 find_package(raylib REQUIRED)
 find_package(imgui REQUIRED)
 
 # --- Sources / Headers ---
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/callbacks/on_connect.cpp
+    src/callbacks/on_disconnect.cpp
+    src/callbacks/on_message.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -33,7 +37,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    asio::asio
     rtnt
+    shuvlog
     cli_parser
 )
 
