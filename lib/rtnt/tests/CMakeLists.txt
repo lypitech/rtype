@@ -2,6 +2,7 @@
 set(RTNT_TEST_SOURCES
     main.cpp
     tests/handshake.cpp
+    tests/empty_packet.cpp
 )
 
 add_executable(rtnt_tests ${RTNT_TEST_SOURCES})
