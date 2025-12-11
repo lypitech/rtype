@@ -3,12 +3,11 @@
 #include "rtnt/Common/Constants.hpp"
 #include "rtnt/Core/Packet.hpp"
 
-namespace rtnt::core::packet::internal
-{
+namespace rtnt::core::packet::internal {
 
 struct Ping
 {
-    static constexpr Id   kId   = static_cast<uint16_t>(SystemMessageId::kPing);
+    static constexpr Id kId = static_cast<uint16_t>(SystemMessageId::kPing);
     static constexpr Flag kFlag = Flag::kUnreliable;
     static constexpr Name kName = INTERNAL_PACKET_NAME("PING");
 
@@ -21,4 +20,4 @@ struct Ping
     }
 };
 
-}
+}  // namespace rtnt::core::packet::internal

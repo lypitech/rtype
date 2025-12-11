@@ -4,8 +4,7 @@
 
 #include <cstdint>
 
-namespace rtnt
-{
+namespace rtnt {
 
 /// @warning    Changing this is considered as a breaking change.
 static constexpr uint16_t PROTOCOL_ID = 0x1801;
@@ -15,19 +14,18 @@ static constexpr uint16_t PROTOCOL_ID = 0x1801;
 /// todo: Prone to change
 static constexpr uint16_t PROTOCOL_VER = 0x0001;
 
-namespace core::packet
+namespace core::packet {
+
+static constexpr std::string_view UNKNOWN_PACKET_NAME = "__rtnt_UNKNOWN";
+
+enum class SystemMessageId : uint16_t
 {
+    kConnect = 0x01,  /// @warning   Changing this value is considered as a breaking change.
+    kConnectAck,
+    kPing,
+    kPong,
+};
 
-    static constexpr std::string_view UNKNOWN_PACKET_NAME = "__rtnt_UNKNOWN";
+}  // namespace core::packet
 
-    enum class SystemMessageId : uint16_t
-    {
-        kConnect = 0x01, /// @warning   Changing this value is considered as a breaking change.
-        kConnectAck,
-        kPing,
-        kPong,
-    };
-
-}
-
-}
+}  // namespace rtnt

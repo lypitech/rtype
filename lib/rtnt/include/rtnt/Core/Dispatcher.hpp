@@ -1,12 +1,11 @@
 #pragma once
 
-#include <memory>
 #include <functional>
+#include <memory>
 
 #include "Packet.hpp"
 
-namespace rtnt::core
-{
+namespace rtnt::core {
 
 class Server;
 class Client;
@@ -23,8 +22,7 @@ class Client;
  */
 class Dispatcher final
 {
-
-using PacketHandler = std::function<void(const std::shared_ptr<Session>&, Packet&)>;
+    using PacketHandler = std::function<void(const std::shared_ptr<Session>&, Packet&)>;
 
 public:
     Dispatcher();
@@ -91,10 +89,7 @@ private:
         packet::Id packetId = T::kId;
 
         if (_handlers.contains(packetId)) {
-            LOG_CRIT(
-                "Error binding Packet #{}: ID is already registered.",
-                packetId
-            );
+            LOG_CRIT("Error binding Packet #{}: ID is already registered.", packetId);
             // todo: throw exception?
             return;
         }
@@ -104,7 +99,7 @@ private:
             try {
                 packet >> data;
             } catch (const std::exception& e) {
-                LOG_CRIT("Could not parse packet: {}", e.what()); // todo: better logging
+                LOG_CRIT("Could not parse packet: {}", e.what());  // todo: better logging
                 return;
             }
             callback(session, data);
@@ -112,4 +107,4 @@ private:
     }
 };
 
-}
+}  // namespace rtnt::core

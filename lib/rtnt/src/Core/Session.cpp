@@ -1,33 +1,24 @@
+#include "rtnt/Core/Session.hpp"
+
 #include <ranges>
 
 #include "logger/Logger.h"
-
-#include "rtnt/Core/Session.hpp"
 #include "rtnt/Common/Utils.hpp"
 
-namespace rtnt::core
+namespace rtnt::core {
+
+Session::Session(udp::endpoint endpoint, SendToPeerFunction sendToPeerFunction)
+    : _endpoint(std::move(endpoint)), _sendToPeerFunction(std::move(sendToPeerFunction)), _lastSeen(steady_clock::now())
 {
+}
 
-Session::Session(
-    udp::endpoint endpoint,
-    SendToPeerFunction sendToPeerFunction
-)   : _endpoint(std::move(endpoint))
-    , _sendToPeerFunction(std::move(sendToPeerFunction))
-    , _lastSeen(steady_clock::now())
-{}
-
-bool Session::handleIncoming(
-    std::shared_ptr<ByteBuffer> rawData,
-    Packet &outPacket
-)
+bool Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData, Packet& outPacket)
 {
     LOG_TRACE_R3(
         "Handling incoming raw data\n"
         "Size: {} bytes\n"
         "Data (N): {}",
-        rawData->size(),
-        byteBufferToHexString(*rawData)
-    );
+        rawData->size(), byteBufferToHexString(*rawData));
 
     const packet::parsing::Result headerParsingResult = packet::Header::parse(*rawData);
 
@@ -44,10 +35,7 @@ bool Session::handleIncoming(
         _remoteSequenceId = header.sequenceId;
     }
 
-    outPacket = Packet(
-        header.messageId,
-        static_cast<packet::Flag>(header.flags)
-    );
+    outPacket = Packet(header.messageId, static_cast<packet::Flag>(header.flags));
 
     size_t payloadSize = rawData->size() - sizeof(packet::Header);
 
@@ -56,25 +44,22 @@ bool Session::handleIncoming(
     }
 
     ByteBuffer payload;
-    payload.assign(
-        rawData->begin() + sizeof(packet::Header),
-        rawData->end()
-    );
+    payload.assign(rawData->begin() + sizeof(packet::Header), rawData->end());
     outPacket._internal_setPayload(std::move(payload));
     return true;
 }
 
-void Session::send(Packet &packet)
+void Session::send(Packet& packet)
 {
-    packet::Header header {};
+    packet::Header header{};
 
     header.sequenceId = _localSequenceId++;
     header.acknowledgeId = _remoteSequenceId;
-    header.acknowledgeBitfield = 0; // todo: Implement ack bitfield
+    header.acknowledgeBitfield = 0;  // todo: Implement ack bitfield
     header.messageId = packet.getId();
     header.flags = static_cast<uint8_t>(packet.getReliability());
     header.packetSize = static_cast<uint16_t>(packet.getPayload().size());
-    header.checksum = 0; // todo: Implement CRC32 checksum
+    header.checksum = 0;  // todo: Implement CRC32 checksum
 
     auto rawBuffer = std::make_shared<ByteBuffer>();
     const auto& payload = packet.getPayload();
@@ -98,20 +83,14 @@ void Session::send(Packet &packet)
         "Checksum: {}\n"
         "Raw header (H): {}\n"
         "Raw buffer (N): {}",
-        header.sequenceId,
-        header.acknowledgeId,
-        header.acknowledgeBitfield,
-        header.messageId,
-        header.flags,
-        header.packetSize,
-        header.checksum,
+        header.sequenceId, header.acknowledgeId, header.acknowledgeBitfield, header.messageId, header.flags,
+        header.packetSize, header.checksum,
         byteBufferToHexString(rawBuffer->begin(), rawBuffer->begin() + sizeof(packet::Header)),
-        byteBufferToHexString(rawBuffer->begin() + sizeof(packet::Header), rawBuffer->end())
-    );
+        byteBufferToHexString(rawBuffer->begin() + sizeof(packet::Header), rawBuffer->end()));
 
     if (_sendToPeerFunction) {
         _sendToPeerFunction(rawBuffer);
     }
 }
 
-}
+}  // namespace rtnt::core

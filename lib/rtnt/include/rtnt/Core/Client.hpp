@@ -5,8 +5,7 @@
 #include "Session.hpp"
 #include "logger/Logger.h"
 
-namespace rtnt::core
-{
+namespace rtnt::core {
 
 /**
  * @class   Client
@@ -17,10 +16,9 @@ namespace rtnt::core
  */
 class Client : public Peer
 {
-
-using OnConnectFunction = std::function<void()>;
-using OnDisconnectFunction = std::function<void()>;
-using OnMessageFunction = std::function<void(Packet&)>;
+    using OnConnectFunction = std::function<void()>;
+    using OnDisconnectFunction = std::function<void()>;
+    using OnMessageFunction = std::function<void(Packet&)>;
 
 public:
     explicit Client(asio::io_context& context);
@@ -36,10 +34,7 @@ public:
      * @param   ip      The server IP address.
      * @param   port    The server port.
      */
-    void connect(
-        const std::string& ip,
-        unsigned short port
-    );
+    void connect(const std::string& ip, unsigned short port);
 
     /**
      * @brief   Quick helper to send a user-defined Packet to the server.
@@ -64,10 +59,7 @@ public:
     [[nodiscard]] Dispatcher& getPacketDispatcher() { return this->_packetDispatcher; }
 
 protected:
-    void onReceive(
-        const udp::endpoint& sender,
-        std::shared_ptr<ByteBuffer> data
-    ) override;
+    void onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> data) override;
 
 private:
     udp::endpoint _serverEndpoint;
@@ -95,17 +87,12 @@ private:
     {
         packet::verifyPacketData<T>();
 
-        LOG_DEBUG(
-            "Client sending Packet #{} {}...",
-            T::kId,
-            packet::getName<T>()
-        );
+        LOG_DEBUG("Client sending Packet #{} {}...", T::kId, packet::getName<T>());
 
         Packet packetToSend(T::kId, packet::getFlag<T>());
         packetToSend << packetData;
         _serverSession->send(packetToSend);
     }
-
 };
 
-}
+}  // namespace rtnt::core

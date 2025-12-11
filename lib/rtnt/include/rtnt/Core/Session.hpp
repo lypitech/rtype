@@ -1,12 +1,11 @@
 #pragma once
 
-#include <chrono>
 #include <asio/ip/udp.hpp>
+#include <chrono>
 
 #include "Packet.hpp"
 
-namespace rtnt::core
-{
+namespace rtnt::core {
 
 using asio::ip::udp;
 using namespace std::chrono;
@@ -22,14 +21,10 @@ using namespace std::chrono;
  */
 class Session
 {
-
-using SendToPeerFunction = std::function<void(std::shared_ptr<ByteBuffer>)>;
+    using SendToPeerFunction = std::function<void(std::shared_ptr<ByteBuffer>)>;
 
 public:
-    explicit Session(
-        udp::endpoint endpoint,
-        SendToPeerFunction sendToPeerFunction
-    );
+    explicit Session(udp::endpoint endpoint, SendToPeerFunction sendToPeerFunction);
 
     /**
      * @brief   Processes incoming raw data and attempts to construct a valid Packet.
@@ -45,10 +40,7 @@ public:
      * @return  @code false@endcode if the packet is either random internet noise, coming from an outdated Peer,
      * corrupted or invalid.
      */
-    bool handleIncoming(
-        std::shared_ptr<ByteBuffer> rawData,
-        Packet& outPacket
-    );
+    bool handleIncoming(std::shared_ptr<ByteBuffer> rawData, Packet& outPacket);
 
     template <typename T>
     void send(const T& packetData)
@@ -91,4 +83,4 @@ private:
     time_point<steady_clock> _lastSeen;
 };
 
-}
+}  // namespace rtnt::core
