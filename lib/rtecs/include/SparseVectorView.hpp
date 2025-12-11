@@ -8,11 +8,11 @@ namespace rtecs {
 template <typename Key, typename T>
 class SparseVectorView
 {
-   private:
+private:
     std::unordered_map<Key, size_t> _map;
     std::vector<T> _vector;
 
-   public:
+public:
     explicit SparseVectorView() = default;
     ~SparseVectorView() = default;
 
