@@ -431,18 +431,14 @@ public:
         return *this << data;
     }
 
-    void _internal_setPayload(std::vector<uint8_t>&& data)
-    {
-        _buffer = std::move(data);
-        _readPosition = 0;
-    }
-
     [[nodiscard]] uint16_t getId() const { return _messageId; }
     [[nodiscard]] packet::Flag getReliability() const { return _flag; }
     [[nodiscard]] uint8_t getChannel() const { return _channelId; }
     [[nodiscard]] const std::vector<uint8_t>& getPayload() const { return _buffer; }
 
 private:
+    friend class Session;
+
     // Metadata
     uint16_t _messageId;
     packet::Flag _flag;
@@ -451,6 +447,12 @@ private:
     // Data
     ByteBuffer _buffer;
     size_t _readPosition = 0;
+
+    void _internal_setPayload(std::vector<uint8_t>&& data)
+    {
+        _buffer = std::move(data);
+        _readPosition = 0;
+    }
 
     /**
      * @brief   Pushes raw data to the buffer
