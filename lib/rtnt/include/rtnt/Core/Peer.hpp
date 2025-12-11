@@ -64,7 +64,7 @@ public:
     {}
 
     /**
-     * @brief   Starts the asynchronous receive() loop.
+     * @brief   Starts the asynchronous @code receive@endcode loop.
      * @note    Requires the associated `io_context` to be running.
      */
     void start() { receive(); }

@@ -45,14 +45,22 @@ namespace packet
 
         struct Result;
 
+        /**
+         * @enum    packet::parsing::Error
+         * @brief   Errors that can occur during Header parsing.
+         */
         enum class Error : uint8_t
         {
-            kNone = 0x0,            ///< a
-            kDataTooSmall,          ///< a
-            kProtocolMismatch,      ///< a
-            kPayloadSizeMismatch,   ///< a
+            kNone = 0x0,            ///< No error during parsing.
+            kDataTooSmall,          ///< Data is too small to contain a RTNT header.
+            kProtocolMismatch,      ///< Protocol ID received does not match local RTNT protocol ID.
+            kPayloadSizeMismatch,   ///< Corrupted packet: Payload size does not match the one written in the header.
         };
 
+        /**
+         * @param   error   Error
+         * @return  Converted string
+         */
         inline std::string_view to_string(Error error)
         {
             switch (error) {
@@ -120,6 +128,14 @@ namespace packet
             checksum            = ntohl(checksum);
         }
 
+        /**
+         * @brief   Tries to parse a
+         * @param   data    Raw buffer data
+         * @return  A @code parsing::Result@endcode instance with details in it.
+         *          If an error occurred during parsing, @code parsing::Result::header@endcode will be set to
+         *          @code std::nullopt@endcode and @code parsing::Result::header@endcode will be set to something
+         *          different from @code parsing::Error::kNone@endcode.
+         */
         static parsing::Result parse(const ByteBuffer& data);
     };
     #pragma pack(pop)
@@ -127,14 +143,34 @@ namespace packet
     namespace parsing
     {
 
+        /**
+         * @struct  Result
+         * @brief   Container for Header parsing result.
+         *
+         * Used for Header parsing, this class allows
+         */
         struct Result final
         {
             std::optional<Header> header;
             Error error;
 
+            /**
+             * @return  @code true@endcode if parsing successfully performed
+             */
             explicit operator bool() const { return error == Error::kNone; }
 
+            /**
+             * @brief   Constructs a Result for a successful parsing.
+             * @param   header  Valid header to put in the result
+             * @return  Successful result
+             */
             static Result success(Header header) { return { header, Error::kNone }; }
+
+            /**
+             * @brief   Constructs a Result for a failed parsing.
+             * @param   error   Error that occurred during parsing
+             * @return  Failed result
+             */
             static Result failure(Error error)   { return { std::nullopt, error }; }
         };
 
@@ -153,6 +189,11 @@ namespace packet
         Reader& operator&(T& data);
     };
 
+    /**
+     * @tparam  T   Packet struct
+     * @return  The name that is contained in the packet struct.
+     *          If there is no name, @code UNKNOWN_PACKET_NAME@endcode will be returned.
+     */
     template <typename T>
     constexpr std::string_view getName()
     {
@@ -163,6 +204,11 @@ namespace packet
         }
     }
 
+    /**
+     * @tparam  T   Packet struct
+     * @return  The flag that is contained in the packet struct.
+     *          Default to @code Flag::kUnreliable@endcode.
+     */
     template <typename T>
     constexpr Flag getFlag()
     {
@@ -173,6 +219,18 @@ namespace packet
         }
     }
 
+    /**
+     * @brief   Verifies if a given struct has the layout of a packet.
+     *
+     * This function checks if:
+     * - Given typename is a struct or a class.
+     * - There is a @code kId@endcode field in the struct.
+     * - The @code kId@endcode field is a @code uint16_t@endcode (@code Id@endcode)
+     *
+     * It also checks if a name is present in the given struct. If not, a warning will be logged.
+     *
+     * @tparam  T   Packet struct to verify
+     */
     template <typename T>
     void verifyPacketData()
     {
@@ -204,6 +262,14 @@ namespace packet
         }
     }
 
+    /**
+     * @brief   Verifies if a given struct has the layout of a user-defined packet.
+     *
+     * It acts the same as @code verifyPacketData@endcode, but also checks for the ID.
+     * If the ID is less than 128 (0-128 is reserved to internal packets), a compilation error will be thrown.
+     *
+     * @tparam  T   Packet struct to verify
+     */
     template <typename T>
     void verifyUserPacketData()
     {
@@ -215,6 +281,15 @@ namespace packet
         );
     }
 
+    /**
+     * @brief   Verifies if a given struct has the layout of a user-defined packet.
+     *
+     * It acts the same as @code verifyPacketData@endcode, but also checks for the ID.
+     * If the ID is equal or greater than 128 (128-65535 is reserved to user-defined packets), a compilation error will
+     * be thrown.
+     *
+     * @tparam  T   Packet struct to verify
+     */
     template <typename T>
     void verifyInternalPacketData()
     {
@@ -226,6 +301,11 @@ namespace packet
         );
     }
 
+    /**
+     * @brief   Verifies if a given struct has an integrated callback.
+     *
+     * @tparam  T   Packet struct to verify
+     */
     template <typename T>
     void verifyPacketIntegratedCallback()
     {
@@ -235,6 +315,11 @@ namespace packet
         );
     }
 
+    /**
+     * @tparam  T       Packet struct to compare the ByteBuffer to
+     * @param   rawData Buffer of raw bytes to compare
+     * @return  @code true@endcode if given ByteBuffer contains a valid T header
+     */
     template <typename T>
     bool is(const ByteBuffer& rawData)
     {
@@ -374,7 +459,7 @@ private:
      */
     void append(
         const void* data,
-        size_t size
+        const size_t size
     )
     {
         const auto* ptr = static_cast<const uint8_t*>(data);
