@@ -4,6 +4,8 @@
 
 namespace packet {
 
+using packetId = rtnt::core::packet::Id;
+
 #pragma pack(push, 1)
 /**
  * @struct packet::Start
@@ -13,7 +15,7 @@ namespace packet {
  */
 struct Start
 {
-    static constexpr auto kId = type::Client::kStart;
+    static constexpr packetId kId = static_cast<packetId>(type::Client::kStart);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr auto kName = "START";
 

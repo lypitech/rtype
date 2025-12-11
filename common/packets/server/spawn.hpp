@@ -4,8 +4,9 @@
 
 namespace packet {
 
-// Changing this is considered breaking changes.
 // TODO: add entity attributes.
+using packetId = rtnt::core::packet::Id;
+
 #pragma pack(push, 1)
 /**
  * @struct packet::Spawn
@@ -15,7 +16,7 @@ namespace packet {
  */
 struct Spawn
 {
-    static constexpr auto kId = type::Server::kSpawn;
+    static constexpr auto kId = static_cast<packetId>(type::Server::kSpawn);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr auto kName = "SPAWN";
 

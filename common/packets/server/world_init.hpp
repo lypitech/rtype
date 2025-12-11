@@ -4,7 +4,8 @@
 
 namespace packet {
 
-// Changing this is considered breaking changes.
+using packetId = rtnt::core::packet::Id;
+
 #pragma pack(push, 1)
 /**
  * @struct packet::WorldInit
@@ -14,7 +15,7 @@ namespace packet {
  */
 struct WorldInit
 {
-    static constexpr auto kId = type::Server::kWorldInit;
+    static constexpr auto kId = static_cast<packetId>(type::Server::kWorldInit);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr auto kName = "WORLD_INIT";
 
