@@ -17,7 +17,7 @@ namespace cli_parser {
  * This class is mainly there for the value to be cast to the wanted type.
  */
 class Flag {
-public:
+   public:
     /**
      * @brief Creates an instance of the class Flag and recover its type.
      * @warning This class is not supposed to be instantiated by the user.
@@ -61,11 +61,16 @@ public:
      */
     bool operator!=(const std::string& other) const;
 
-private:
-    void detectType();
+   private:
     std::string _flag;
     std::string _value;
     std::type_index _type = std::type_index(typeid(std::string));
+
+    /**
+     * @brief Detects the type of this flag and stores it in member @code
+     * _type@endcode
+     */
+    void detectType();
 };
 
 }  // namespace cli_parser
