@@ -8,11 +8,12 @@ project(r-type_client
 )
 
 # --- Options ---
-if(PROJECT_IS_TOP_LEVEL)
-    message(WARNING "Building Client standalone, adding Shuvlog and rtnt manually")
+if (PROJECT_IS_TOP_LEVEL)
+    message(WARNING "Building Client standalone, adding Shuvlog, cli_parsing and rtnt manually")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/shuvlog shuvlog)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/cli_parser cli_parser)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rtnt rtnt)
-endif()
+endif ()
 
 # --- Dependencies ---
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
@@ -27,11 +28,13 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common
 )
 
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME} PRIVATE
     rtnt
+    cli_parser
 )
 
 # --- Output ---
@@ -54,9 +57,9 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 
 if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4 /permissive-)
-else()
+else ()
     target_compile_options(${PROJECT_NAME} PRIVATE
         -Wall -Wextra -Werror -pedantic
         -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=.
     )
-endif()
+endif ()
