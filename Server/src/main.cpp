@@ -5,7 +5,7 @@
 #include "logger/Logger.h"
 #include "logger/Sinks/LogFileSink.h"
 #include "logger/Thread.h"
-#include "rtnt/Core/Server.hpp"
+#include "rtnt/Core/server.hpp"
 
 int main(const int argc, const char* argv[])
 {
