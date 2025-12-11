@@ -68,7 +68,7 @@ public:
     )
     {
         packet::verifyUserPacketData<T>();
-        internal_sendTo(session, packetData);
+        _internal_sendTo(session, packetData);
     }
 
     // todo: maybe a broadcast function to send a packet to everyone?
@@ -91,7 +91,7 @@ private:
     OnMessageFunction _onMessage;
 
     template <typename T>
-    void internal_sendTo(
+    void _internal_sendTo(
         const std::shared_ptr<Session>& session,
         const T& packetData
     )

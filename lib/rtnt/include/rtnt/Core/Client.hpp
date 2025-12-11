@@ -80,7 +80,10 @@ private:
     OnDisconnectFunction _onDisconnect;
     OnMessageFunction _onMessage;
 
-    void internal_registerInternalPacketHandlers();
+    /**
+     * @brief   Binds all internal packet handlers
+     */
+    void _internal_registerInternalPacketHandlers();
 
     /**
      * @brief   Sends a packet to the connected server.
@@ -88,7 +91,7 @@ private:
      * @param   packetData  Packet to send
      */
     template <typename T>
-    void internal_send(const T& packetData)
+    void _internal_send(const T& packetData)
     {
         packet::verifyPacketData<T>();
 
