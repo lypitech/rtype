@@ -14,7 +14,7 @@ Client::Client(asio::io_context &context)
 
 void Client::connect(
     const std::string &ip,
-    unsigned short port
+    const unsigned short port
 )
 {
     if (!_onConnect || !_onDisconnect || !_onMessage) {
