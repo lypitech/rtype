@@ -11,11 +11,11 @@ namespace cli_parser {
  * @class   Parser
  * @brief   A simple command line interface parser.
  *
- * The parser permits to access to the parameter given to the binary when starting.
+ * The parser permits to access to the parameter given to the binary when
+ * starting.
  */
 class Parser {
-public:
-
+   public:
     /**
      * @brief Use the basic argument of the function main.
      *
@@ -45,7 +45,7 @@ public:
     [[nodiscard]]
     bool hasFlag(const std::string& flag) const;
 
-private:
+   private:
     std::vector<Flag> _flags{};
 };
 
