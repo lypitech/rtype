@@ -1,7 +1,7 @@
-#include "rtnt/Core/Client.hpp"
+#include "rtnt/Core/client.hpp"
 
 #include "logger/Logger.h"
-#include "rtnt/Core/Packets/Connect.hpp"
+#include "rtnt/Core/Packets/connect.hpp"
 
 namespace rtnt::core {
 

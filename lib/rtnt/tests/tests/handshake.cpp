@@ -1,14 +1,16 @@
+#include <gtest/gtest.h>
+
+#include <asio/io_context.hpp>
 #include <future>
 #include <thread>
-#include <gtest/gtest.h>
-#include <asio/io_context.hpp>
 
 #include "logger/Logger.h"
 #include "logger/Thread.h"
-#include "rtnt/Core/Client.hpp"
-#include "rtnt/Core/Server.hpp"
+#include "rtnt/Core/client.hpp"
+#include "rtnt/Core/server.hpp"
 
-TEST(handshake, basic) {
+TEST(handshake, basic)
+{
     asio::io_context context;
     auto workGuard = asio::make_work_guard(context);
 
@@ -50,9 +52,7 @@ TEST(handshake, basic) {
         promise.set_value(true);
     });
 
-    client.onDisconnect([]() {
-        LOG_DEBUG("Client disconnected");
-    });
+    client.onDisconnect([]() { LOG_DEBUG("Client disconnected"); });
 
     client.onMessage([](rtnt::core::Packet&) {});
 

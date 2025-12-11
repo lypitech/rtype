@@ -3,7 +3,7 @@
 #include <asio/ip/udp.hpp>
 #include <chrono>
 
-#include "Packet.hpp"
+#include "packet.hpp"
 
 namespace rtnt::core {
 
