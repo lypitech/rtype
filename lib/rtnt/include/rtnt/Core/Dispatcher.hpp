@@ -58,16 +58,7 @@ public:
     /**
      * @brief   Routes an incoming packet to the correct handler.
      */
-    void dispatch(const std::shared_ptr<Session>& session, Packet& packet)
-    {
-        auto it = _handlers.find(packet.getId());
-
-        if (it != _handlers.end()) {
-            it->second(session, packet);
-        } else {
-            LOG_ERR("Trying to dispatch an unknown packet (#{}).", packet.getId()); // todo: better logging
-        }
-    }
+    void dispatch(const std::shared_ptr<Session>& session, Packet& packet);
 
 private:
     friend class Server;
