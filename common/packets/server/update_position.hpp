@@ -4,7 +4,8 @@
 
 namespace packet {
 
-// Changing this is considered breaking changes.
+using packetId = rtnt::core::packet::Id;
+
 #pragma pack(push, 1)
 /**
  * @struct packet::UpdatePosition
@@ -14,7 +15,7 @@ namespace packet {
  */
 struct UpdatePosition
 {
-    static constexpr auto kId = type::Server::kUpdatePosition;
+    static constexpr auto kId = static_cast<packetId>(type::Server::kUpdatePosition);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr auto kName = "UPDATE_POSITION";
 

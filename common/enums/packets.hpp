@@ -8,7 +8,7 @@ namespace packet::type {
  *
  * @brief The id of the packet sent by the client.
  */
-enum class Client : uint16_t
+enum class Client : rtnt::core::packet::Id
 {
     kJoin = 0x128,  ///< Ask to join a game.
     kStart,         ///< Ask to start a game.
@@ -20,7 +20,7 @@ enum class Client : uint16_t
  *
  * @brief The id of the packet sent by the server.
  */
-enum class Server : uint16_t
+enum class Server : rtnt::core::packet::Id
 {
     kJoinAck = 0x150,    ///< Notify the status of a join request.
     kPlayerJoin,         ///< Notify that a player joined the lobby.

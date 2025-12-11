@@ -4,6 +4,8 @@
 
 namespace packet {
 
+using packetId = rtnt::core::packet::Id;
+
 #pragma pack(push, 1)
 /**
  * @struct packet::PlayerJoin
@@ -13,7 +15,7 @@ namespace packet {
  */
 struct PlayerJoin
 {
-    static constexpr auto kId = type::Server::kPlayerJoin;
+    static constexpr auto kId = static_cast<packetId>(type::Server::kPlayerJoin);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr auto kName = "PLAYER_JOIN";
 

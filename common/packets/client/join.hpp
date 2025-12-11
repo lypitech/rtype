@@ -5,6 +5,8 @@
 
 namespace packet {
 
+using packetId = rtnt::core::packet::Id;
+
 #pragma pack(push, 1)  // forcing strict alignment, no compiler padding
 /**
  * @struct packet::Join
@@ -14,9 +16,9 @@ namespace packet {
  */
 struct Join
 {
-    static constexpr auto kId = type::Client::kJoin;
-    static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr auto kName = "JOIN";
+    static constexpr packetId kId = static_cast<packetId>(type::Client::kJoin);
+    static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
 
     std::string username;  ///< The username of the joining player.
     uint8_t room_id;       ///< The id of the room to join. 0 for any.
