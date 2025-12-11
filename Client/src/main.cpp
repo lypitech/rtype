@@ -1,6 +1,12 @@
+#include <asio.hpp>
+
+#include "callbacks/callbacks.hpp"
 #include "cli_parser.hpp"
 #include "logger/Logger.h"
 #include "logger/Sinks/LogFileSink.h"
+#include "logger/Thread.h"
+#include "packets/client/join.hpp"
+#include "rtnt/Core/Client.hpp"
 
 int main(const int argc, const char* argv[])
 {
@@ -18,6 +24,24 @@ int main(const int argc, const char* argv[])
         return 0;
     }
 
-    LOG_INFO("hello from client");
+    asio::io_context con;
+    rtnt::core::Client client(con);
+
+    client.onConnect(rt::callback::onConnect);
+    client.onDisconnect(rt::callback::onDisconnect);
+    client.onMessage(rt::callback::onMessage);
+
+    client.connect("127.0.0.1", 4242);
+
+    std::thread ioThread([&con]() {
+        logger::setThreadLabel("IoThread");
+        LOG_DEBUG("Running context");
+        con.run();
+    });
+
+    if (ioThread.joinable()) {
+        ioThread.join();
+    }
+    LOG_INFO("Shutting down client...");
     return 0;
 }
