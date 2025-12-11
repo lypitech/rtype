@@ -18,10 +18,15 @@ namespace core::packet {
 
 static constexpr std::string_view UNKNOWN_PACKET_NAME = "__rtnt_UNKNOWN";
 
+/**
+ * @brief   Internal packet IDs
+ * @warning Modifying the order or changing any assigned value is considered as a breaking change.
+ */
 enum class SystemMessageId : uint16_t
 {
-    kConnect = 0x01,  /// @warning   Changing this value is considered as a breaking change.
+    kConnect = 0x01,
     kConnectAck,
+    kDisconnect,
     kPing,
     kPong,
 };
