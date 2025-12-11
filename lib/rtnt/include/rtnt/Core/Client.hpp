@@ -50,7 +50,7 @@ public:
     void send(const T& packetData)
     {
         packet::verifyUserPacketData<T>();
-        internal_send<T>(packetData);
+        _internal_send<T>(packetData);
     }
 
     /**
