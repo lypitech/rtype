@@ -66,6 +66,7 @@ void Client::onReceive(
 )
 {
     if (sender != _serverEndpoint || !_serverSession) {
+        LOG_WARN("Received data that doesn't come from the remote server. Probably random internet noise, skipping...");
         return;
     }
 
