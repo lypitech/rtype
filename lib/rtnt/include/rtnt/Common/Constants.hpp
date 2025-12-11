@@ -8,9 +8,7 @@ namespace rtnt
 {
 
 /// @warning    Changing this is considered as a breaking change.
-///
-/// todo: Prone to change
-static constexpr uint16_t PROTOCOL_ID = 0xfeed;
+static constexpr uint16_t PROTOCOL_ID = 0x1801;
 
 /// @warning    Changing this is considered as a breaking change.
 ///
