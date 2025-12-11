@@ -22,13 +22,13 @@ find_package(asio REQUIRED)
 
 # --- Sources / Headers ---
 add_library(${PROJECT_NAME} STATIC
-    src/Core/Session.cpp
-    src/Core/Packet.cpp
-    src/Core/Server.cpp
-    src/Core/Client.cpp
-    src/Core/Peer.cpp
-    src/Common/Utils.cpp
-    src/Core/Dispatcher.cpp
+    src/Core/session.cpp
+    src/Core/packet.cpp
+    src/Core/server.cpp
+    src/Core/client.cpp
+    src/Core/peer.cpp
+    src/Common/utils.cpp
+    src/Core/dispatcher.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

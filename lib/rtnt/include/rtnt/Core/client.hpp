@@ -1,9 +1,9 @@
 #pragma once
 
 #include "dispatcher.hpp"
+#include "logger/Logger.h"
 #include "peer.hpp"
 #include "session.hpp"
-#include "logger/Logger.h"
 
 namespace rtnt::core {
 
