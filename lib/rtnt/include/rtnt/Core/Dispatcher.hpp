@@ -51,7 +51,7 @@ public:
     template <typename T>
     void bind()
     {
-        packet::verifyInternalPacketData<T>();
+        packet::verifyPacketIntegratedCallback<T>();
         bind<T>(T::onReceive);
     }
 
@@ -78,14 +78,14 @@ private:
     template <typename T>
     void _internal_bind(std::function<void(const std::shared_ptr<Session>&, const T&)> callback)
     {
-        packet::verifyPacketData<T>();
+        packet::verifyInternalPacketData<T>();
         registerHandler<T>(callback);
     }
 
     template <typename T>
     void _internal_bind()
     {
-        packet::verifyInternalPacketData<T>();
+        packet::verifyPacketIntegratedCallback<T>();
         _internal_bind<T>(T::onReceive);
     }
 
