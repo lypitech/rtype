@@ -17,7 +17,7 @@ struct Start
 {
     static constexpr packetId kId = static_cast<packetId>(type::Client::kStart);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
-    static constexpr auto kName = "START";
+    static constexpr std::string kName = "START";
 
     template <typename Archive>
     void serialize(Archive& ar)

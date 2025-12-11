@@ -18,7 +18,7 @@ struct Spawn
 {
     static constexpr auto kId = static_cast<packetId>(type::Server::kSpawn);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
-    static constexpr auto kName = "SPAWN";
+    static constexpr std::string kName = "SPAWN";
 
     uint32_t id;  ///< The id of the spawned entity.
 

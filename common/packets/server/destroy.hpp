@@ -15,9 +15,9 @@ using packetId = rtnt::core::packet::Id;
  */
 struct Destroy
 {
-    static constexpr packetId kId = static_cast<packetId>(type::Server::kDestroy);
+    static constexpr auto kId = static_cast<packetId>(type::Server::kDestroy);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
-    static constexpr auto kName = "DESTROY";
+    static constexpr std::string kName = "DESTROY";
 
     uint32_t id;             ///< The id of the destroyed entity.
     uint32_t earned_points;  ///< The points earned for this destruction.

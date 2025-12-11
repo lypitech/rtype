@@ -17,7 +17,7 @@ struct WorldInit
 {
     static constexpr auto kId = static_cast<packetId>(type::Server::kWorldInit);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
-    static constexpr auto kName = "WORLD_INIT";
+    static constexpr std::string kName = "WORLD_INIT";
 
     uint16_t stage;                     ///< The current started stage.
     uint32_t size;                      ///< The number of entities to create at initialization.

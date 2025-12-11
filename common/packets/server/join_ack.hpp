@@ -17,7 +17,7 @@ struct JoinAck
 {
     static constexpr auto kId = static_cast<packetId>(type::Server::kJoinAck);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
-    static constexpr auto kName = "JOIN_ACK";
+    static constexpr std::string kName = "JOIN_ACK";
 
     uint32_t id;     ///< The id of the entity assigned to the player.
     uint8_t status;  ///< The status of the request, a boolean.

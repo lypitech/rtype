@@ -18,7 +18,7 @@ struct UpdateGameState
 {
     static constexpr auto kId = static_cast<packetId>(type::Server::kUpdateGameState);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
-    static constexpr auto kName = "UPDATE_GAME_STATE";
+    static constexpr std::string kName = "UPDATE_GAME_STATE";
 
     uint8_t gameState;  ///< The current state of the game.
 
