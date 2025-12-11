@@ -7,8 +7,7 @@
 
 static constexpr size_t BUFFER_SIZE = USHRT_MAX;
 
-namespace rtnt::core
-{
+namespace rtnt::core {
 
 using asio::ip::udp;
 
@@ -38,15 +37,10 @@ public:
      * @param   context Asio I/O context
      * @param   port    Port the server will listen to
      */
-    explicit Peer(
-        asio::io_context& context,
-        unsigned short port
-    )   : _context(context)
-        , _socket(
-            context,
-            udp::endpoint(udp::v4(), port)
-        )
-    {}
+    explicit Peer(asio::io_context& context, unsigned short port)
+        : _context(context), _socket(context, udp::endpoint(udp::v4(), port))
+    {
+    }
 
     /**
      * @brief   Client mode.
@@ -56,12 +50,9 @@ public:
      * @param   context Asio I/O context
      */
     explicit Peer(asio::io_context& context)
-        : _context(context)
-        , _socket(
-            context,
-            udp::endpoint(udp::v4(), 0)
-        )
-    {}
+        : _context(context), _socket(context, udp::endpoint(udp::v4(), 0))
+    {
+    }
 
     /**
      * @brief   Starts the asynchronous @code receive@endcode loop.
@@ -76,10 +67,7 @@ public:
      * @param   data    Data to send (raw bytes)
      * @note    This is a fire-and-forget operation. No delivery guarantee at this level (managed by RUDP, Session).
      */
-    void sendToTarget(
-        const udp::endpoint& target,
-        std::shared_ptr<ByteBuffer> data
-    );
+    void sendToTarget(const udp::endpoint& target, std::shared_ptr<ByteBuffer> data);
 
     /**
      * @return  The local port the Peer is bound to.
@@ -92,10 +80,7 @@ protected:
      * @param   sender  The endpoint that sent the data
      * @param   data    The raw data received (raw bytes)
      */
-    virtual void onReceive(
-        const udp::endpoint& sender,
-        std::shared_ptr<ByteBuffer> data
-    ) = 0;
+    virtual void onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> data) = 0;
 
 private:
     asio::io_context& _context;
@@ -106,4 +91,4 @@ private:
     void receive();
 };
 
-}
+}  // namespace rtnt::core

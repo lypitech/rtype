@@ -5,13 +5,11 @@
 #include "rtnt/Core/Packet.hpp"
 #include "rtnt/Core/Session.hpp"
 
-namespace rtnt::core::packet::internal
-{
+namespace rtnt::core::packet::internal {
 
 struct Connect
 {
-
-    static constexpr Id   kId   = static_cast<uint16_t>(SystemMessageId::kConnect);
+    static constexpr Id kId = static_cast<uint16_t>(SystemMessageId::kConnect);
     static constexpr Flag kFlag = Flag::kReliable;
     static constexpr Name kName = INTERNAL_PACKET_NAME("CONNECT");
 
@@ -23,12 +21,11 @@ struct Connect
     static void onReceive(const std::shared_ptr<Session>& session, const Connect& /*packet*/)
     {
         const ConnectAck response{
-            .assignedSessionId = 88 // todo: fix magic number
+            .assignedSessionId = 88  // todo: fix magic number
         };
 
         session->send(response);
     }
-
 };
 
-}
+}  // namespace rtnt::core::packet::internal

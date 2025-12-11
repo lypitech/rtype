@@ -1,12 +1,9 @@
 #include "rtnt/Common/Utils.hpp"
 
-namespace rtnt
-{
+namespace rtnt {
 
-std::string byteBufferToHexString(
-    const core::ByteBuffer::const_iterator begin,
-    const core::ByteBuffer::const_iterator end
-)
+std::string byteBufferToHexString(const core::ByteBuffer::const_iterator begin,
+                                  const core::ByteBuffer::const_iterator end)
 {
     const size_t size = std::distance(begin, end);
 
@@ -22,7 +19,9 @@ std::string byteBufferToHexString(
         if (it != begin) {
             result += ' ';
         }
-        result += std::format("{:02X}", *it); // todo: optimization: manual hex conversion instead of calling performance-heavy std::format.
+        result += std::format(
+            "{:02X}",
+            *it);  // todo: optimization: manual hex conversion instead of calling performance-heavy std::format.
     }
     result += ']';
 
@@ -34,4 +33,4 @@ std::string byteBufferToHexString(const core::ByteBuffer &buffer)
     return byteBufferToHexString(buffer.begin(), buffer.end());
 }
 
-}
+}  // namespace rtnt

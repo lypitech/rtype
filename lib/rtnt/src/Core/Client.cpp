@@ -1,21 +1,17 @@
 #include "rtnt/Core/Client.hpp"
-#include "rtnt/Core/Packets/Connect.hpp"
 
 #include "logger/Logger.h"
+#include "rtnt/Core/Packets/Connect.hpp"
 
-namespace rtnt::core
-{
+namespace rtnt::core {
 
-Client::Client(asio::io_context &context)
+Client::Client(asio::io_context& context)
     : Peer(context)
 {
     _internal_registerInternalPacketHandlers();
 }
 
-void Client::connect(
-    const std::string &ip,
-    const unsigned short port
-)
+void Client::connect(const std::string& ip, const unsigned short port)
 {
     if (!_onConnect || !_onDisconnect || !_onMessage) {
         LOG_CRIT("Make sure you set the callback functions before trying to connect.");
@@ -27,12 +23,9 @@ void Client::connect(
     const asio::ip::address address = asio::ip::make_address(ip);
 
     _serverEndpoint = udp::endpoint(address, port);
-    _serverSession = std::make_shared<Session>(
-        _serverEndpoint,
-        [this](std::shared_ptr<ByteBuffer> rawBytes) {
-            this->sendToTarget(_serverEndpoint, rawBytes);
-        }
-    );
+    _serverSession = std::make_shared<Session>(_serverEndpoint, [this](std::shared_ptr<ByteBuffer> rawBytes) {
+        this->sendToTarget(_serverEndpoint, rawBytes);
+    });
     start();
 
     packet::internal::Connect packet;
@@ -60,10 +53,7 @@ void Client::update(milliseconds timeout)
     }
 }
 
-void Client::onReceive(
-    const udp::endpoint& sender,
-    std::shared_ptr<ByteBuffer> data
-)
+void Client::onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> data)
 {
     if (sender != _serverEndpoint || !_serverSession) {
         LOG_WARN("Received data that doesn't come from the remote server. Probably random internet noise, skipping...");
@@ -91,8 +81,7 @@ void Client::_internal_registerInternalPacketHandlers()
             if (_onConnect) {
                 _onConnect();
             }
-        }
-    );
+        });
 }
 
-}
+}  // namespace rtnt::core
