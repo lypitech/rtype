@@ -6,8 +6,9 @@
 
 namespace rteng::graphics {
 
-Renderer::Renderer(int screenWidth, int screenHeight, const std::string& title, int fps)
+void Renderer::init(int screenWidth, int screenHeight, const std::string& title, int fps)
 {
+    _isInit = true;
     InitWindow(screenWidth, screenHeight, title.c_str());
     SetTargetFPS(fps);
 }
@@ -21,11 +22,16 @@ Renderer::~Renderer()
         UnloadTexture(*texture);
         texture.reset();
     }
-    CloseWindow();
+    if (_isInit) {
+        CloseWindow();
+    }
 }
 
 void Renderer::drawTexture(int textureId, const Rect& source, const Rect& dest, float rotation)
 {
+    if (!_isInit) {
+        return;
+    }
     if (!_textures[textureId]) {
         return;
     }
@@ -39,16 +45,25 @@ void Renderer::drawTexture(int textureId, const Rect& source, const Rect& dest, 
 
 void Renderer::drawRectangle(const Rect& rect, const Color& color)
 {
+    if (!_isInit) {
+        return;
+    }
     DrawRectangle(rect.x, rect.y, rect.width, rect.height, color);
 }
 
 void Renderer::drawText(const std::string& text, int posX, int posY, int fontSize, const Color& color)
 {
+    if (!_isInit) {
+        return;
+    }
     DrawText(text.c_str(), posX, posY, fontSize, color);
 }
 
 std::weak_ptr<Texture2D> Renderer::loadTexture(const std::string& filePath)
 {
+    if (!_isInit) {
+        return {};
+    }
     Texture2D tex = LoadTexture(filePath.c_str());
 
     if (tex.id == 0) {

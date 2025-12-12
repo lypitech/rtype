@@ -19,20 +19,22 @@ struct Rect
 class Renderer
 {
 public:
-    Renderer(int screenWidth, int screenHeight, const std::string& title, int fps = 60);
+    Renderer() = default;
 
+    void init(int screenWidth, int screenHeight, const std::string& title, int fps = 60);
     ~Renderer();
-
-    std::vector<std::shared_ptr<Texture2D>> _textures;
-    int m_nextTextureId = 1;
 
     void drawTexture(int textureId, const Rect& source, const Rect& dest, float rotation);
 
-    static void drawRectangle(const Rect& rect, const Color& color);
+    void drawRectangle(const Rect& rect, const Color& color);
 
-    static void drawText(const std::string& text, int posX, int posY, int fontSize, const Color& color);
+    void drawText(const std::string& text, int posX, int posY, int fontSize, const Color& color);
 
     std::weak_ptr<Texture2D> loadTexture(const std::string& filePath);
+
+private:
+    std::vector<std::shared_ptr<Texture2D>> _textures;
+    bool _isInit{false};
 };
 
 }  // namespace rteng::graphics

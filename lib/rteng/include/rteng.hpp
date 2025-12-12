@@ -1,5 +1,6 @@
 #pragma once
 
+#include <asio.hpp>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,13 +15,20 @@
 // components->monobehaviours
 #include "MonoBehaviour.hpp"
 #include "comp/Behaviour.hpp"
+#include "rtnt/Core/client.hpp"
+#include "rtnt/Core/server.hpp"
 
 namespace rteng {
 
 class GameEngine
 {
 public:
-    GameEngine(int screenWidth, int screenHeight, const std::string& title, int fps = 60);
+    explicit GameEngine(std::string host, unsigned short port);
+    explicit GameEngine(unsigned short port);
+
+    ~GameEngine();
+
+    void init(int screenWidth, int screenHeight, const std::string& title, int fps = 60);
 
     void run();
     void stop() { _isRunning = false; }
@@ -56,7 +64,19 @@ public:
 private:
     graphics::Renderer _renderer;
     std::unique_ptr<rtecs::ECS> _ecs = rtecs::ECS::createWithComponents<comp::Transform, comp::IO, comp::Behaviour>();
+    asio::io_context _context;
+    std::unique_ptr<rtnt::core::Client> _client;
+    std::unique_ptr<rtnt::core::Server> _server;
+    std::string _host{"localhost"};
+    std::unique_ptr<std::thread> _ioThread;
+    unsigned short _port;
+    bool _isClient{true};
+    bool _isInit{false};
     bool _isRunning = false;
+
+    void onConnect();
+    void onDisconnect();
+    void runContext();
 };
 
 }  // namespace rteng
