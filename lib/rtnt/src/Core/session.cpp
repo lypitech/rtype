@@ -93,4 +93,9 @@ void Session::send(Packet& packet)
     }
 }
 
+void Session::disconnect()
+{
+    this->_shouldClose = true;
+}
+
 }  // namespace rtnt::core
