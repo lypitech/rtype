@@ -29,6 +29,7 @@ public:
 
     ~GameEngine();
 
+    void init();
     void init(int screenWidth, int screenHeight, const std::string& title, int fps = 60);
 
     void run();
