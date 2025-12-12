@@ -1,8 +1,6 @@
 #include "rtnt/Core/packet.hpp"
 
-namespace rtnt::core {
-
-namespace packet {
+namespace rtnt::core::packet {
 
 using namespace parsing;
 
@@ -27,38 +25,4 @@ Result Header::parse(const ByteBuffer& data)
     return Result::success(header);
 }
 
-template <typename T>
-Reader& Reader::operator&(T& data)
-{
-    _packet >> data;  // Redirects '&' to Packet's read logic
-    return *this;
-}
-
-}  // namespace packet
-
-/**
- * @brief Global operator to WRITE a custom struct into a packet.
- */
-template <typename T>
-std::enable_if<!std::is_standard_layout<T>::value, Packet&>::type operator<<(Packet& p, const T& data)
-{
-    const_cast<T&>(data).serialize(p);
-    return p;
-}
-
-/**
- * @brief Global operator to READ a custom struct from a packet.
- *
- * @param   p       Packet to read from
- * @param   data    a
- */
-template <typename T>
-std::enable_if<!std::is_standard_layout<T>::value, Packet&>::type operator>>(Packet& p, T& data)
-{
-    packet::Reader reader{p};
-
-    data.serialize(reader);
-    return p;
-}
-
-}  // namespace rtnt::core
+} // namespace rtnt::core::packet
