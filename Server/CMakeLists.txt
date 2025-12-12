@@ -11,7 +11,7 @@ project(r-type_server
 if(PROJECT_IS_TOP_LEVEL)
     message(WARNING "Building Server standalone, adding Shuvlog and rtnt manually")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/shuvlog shuvlog)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rtnt rtnt)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rteng rteng)
 endif()
 
 # --- Sources / Headers ---
@@ -21,11 +21,12 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common
 )
 
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    rtnt
+    rteng
     shuvlog
 )
 
