@@ -16,6 +16,12 @@ class SparseVectorView
     explicit SparseVectorView() = default;
     ~SparseVectorView() = default;
 
+    void emplace(Key key, T value)
+    {
+        _vector.push_back(std::move(value));
+        _map.emplace(key, _vector.size() - 1);
+    }
+
     T &operator[](Key key)
     {
         size_t index = _map.at(key);
