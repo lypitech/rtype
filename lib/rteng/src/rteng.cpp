@@ -113,7 +113,7 @@ void GameEngine::run()
         return;
     }
     _ioThread = std::make_unique<std::thread>(std::bind(&GameEngine::runContext, this));
-    while (_isRunning && (!_isClient || WindowShouldClose())) {
+    while (_isRunning && (!_isClient || !WindowShouldClose())) {
         // 1. Input (Input System)
         // 2. Update (Update System)
         // 3. ECS
