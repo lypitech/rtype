@@ -36,6 +36,8 @@ public:
      */
     void connect(const std::string& ip, unsigned short port);
 
+    void disconnect();
+
     /**
      * @brief   Quick helper to send a user-defined Packet to the server.
      * @tparam  T           Type of user-defined packet (automatically resolved with variable)

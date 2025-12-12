@@ -2,6 +2,7 @@
 
 #include "logger/Logger.h"
 #include "rtnt/Core/Packets/connect.hpp"
+#include "rtnt/Core/Packets/disconnect.hpp"
 
 namespace rtnt::core {
 
@@ -36,6 +37,20 @@ void Client::connect(const std::string& ip, const unsigned short port)
 
     packet::internal::Connect packet;
     _internal_send(packet);
+}
+
+void Client::disconnect()
+{
+    if (!_isConnected) {
+        LOG_WARN("Trying to disconnect while not connected.");
+        return;
+    }
+
+    packet::internal::Disconnect packet;
+    _internal_send(packet);
+    stop();
+    _serverSession.reset();
+    _isConnected = false;
 }
 
 void Client::update(milliseconds timeout)
