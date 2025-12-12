@@ -5,12 +5,15 @@
 
 #include "ECS.hpp"
 #include "Renderer.hpp"
+
+// components
+#include "comp/IO.hpp"
 #include "comp/Transform.hpp"
 
 namespace rteng {
 class GameEngine
 {
-   public:
+public:
     GameEngine(int screenWidth, int screenHeight, const std::string& title, int fps = 60);
 
     void run();
@@ -18,9 +21,9 @@ class GameEngine
     // Rendering System
     // Event System
 
-   private:
+private:
     graphics::Renderer _renderer;
-    std::unique_ptr<rtecs::ECS> _ecs = rtecs::ECS::createWithComponents<Transform>();
+    std::unique_ptr<rtecs::ECS> _ecs = rtecs::ECS::createWithComponents<comp::Transform, comp::IO>();
     bool _isRunning = false;
 };
 }  // namespace rteng
