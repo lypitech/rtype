@@ -24,9 +24,6 @@ find_package(imgui REQUIRED)
 # --- Sources / Headers ---
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/callbacks/on_connect.cpp
-    src/callbacks/on_disconnect.cpp
-    src/callbacks/on_message.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
