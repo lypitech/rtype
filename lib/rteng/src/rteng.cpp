@@ -12,21 +12,21 @@ GameEngine::GameEngine(int screenWidth, int screenHeight, const std::string &tit
 
 void GameEngine::run()
 {
-    while (!_renderer.windowShouldClose() && _isRunning) {
+    while (!WindowShouldClose() && _isRunning) {
         // 1. Input (Input System)
         // 2. Update (Update System)
         // 3. ECS
 
-        _renderer.beginDrawing();
-        _renderer.clearBackground();
+        BeginDrawing();
+        ClearBackground(WHITE);
 
         _ecs->applyAllSystems();
 
         // 4. Render (Rendering System)
 
-        _renderer.drawText("Hello R-Type Engine!", 190, 200, 20, graphics::LIGHTGRAY);
+        _renderer.drawText("Hello R-Type Engine!", 190, 200, 20, LIGHTGRAY);
 
-        _renderer.endDrawing();
+        EndDrawing();
         // 5. Timer (Timer System)
     }
 }
