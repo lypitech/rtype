@@ -32,33 +32,12 @@ public:
     virtual ~Peer() = default;
 
     /**
-     * @brief   Server mode.
-     *
-     * @param   context Asio I/O context
-     * @param   port    Port the server will listen to
-     */
-    explicit Peer(asio::io_context& context, unsigned short port)
-        : _context(context), _socket(context, udp::endpoint(udp::v4(), port))
-    {
-    }
-
-    /**
-     * @brief   Client mode.
-     *
-     * Port will be automatically chose by the OS.
-     *
-     * @param   context Asio I/O context
-     */
-    explicit Peer(asio::io_context& context)
-        : _context(context), _socket(context, udp::endpoint(udp::v4(), 0))
-    {
-    }
-
-    /**
      * @brief   Starts the asynchronous @code receive@endcode loop.
      * @note    Requires the associated `io_context` to be running.
      */
     void start() { receive(); }
+
+    void stop();
 
     /**
      * @brief   Sends raw bytes to a specific target.
@@ -75,6 +54,30 @@ public:
     [[nodiscard]] uint16_t getLocalPort() const { return _socket.local_endpoint().port(); }
 
 protected:
+    /**
+     * @brief   Constructs a Peer in a degraded state. You NEED to call either @code server()@endcode or
+     *          @code client()@endcode to initialize the Peer.
+     * @param   context Asio I/O context
+     */
+    explicit Peer(asio::io_context& context)
+        : _context(context), _socket(context)
+    {
+    }
+
+    /**
+     * @brief   Server mode.
+     *
+     * @param   port    Port the server will listen to
+     */
+    void server(unsigned short port);
+
+    /**
+     * @brief   Client mode.
+     *
+     * Port will be automatically chose by the OS.
+     */
+    void client();
+
     /**
      * @brief   Callback triggered when raw bytes are received.
      * @param   sender  The endpoint that sent the data

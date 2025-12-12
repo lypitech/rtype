@@ -5,6 +5,12 @@
 
 namespace rtnt::core {
 
+Server::Server(asio::io_context &context, const unsigned short port)
+    : Peer(context)
+{
+    server(port);
+}
+
 void Server::update(milliseconds timeout)
 {
     auto now = steady_clock::now();
@@ -55,7 +61,8 @@ void Server::onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> 
 
     if (session->handleIncoming(data, packet)) {
         _packetDispatcher.dispatch(session, packet);
-        if (_onMessage) {
+
+        if (packet.getId() >= 128 || _onMessage) {
             _onMessage(session, packet);
         }
     }
