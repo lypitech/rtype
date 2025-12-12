@@ -462,7 +462,7 @@ private:
 * @brief Global operator to WRITE a custom struct into a packet.
 */
 template <typename T>
-std::enable_if<!std::is_standard_layout<T>::value, Packet&>::type operator<<(Packet& p, const T& data)
+std::enable_if_t<!std::is_standard_layout_v<T>, Packet&> operator<<(Packet& p, const T& data)
 {
     const_cast<T&>(data).serialize(p);
     return p;
@@ -475,7 +475,7 @@ std::enable_if<!std::is_standard_layout<T>::value, Packet&>::type operator<<(Pac
  * @param   data    a
  */
 template <typename T>
-std::enable_if<!std::is_standard_layout<T>::value, Packet&>::type operator>>(Packet& p, T& data)
+std::enable_if_t<!std::is_standard_layout_v<T>, Packet&> operator>>(Packet& p, T& data)
 {
     packet::Reader reader{p};
     data.serialize(reader);
