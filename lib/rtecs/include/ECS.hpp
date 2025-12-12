@@ -69,7 +69,8 @@ public:
     void registerComponent()
     {
         const size_t hashcode = typeid(Component).hash_code();
-        _componentView[hashcode] = std::make_unique<SparseSet<Component>>();
+        _componentView.emplace(hashcode, std::make_unique<SparseSet<Component>>());
+        // _componentView[hashcode] = std::make_unique<SparseSet<Component>>();
     }
 
     template <typename... Components>
