@@ -4,11 +4,7 @@
 // behaviour/component
 #include "SparseSet.hpp"
 #include "comp/Behaviour.hpp"
-
-namespace rteng {
-
-GameEngine::GameEngine(int screenWidth, int screenHeight, const std::string& title, int fps)
-    : _renderer(screenWidth, screenHeight, title, fps)
+#include "logger/Thread.h"
 
 namespace rteng {
 
@@ -30,7 +26,7 @@ GameEngine::~GameEngine()
     }
 }
 
-void GameEngine::init(int screenWidth, int screenHeight, const std::string &title, int fps)
+void GameEngine::init(int screenWidth, int screenHeight, const std::string& title, int fps)
 {
     if (_isClient) {
         _client->connect(_host, _port);
@@ -98,6 +94,7 @@ void GameEngine::registerSystems(std::vector<std::unique_ptr<rtecs::ASystem>> sy
     for (auto& system : systems) {
         _ecs->registerSystem(std::move(system));
     }
+}
 
 void GameEngine::onConnect()
 {
