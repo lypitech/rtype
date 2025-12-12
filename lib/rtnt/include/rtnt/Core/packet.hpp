@@ -191,6 +191,13 @@ struct Reader final
     Reader& operator&(T& data);
 };
 
+template <typename T>
+Reader& Reader::operator&(T& data)
+{
+    _packet >> data;  // Redirects '&' to Packet's read logic
+    return *this;
+}
+
 /**
  * @tparam  T   Packet struct
  * @return  The name that is contained in the packet struct.
@@ -350,7 +357,7 @@ public:
      * memory copying. For strings, see the dedicated operator.
      */
     template <typename T>
-    std::enable_if<std::is_trivially_copyable<T>::value, Packet&>::type operator<<(const T& data)
+    std::enable_if_t<std::is_standard_layout_v<T>, Packet&> operator<<(const T& data)
     {
         append(&data, sizeof(T));
         return *this;
@@ -362,7 +369,7 @@ public:
      */
     Packet& operator<<(const std::string& str)
     {
-        auto size = static_cast<uint16_t>(str.size());
+        const auto size = static_cast<uint16_t>(str.size());
 
         *this << size;
         append(str.data(), size);
@@ -378,7 +385,7 @@ public:
      * memory copying. For strings, see the dedicated operator.
      */
     template <typename T>
-    std::enable_if<std::is_trivially_copyable<T>::value, Packet&>::type operator>>(T& data)
+    std::enable_if_t<std::is_standard_layout_v<T>, Packet&> operator>>(T& data)
     {
         if (_readPosition + sizeof(T) > _buffer.size()) {
             throw std::runtime_error("Packet Underflow");
@@ -450,5 +457,29 @@ private:
         _buffer.insert(_buffer.end(), ptr, ptr + size);
     }
 };
+
+/**
+* @brief Global operator to WRITE a custom struct into a packet.
+*/
+template <typename T>
+std::enable_if<!std::is_standard_layout<T>::value, Packet&>::type operator<<(Packet& p, const T& data)
+{
+    const_cast<T&>(data).serialize(p);
+    return p;
+}
+
+/**
+ * @brief Global operator to READ a custom struct from a packet.
+ *
+ * @param   p       Packet to read from
+ * @param   data    a
+ */
+template <typename T>
+std::enable_if<!std::is_standard_layout<T>::value, Packet&>::type operator>>(Packet& p, T& data)
+{
+    packet::Reader reader{p};
+    data.serialize(reader);
+    return p;
+}
 
 }  // namespace rtnt::core
