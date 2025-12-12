@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 
 project(rteng
     VERSION 0.0.1
@@ -33,6 +33,8 @@ target_include_directories(${PROJECT_NAME}
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
+        asio::asio
+        rtnt
         shuvlog
         rtecs
 )
