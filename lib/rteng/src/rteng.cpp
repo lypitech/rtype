@@ -11,11 +11,19 @@ namespace rteng {
 GameEngine::GameEngine(std::string host, unsigned short port)
     : _client(std::make_unique<rtnt::core::Client>(_context)), _host(host), _port(port)
 {
+    _client->onMessage([](rtnt::core::Packet&) { LOG_INFO("Received message."); });
+    _client->onConnect([]() { LOG_INFO("Successfully connected."); });
+    _client->onDisconnect([]() { LOG_INFO("Disconnected from host."); });
 }
 
 GameEngine::GameEngine(unsigned short port)
     : _server(std::make_unique<rtnt::core::Server>(_context, port)), _port(port), _isClient(false)
 {
+    using SessionPtr = std::shared_ptr<rtnt::core::Session>;
+
+    _server->onMessage([](SessionPtr, rtnt::core::Packet&) { LOG_INFO("Received message from cli."); });
+    _server->onConnect([](SessionPtr) { LOG_INFO("Accepting new connection."); });
+    _server->onDisconnect([](SessionPtr) { LOG_INFO("Client disconnected."); });
 }
 
 GameEngine::~GameEngine()
@@ -23,6 +31,48 @@ GameEngine::~GameEngine()
     _context.stop();
     if (_ioThread->joinable()) {
         _ioThread->join();
+    }
+}
+
+void GameEngine::onClientMessage(std::function<void(rtnt::core::Packet&)> callback)
+{
+    if (_isClient) {
+        _client->onMessage(callback);
+    }
+}
+
+void GameEngine::onClientConnect(const std::function<void()> callback)
+{
+    if (_isClient) {
+        _client->onConnect(callback);
+    }
+}
+
+void GameEngine::onClientDisconnect(std::function<void()> callback)
+{
+    if (_isClient) {
+        _client->onDisconnect(callback);
+    }
+}
+
+void GameEngine::onServerMessage(std::function<void(std::shared_ptr<rtnt::core::Session>, rtnt::core::Packet&)> func)
+{
+    if (!_isClient) {
+        _server->onMessage(func);
+    }
+}
+
+void GameEngine::onServerConnect(std::function<void(std::shared_ptr<rtnt::core::Session>)> func)
+{
+    if (!_isClient) {
+        _server->onConnect(func);
+    }
+}
+
+void GameEngine::onServerDisconnect(std::function<void(std::shared_ptr<rtnt::core::Session>)> func)
+{
+    if (!_isClient) {
+        _server->onDisconnect(func);
     }
 }
 
@@ -89,21 +139,11 @@ void GameEngine::run()
     }
 }
 
-void GameEngine::registerSystems(std::vector<std::unique_ptr<rtecs::ASystem>> systems)
+void GameEngine::registerSystems(std::vector<std::unique_ptr<rtecs::ASystem> > systems)
 {
     for (auto& system : systems) {
         _ecs->registerSystem(std::move(system));
     }
-}
-
-void GameEngine::onConnect()
-{
-    // LALALALALA J'ENTENDS PAS
-}
-
-void GameEngine::onDisconnect()
-{
-    // LALALALALA J'ENTENDS TOUJOURS PAS
 }
 
 }  // namespace rteng
