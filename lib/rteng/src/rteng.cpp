@@ -76,14 +76,25 @@ void GameEngine::onServerDisconnect(std::function<void(std::shared_ptr<rtnt::cor
     }
 }
 
-void GameEngine::init(int screenWidth, int screenHeight, const std::string& title, int fps)
+void GameEngine::init()
 {
     if (_isClient) {
         _client->connect(_host, _port);
     } else {
         _server->start();
     }
-    _renderer.init(screenWidth, screenHeight, title, fps);
+    _isInit = true;
+    _isRunning = true;
+}
+
+void GameEngine::init(int screenWidth, int screenHeight, const std::string& title, int fps)
+{
+    if (_isClient) {
+        _client->connect(_host, _port);
+        _renderer.init(screenWidth, screenHeight, title, fps);
+    } else {
+        _server->start();
+    }
     _isInit = true;
     _isRunning = true;
 }
@@ -102,13 +113,10 @@ void GameEngine::run()
         return;
     }
     _ioThread = std::make_unique<std::thread>(std::bind(&GameEngine::runContext, this));
-    while (!WindowShouldClose() && _isRunning) {
+    while (_isRunning && (!_isClient || WindowShouldClose())) {
         // 1. Input (Input System)
         // 2. Update (Update System)
         // 3. ECS
-
-        BeginDrawing();
-        ClearBackground(WHITE);
 
         // Update MonoBehaviour instances (Start called once, then Update each frame)
         {
@@ -131,10 +139,14 @@ void GameEngine::run()
         _ecs->applyAllSystems();
 
         // 4. Render (Rendering System)
+        if (_isClient) {
+            BeginDrawing();
+            ClearBackground(WHITE);
+            _renderer.drawText("Hello R-Type Engine!", 190, 200, 20, LIGHTGRAY);
 
-        _renderer.drawText("Hello R-Type Engine!", 190, 200, 20, LIGHTGRAY);
+            EndDrawing();
+        }
 
-        EndDrawing();
         // 5. Timer (Timer System)
     }
 }
