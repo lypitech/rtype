@@ -20,10 +20,9 @@ class ASystem
         return _mask;
     };
 
+public:
     explicit ASystem(DynamicBitSet mask)
         : _mask(std::move(mask)) {};
-
-   public:
     virtual ~ASystem() = default;
 
     virtual void apply(ECS &ecs) = 0;
