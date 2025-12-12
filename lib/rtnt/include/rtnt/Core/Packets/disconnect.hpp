@@ -15,6 +15,11 @@ struct Disconnect
     void serialize(Archive&)
     {
     }
+
+    static void onReceive(const std::shared_ptr<Session>& session, const Disconnect& /*packet*/)
+    {
+        session->disconnect();
+    }
 };
 
 }  // namespace rtnt::core::packet::internal
