@@ -13,14 +13,14 @@ Server::Server(asio::io_context &context, const unsigned short port)
 
 void Server::update(milliseconds timeout)
 {
-    auto now = steady_clock::now();
+    const auto now = steady_clock::now();
 
     for (auto it = _sessions.begin(); it != _sessions.end();) {
         auto& session = it->second;
         auto lastSeen = session->getLastSeenTimestamp();
         auto age = duration_cast<milliseconds>(now - lastSeen);
 
-        if (age > timeout) {
+        if (age > timeout || session->shouldClose()) {
             if (_onDisconnect) {
                 _onDisconnect(session);
             }
