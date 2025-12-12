@@ -81,6 +81,15 @@ class ECS final
         return _entityList.size() - 1;
     }
 
+    template <typename Component>
+    bool hasEntityComponent(EntityID entityId)
+    {
+        const DynamicBitSet &entity = _entityList[entityId];
+        const DynamicBitSet componentBitset = getComponentBitSet<Component>();
+
+        return (entity & componentBitset) == componentBitset;
+    }
+
     template <typename System>
     void registerSystem(std::unique_ptr<System> system)
     {
