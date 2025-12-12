@@ -61,7 +61,7 @@ void Session::send(Packet& packet)
     header.packetSize = static_cast<uint16_t>(packet.getPayload().size());
     header.checksum = 0;  // todo: Implement CRC32 checksum
 
-    auto rawBuffer = std::make_shared<ByteBuffer>();
+    const auto rawBuffer = std::make_shared<ByteBuffer>();
     const auto& payload = packet.getPayload();
 
     rawBuffer->reserve(sizeof(packet::Header) + payload.size());

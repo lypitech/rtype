@@ -23,10 +23,7 @@ class Server : public Peer
     using OnMessageFunction = std::function<void(std::shared_ptr<Session>, Packet&)>;
 
 public:
-    explicit Server(asio::io_context& context, const unsigned short port)
-        : Peer(context, port)
-    {
-    }
+    explicit Server(asio::io_context& context, const unsigned short port);
 
     /**
      * @brief   Sets the callback for when a remote Peer connects to the Server.

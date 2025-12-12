@@ -8,6 +8,7 @@ namespace rtnt::core {
 Client::Client(asio::io_context& context)
     : Peer(context)
 {
+    client();
     _internal_registerInternalPacketHandlers();
 }
 
@@ -18,7 +19,12 @@ void Client::connect(const std::string& ip, const unsigned short port)
         return;
     }
 
-    LOG_INFO("Connecting to server {}:{}...", ip, port);
+    if (_isConnected) {
+        LOG_ERR("Trying to connect while already connected. Ignoring...");
+        return;
+    }
+
+    LOG_INFO("Connecting to remote server {}:{}...", ip, port);
 
     const asio::ip::address address = asio::ip::make_address(ip);
 
@@ -34,7 +40,7 @@ void Client::connect(const std::string& ip, const unsigned short port)
 
 void Client::update(milliseconds timeout)
 {
-    if (!_serverSession) {
+    if (!_isConnected || !_serverSession) {
         LOG_WARN("Trying to update while disconnected from server.");
         return;
     }

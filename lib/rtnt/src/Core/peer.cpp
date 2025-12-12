@@ -4,20 +4,29 @@
 
 namespace rtnt::core {
 
-void Peer::sendToTarget(const udp::endpoint &target, std::shared_ptr<ByteBuffer> data)
+void Peer::server(const unsigned short port)
 {
-    _socket.async_send_to(asio::buffer(*data), target, [target, data](std::error_code ec, size_t bytesSent) {
-        if (ec) {
-            LOG_WARN("Encountered an error while sending data: {}.", ec.message());
-            return;
-        }
+    _socket = udp::socket(_context, udp::endpoint(udp::v4(), port));
+}
 
-        LOG_TRACE_R3("Sent {} bytes to {}:{}.", bytesSent, target.address().to_string(), target.port());
-    });
+void Peer::client()
+{
+    _socket = udp::socket(_context, udp::endpoint(udp::v4(), 0));
+}
+
+void Peer::stop()
+{
+    _socket.shutdown(udp::socket::shutdown_send);
+    _socket.close();
 }
 
 void Peer::receive()
 {
+    if (!_socket.is_open()) {
+        LOG_ERR("Trying to receive with a closed socket.");
+        return;
+    }
+
     LOG_DEBUG("Listening...");
 
     _socket.async_receive_from(
@@ -43,6 +52,18 @@ void Peer::receive()
             }
             receive();
         });
+}
+
+void Peer::sendToTarget(const udp::endpoint &target, std::shared_ptr<ByteBuffer> data)
+{
+    _socket.async_send_to(asio::buffer(*data), target, [target, data](std::error_code ec, size_t bytesSent) {
+        if (ec) {
+            LOG_WARN("Encountered an error while sending data: {}.", ec.message());
+            return;
+        }
+
+        LOG_TRACE_R3("Sent {} bytes to {}:{}.", bytesSent, target.address().to_string(), target.port());
+    });
 }
 
 }  // namespace rtnt::core
