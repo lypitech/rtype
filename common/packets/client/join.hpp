@@ -7,7 +7,6 @@ namespace packet {
 
 using packetId = rtnt::core::packet::Id;
 
-#pragma pack(push, 1)  // forcing strict alignment, no compiler padding
 /**
  * @struct packet::Join
  *
@@ -29,6 +28,5 @@ struct Join
         ar & username & room_id;
     }
 };
-#pragma pack(pop)
 
 }  // namespace packet

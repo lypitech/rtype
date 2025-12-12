@@ -6,7 +6,6 @@ namespace packet {
 
 using packetId = rtnt::core::packet::Id;
 
-#pragma pack(push, 1)
 /**
  * @struct packet::UpdatePosition
  *
@@ -31,7 +30,6 @@ struct UpdatePosition
         ar & id & position_x & position_y & velocity_x & velocity_y;
     }
 };
-#pragma pack(pop)
 
 }  // namespace packet
 

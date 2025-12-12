@@ -6,7 +6,6 @@ namespace packet {
 
 using packetId = rtnt::core::packet::Id;
 
-#pragma pack(push, 1)
 /**
  * @struct packet::Destroy
  *
@@ -28,7 +27,6 @@ struct Destroy
         ar & id & earned_points;
     }
 };
-#pragma pack(pop)
 
 }  // namespace packet
 

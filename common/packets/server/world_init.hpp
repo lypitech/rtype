@@ -6,7 +6,6 @@ namespace packet {
 
 using packetId = rtnt::core::packet::Id;
 
-#pragma pack(push, 1)
 /**
  * @struct packet::WorldInit
  *
@@ -29,7 +28,6 @@ struct WorldInit
         ar & stage & size & entities;
     }
 };
-#pragma pack(pop)
 
 }  // namespace packet
 

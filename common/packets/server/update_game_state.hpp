@@ -7,7 +7,6 @@ namespace packet {
 
 using packetId = rtnt::core::packet::Id;
 
-#pragma pack(push, 1)
 /**
  * @struct packet::UpdateGameState
  *
@@ -28,7 +27,6 @@ struct UpdateGameState
         ar & gameState;
     }
 };
-#pragma pack(pop)
 
 }  // namespace packet
 

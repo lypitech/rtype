@@ -7,7 +7,6 @@ namespace packet {
 // TODO: add entity attributes.
 using packetId = rtnt::core::packet::Id;
 
-#pragma pack(push, 1)
 /**
  * @struct packet::Spawn
  *
@@ -28,7 +27,6 @@ struct Spawn
         ar & id;
     }
 };
-#pragma pack(pop)
 
 }  // namespace packet
 
