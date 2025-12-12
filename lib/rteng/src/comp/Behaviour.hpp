@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "behaviour/MonoBehaviour.hpp"
+#include "MonoBehaviour.hpp"
 
 namespace comp {
 

@@ -52,4 +52,11 @@ void GameEngine::run()
     }
 }
 
+void GameEngine::registerSystems(std::vector<std::unique_ptr<rtecs::ASystem>> systems)
+{
+    for (auto& system : systems) {
+        _ecs->registerSystem(std::move(system));
+    }
+}
+
 }  // namespace rteng
