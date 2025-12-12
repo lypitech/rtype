@@ -5,7 +5,7 @@
 // Dans votre setup de test GTest
 class RaylibRendererTest : public ::testing::Test
 {
-   protected:
+protected:
     rteng::graphics::RaylibRenderer *renderer = nullptr;
 
     void SetUp() override { renderer = new rteng::graphics::RaylibRenderer; }
