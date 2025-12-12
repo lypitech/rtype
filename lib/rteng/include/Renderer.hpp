@@ -60,7 +60,7 @@ struct Texture2D
 
 class Renderer
 {
-   public:
+public:
     Renderer(int screenWidth, int screenHeight, const std::string& title, int fps = 60);
 
     ~Renderer();

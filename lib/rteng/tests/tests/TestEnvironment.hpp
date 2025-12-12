@@ -5,7 +5,7 @@
 
 class RaylibTestEnvironment : public testing::Environment
 {
-   public:
+public:
     // Before each test
     void SetUp()
     {
