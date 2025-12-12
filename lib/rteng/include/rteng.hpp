@@ -9,6 +9,8 @@
 // components
 #include "comp/IO.hpp"
 #include "comp/Transform.hpp"
+// components->monobehaviours
+#include "comp/Behaviour.hpp"
 
 namespace rteng {
 class GameEngine
@@ -23,7 +25,7 @@ public:
 
 private:
     graphics::Renderer _renderer;
-    std::unique_ptr<rtecs::ECS> _ecs = rtecs::ECS::createWithComponents<comp::Transform, comp::IO>();
+    std::unique_ptr<rtecs::ECS> _ecs = rtecs::ECS::createWithComponents<comp::Transform, comp::IO, comp::Behaviour>();
     bool _isRunning = false;
 };
 }  // namespace rteng
