@@ -61,6 +61,8 @@ public:
      */
     void send(Packet& packet);
 
+    void disconnect();
+
     /**
      * @return  The endpoint associated with this Session (the remote Peer).
      */
@@ -72,6 +74,8 @@ public:
      */
     [[nodiscard]] time_point<steady_clock> getLastSeenTimestamp() const { return _lastSeen; }
 
+    [[nodiscard]] bool shouldClose() const { return _shouldClose; }
+
 private:
     const udp::endpoint _endpoint;
     SendToPeerFunction _sendToPeerFunction;
@@ -81,6 +85,7 @@ private:
     uint32_t _remoteSequenceId = 0;
 
     time_point<steady_clock> _lastSeen;
+    bool _shouldClose;
 };
 
 }  // namespace rtnt::core
