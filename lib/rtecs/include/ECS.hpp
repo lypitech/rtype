@@ -104,6 +104,12 @@ public:
         return _entityList.size() - 1;
     }
 
+    EntityID registerEntity(const DynamicBitSet &entity)
+    {
+        _entityList.push_back(entity);
+        return _entityList.size() - 1;
+    }
+
     template <typename Component>
     bool hasEntityComponent(EntityID entityId)
     {
