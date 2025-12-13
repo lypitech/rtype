@@ -25,6 +25,12 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # --- Dependencies ---
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+        include("${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+    else()
+        message(FATAL_ERROR "Conan toolchain not found.")
+    endif()
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
 find_package(asio REQUIRED)
