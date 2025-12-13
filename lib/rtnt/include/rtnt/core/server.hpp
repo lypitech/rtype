@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <ranges>
 #include <utility>
 
 #include "dispatcher.hpp"
@@ -61,6 +62,15 @@ public:
     {
         packet::verifyUserPacketData<T>();
         _internal_sendTo(session, packetData);
+    }
+
+    template <typename T>
+    void broadcast(const T& packetData)
+    {
+        packet::verifyUserPacketData<T>();
+        for (auto &session: _sessions | std::views::values) {
+            _internal_sendTo(session, packetData);
+        }
     }
 
     // todo: maybe a broadcast function to send a packet to everyone?
