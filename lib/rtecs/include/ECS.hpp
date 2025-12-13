@@ -85,7 +85,7 @@ class ECS final
     template <typename... Components>
     EntityID registerEntity(Components &&...components)
     {
-        const DynamicBitSet entity = (getComponentBitSet<std::remove_reference_t<Components>>() | ...);
+        const DynamicBitSet entity = (getComponentBitSet<Components>() | ...);
 
         _entityList.push_back(entity);
 
