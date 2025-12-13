@@ -97,9 +97,10 @@ DynamicBitSet DynamicBitSet::operator&(const DynamicBitSet& other) const
 DynamicBitSet DynamicBitSet::operator|(const DynamicBitSet& other) const
 {
     DynamicBitSet result;
+    const size_t limit = std::max(_nbits, other._nbits);
 
-    for (size_t i = 0; i < std::min(_nbits, other._nbits); i++) {
-        result[i] = _bitsets[i / 64][i % 64] || other._bitsets[i / 64][i % 64];
+    for (size_t i = 0; i < limit; i++) {
+        result[i] = (*this)[i] || other[i];
     }
     return result;
 }
