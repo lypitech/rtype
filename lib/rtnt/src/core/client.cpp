@@ -1,8 +1,8 @@
-#include "rtnt/Core/client.hpp"
+#include "rtnt/core/client.hpp"
 
 #include "logger/Logger.h"
-#include "rtnt/Core/Packets/connect.hpp"
-#include "rtnt/Core/Packets/disconnect.hpp"
+#include "rtnt/core/packets/connect.hpp"
+#include "rtnt/core/packets/disconnect.hpp"
 
 namespace rtnt::core {
 

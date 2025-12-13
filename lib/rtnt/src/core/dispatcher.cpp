@@ -1,6 +1,6 @@
-#include "rtnt/Core/dispatcher.hpp"
-#include "rtnt/Core/Packets/connect.hpp"
-#include "rtnt/Core/Packets/disconnect.hpp"
+#include "rtnt/core/dispatcher.hpp"
+#include "rtnt/core/packets/connect.hpp"
+#include "rtnt/core/packets/disconnect.hpp"
 
 namespace rtnt::core {
 
