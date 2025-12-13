@@ -66,7 +66,7 @@ public:
     template <typename... Components>
     DynamicBitSet getComponentsBitSet() const
     {
-        return (getComponentBitSet<Components>(), ...);
+        return (getComponentBitSet<Components>() | ...);
     }
 
     template <typename Component, typename... TupleTypes>
@@ -85,7 +85,7 @@ public:
     template <typename... Components>
     EntityID registerEntity(Components &&...components)
     {
-        const DynamicBitSet entity = (getComponentBitSet<Components>() | ...);
+        const DynamicBitSet entity = getComponentsBitSet<Components...>();
 
         _entityList.push_back(entity);
 
