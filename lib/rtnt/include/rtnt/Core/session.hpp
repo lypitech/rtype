@@ -97,7 +97,7 @@ private:
     uint32_t _remoteSequenceId = 0;
 
     time_point<steady_clock> _lastSeen;
-    bool _shouldClose;
+    bool _shouldClose = false;
 };
 
 }  // namespace rtnt::core
