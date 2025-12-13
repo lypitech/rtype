@@ -142,7 +142,7 @@ public:
     {
         const size_t hashcode = typeid(Component).hash_code();
         return *_componentView[hashcode];
-    };
+    }
 
     template <typename... Components>
     ComponentGroupList<Components...> getMultipleComponents()
