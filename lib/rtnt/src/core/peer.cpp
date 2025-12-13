@@ -4,15 +4,9 @@
 
 namespace rtnt::core {
 
-void Peer::server(const unsigned short port)
-{
-    _socket = udp::socket(_context, udp::endpoint(udp::v4(), port));
-}
+void Peer::server(const unsigned short port) { _socket = udp::socket(_context, udp::endpoint(udp::v4(), port)); }
 
-void Peer::client()
-{
-    _socket = udp::socket(_context, udp::endpoint(udp::v4(), 0));
-}
+void Peer::client() { _socket = udp::socket(_context, udp::endpoint(udp::v4(), 0)); }
 
 void Peer::stop()
 {

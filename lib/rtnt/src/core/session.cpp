@@ -10,10 +10,10 @@ namespace rtnt::core {
 static std::atomic<session::Id> globalSessionIdCounter{0};
 
 Session::Session(udp::endpoint endpoint, SendToPeerFunction sendToPeerFunction)
-    : _id(globalSessionIdCounter++)
-    , _endpoint(std::move(endpoint))
-    , _sendToPeerFunction(std::move(sendToPeerFunction))
-    , _lastSeen(steady_clock::now())
+    : _id(globalSessionIdCounter++),
+      _endpoint(std::move(endpoint)),
+      _sendToPeerFunction(std::move(sendToPeerFunction)),
+      _lastSeen(steady_clock::now())
 {
 }
 
@@ -104,9 +104,6 @@ void Session::update()
     // todo: apply rudp logic
 }
 
-void Session::disconnect()
-{
-    this->_shouldClose = true;
-}
+void Session::disconnect() { this->_shouldClose = true; }
 
 }  // namespace rtnt::core

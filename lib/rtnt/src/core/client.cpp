@@ -72,7 +72,7 @@ void Client::update(milliseconds timeout)
         if (_onDisconnect) {
             _onDisconnect();
         }
-        stop(); /// todo: can make the program crash.
+        stop();  /// todo: can make the program crash.
         _serverSession.reset();
         _isConnected = false;
         return;

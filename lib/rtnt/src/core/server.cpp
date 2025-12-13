@@ -5,7 +5,7 @@
 
 namespace rtnt::core {
 
-Server::Server(asio::io_context &context, const unsigned short port)
+Server::Server(asio::io_context& context, const unsigned short port)
     : Peer(context)
 {
     server(port);

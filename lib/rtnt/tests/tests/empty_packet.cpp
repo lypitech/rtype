@@ -11,7 +11,7 @@
 
 struct Example
 {
-    static constexpr rtnt::core::packet::Id   kId   = 1801;
+    static constexpr rtnt::core::packet::Id kId = 1801;
     static constexpr rtnt::core::packet::Name kName = "EXAMPLE";
 
     template <typename Archive>
@@ -103,8 +103,8 @@ TEST(rtnt, empty_packet)
 
     ASSERT_TRUE(packetReceived) << "Test Failed: Server did not receive packet within timeout.";
 
-    EXPECT_EQ(packetSize, 0)
-        << std::format("Test Failed: Server did not received the correct packet size (got {}, expected 0).", packetSize);
+    EXPECT_EQ(packetSize, 0) << std::format(
+        "Test Failed: Server did not received the correct packet size (got {}, expected 0).", packetSize);
 
     context.stop();
     if (ioThread.joinable()) {

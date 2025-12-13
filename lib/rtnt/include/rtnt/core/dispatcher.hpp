@@ -99,7 +99,7 @@ private:
             try {
                 packet >> data;
             } catch (const std::exception& e) {
-                LOG_CRIT("Could not parse packet: {}", e.what()); // todo: better logging
+                LOG_CRIT("Could not parse packet: {}", e.what());  // todo: better logging
                 return;
             }
 

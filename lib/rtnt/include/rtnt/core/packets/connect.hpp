@@ -15,9 +15,7 @@ struct Connect
 
     static void onReceive(const std::shared_ptr<Session>& session, const Connect& /*packet*/)
     {
-        const ConnectAck response{
-            .assignedSessionId = session->getId()
-        };
+        const ConnectAck response{.assignedSessionId = session->getId()};
 
         session->send(response);
     }
