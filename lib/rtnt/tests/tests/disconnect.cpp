@@ -6,9 +6,7 @@ TEST_F(NetworkTest, disconnect)
 {
     bool clientDisconnected = false;
 
-    server->onDisconnect([&](const std::shared_ptr<rtnt::core::Session>&) {
-        clientDisconnected = true;
-    });
+    server->onDisconnect([&](const std::shared_ptr<rtnt::core::Session>&) { clientDisconnected = true; });
 
     client->connect("127.0.0.1", 4242);
 

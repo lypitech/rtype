@@ -1,16 +1,18 @@
 #pragma once
 
 #include <gtest/gtest.h>
-#include <asio/io_context.hpp>
-#include <thread>
-#include <future>
 
-#include "rtnt/Core/client.hpp"
-#include "rtnt/Core/server.hpp"
+#include <asio/io_context.hpp>
+#include <future>
+#include <thread>
+
 #include "logger/Logger.h"
 #include "logger/Thread.h"
+#include "rtnt/Core/client.hpp"
+#include "rtnt/Core/server.hpp"
 
-class NetworkTest : public testing::Test {
+class NetworkTest : public testing::Test
+{
 protected:
     asio::io_context context;
     asio::executor_work_guard<asio::io_context::executor_type> workGuard;

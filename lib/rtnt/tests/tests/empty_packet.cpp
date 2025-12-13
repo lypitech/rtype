@@ -9,8 +9,7 @@
 #include "rtnt/core/client.hpp"
 #include "rtnt/core/server.hpp"
 
-namespace
-{
+namespace {
 
 struct Example
 {
@@ -29,7 +28,7 @@ struct Example
     }
 };
 
-}
+}  // namespace
 
 TEST(rtnt, empty_packet)
 {

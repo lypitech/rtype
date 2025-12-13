@@ -2,8 +2,7 @@
 
 #include "network_fixture.hpp"
 
-namespace
-{
+namespace {
 
 struct Example
 {
@@ -19,22 +18,20 @@ struct Example
     }
 };
 
-}
+}  // namespace
 
 TEST_F(NetworkTest, string_packet)
 {
-    constexpr std::string strToTransmit{ "hi lol" };
+    constexpr std::string strToTransmit{"hi lol"};
     std::string receivedString{};
 
-    server->getPacketDispatcher().bind<Example>([&](const auto&, const Example& pkt) {
-        receivedString = pkt.str;
-    });
+    server->getPacketDispatcher().bind<Example>([&](const auto&, const Example& pkt) { receivedString = pkt.str; });
 
     client->connect("127.0.0.1", 4242);
 
     ASSERT_TRUE(waitFor([&]() { return client->isConnected(); })) << "Client failed to connect.";
 
-    constexpr Example ex{ .str = strToTransmit };
+    constexpr Example ex{.str = strToTransmit};
     client->send(ex);
 
     ASSERT_TRUE(waitFor([&]() { return !receivedString.empty(); })) << "Server has received no EXAMPLE packet.";
