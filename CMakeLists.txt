@@ -27,6 +27,15 @@ endif()
 # --- Dependencies ---
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
+if(WIN32)
+    add_compile_definitions(
+        _WIN32_WINNT=0x0601
+        WIN32_LEAN_AND_MEAN
+        NOGDI
+        NOUSER
+    )
+endif()
+
 find_package(asio REQUIRED)
 find_package(raylib REQUIRED)
 find_package(imgui REQUIRED)
