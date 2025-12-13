@@ -8,12 +8,11 @@ namespace comp {
 
 struct Sprite
 {
-    bool _shown = true;
-    Texture2D _texture{};
-    Position position;
-    float _scale = 1.0f;
-    Color _color{};
-    bool started = false;
+    bool shown = true;
+    Texture2D texture = {};
+    Position position = {0, 0};
+    float scale = 1.0f;
+    Color color = {0, 0, 0, 0};
 };
 
 }  // namespace comp
