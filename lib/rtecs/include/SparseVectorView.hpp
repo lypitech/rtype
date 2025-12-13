@@ -38,7 +38,7 @@ class SparseVectorView
 
     const std::vector<T> &getDense() const { return _vector; }
 
-    size_t getDenseIndex(Key key) const { return _map[key]; }
+    size_t getDenseIndex(Key key) const { return _map.at(key); }
 };
 
 }  // namespace rtecs
