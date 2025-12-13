@@ -25,6 +25,16 @@ class ECS final
 {
    private:
     template <typename Component>
+    void emplaceComponent(EntityID id, Component &&component)
+    {
+        const size_t hashcode = typeid(std::remove_reference_t<Component>).hash_code();
+
+        auto &sparseSet = static_cast<SparseSet<std::remove_reference_t<Component>> &>(*_componentView[hashcode]);
+
+        sparseSet.put(id, std::forward<Component>(component));
+    }
+
+    template <typename Component>
     DynamicBitSet getComponentBitSet() const
     {
         DynamicBitSet bitset;
@@ -73,6 +83,19 @@ class ECS final
     }
 
     template <typename... Components>
+    EntityID registerEntity(Components &&...components)
+    {
+        const DynamicBitSet entity = (getComponentBitSet<std::remove_reference_t<Components>>() | ...);
+
+        _entityList.push_back(entity);
+
+        const EntityID id = _entityList.size() - 1;
+
+        (emplaceComponent(id, std::forward<Components>(components)), ...);
+        return id;
+    }
+
+    template <typename... Components>
     EntityID registerEntity()
     {
         const DynamicBitSet entity(getComponentsBitSet<Components...>());
@@ -95,7 +118,7 @@ class ECS final
     {
         static_assert(std::is_base_of_v<ASystem, System>, "System must inherit from ASystem");
         const size_t hashcode = typeid(System).hash_code();
-        _systemView[hashcode] = std::move(system);
+        _systemView.emplace(hashcode, std::move(system));
     }
 
     template <typename System>
