@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bitset>
+#include <cstdint>
 #include <vector>
 
 namespace rtecs {
@@ -37,6 +38,23 @@ public:
         BitRef &operator=(bool v);
         bool operator==(const BitRef &) const;
     };
+
+    /** @brief Default constructor creating an empty bitset. */
+    explicit DynamicBitSet() = default;
+    /**
+     * @brief Construct a `DynamicBitSet` from a byte array.
+     *
+     * @param bytes The byte array representing the bitset.
+     * @param nbits The number of bits to track.
+     */
+    explicit DynamicBitSet(std::vector<uint8_t> bytes, size_t nbits);
+
+    /** @brief Serialize the bitset to a byte array. */
+    [[nodiscard]]
+    std::pair<std::vector<uint8_t>, size_t> toBytes() const;
+
+    /** @return The number of bits tracked by the bitset. */
+    [[nodiscard]] size_t size() const { return _nbits; }
 
     /** @return true if any bit is set. */
     [[nodiscard]] bool any() const;
