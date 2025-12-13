@@ -43,9 +43,7 @@ TEST(rtnt, empty_packet)
     server.onMessage([&](const auto& /*session*/, auto& packet) {
         LOG_DEBUG("Server received a message!");
 
-        try {
-            promise.set_value(packet.getPayload().size());
-        } catch (...) {}
+        promise.set_value(packet.getPayload().size());
     });
 
     server.onDisconnect([](const auto& session) {
