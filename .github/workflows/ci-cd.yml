@@ -4,14 +4,13 @@ on:
   push:
     branches: ["**"]
   pull_request:
-    branches: ["main", "dev"]
+    branches: ["main"]
 
 jobs:
   check-coding-style:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Run Coding Style Script
         run: |
           chmod +x scripts/checker.sh
@@ -27,18 +26,31 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive # Checkout doesn't fetch submodules so it has to be done manually
 
       - name: Install system dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build build-essential
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            build-essential \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            libx11-dev \
+            libxrandr-dev \
+            libxi-dev \
+            libxcursor-dev \
+            libxinerama-dev \
+            libxbf-dev
 
       - name: Install system dependencies (Mac)
         if: matrix.os == 'macos-latest'
         run: brew install cmake ninja
 
-      - name: Setup Python (for Conan)
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.x"
@@ -50,10 +62,11 @@ jobs:
         run: conan profile detect --force
 
       - name: Install Dependencies with Conan
-        run: conan install . --output-folder=build --build=missing -s build_type=Release
+        run: |
+          conan install . --output-folder=build --build=missing -s build_type=Release -s compiler.cppstd=23
 
       - name: Configure CMake
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -GNinja
 
       - name: Build Project
         run: cmake --build build --config Release
