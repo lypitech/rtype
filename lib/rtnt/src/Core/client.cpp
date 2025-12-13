@@ -48,7 +48,7 @@ void Client::disconnect()
 
     packet::internal::Disconnect packet;
     _internal_send(packet);
-    stop();
+    // stop(); /// fixme: this makes the program crash because of Asio async operations (closing the hardware interface before finishing async work). Maybe move this at another place?
     _serverSession.reset();
     _isConnected = false;
 }
