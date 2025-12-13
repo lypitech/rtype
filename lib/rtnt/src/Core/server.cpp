@@ -15,6 +15,7 @@ void Server::update(milliseconds timeout)
 {
     const auto now = steady_clock::now();
 
+    LOG_TRACE_R3("Updating server state. Time is {}", now.time_since_epoch().count());
     for (auto it = _sessions.begin(); it != _sessions.end();) {
         auto& session = it->second;
         auto lastSeen = session->getLastSeenTimestamp();
@@ -26,6 +27,7 @@ void Server::update(milliseconds timeout)
             }
             it = _sessions.erase(it);
         } else {
+            session->update();
             ++it;
         }
     }

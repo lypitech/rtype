@@ -67,6 +67,8 @@ public:
      */
     void send(Packet& packet);
 
+    void update();
+
     void disconnect();
 
     [[nodiscard]] session::Id getId() const { return _id; }
