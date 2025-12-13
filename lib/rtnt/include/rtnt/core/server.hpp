@@ -73,8 +73,6 @@ public:
         }
     }
 
-    // todo: maybe a broadcast function to send a packet to everyone?
-
     [[nodiscard]] Dispatcher& getPacketDispatcher() { return this->_packetDispatcher; }
 
 protected:
