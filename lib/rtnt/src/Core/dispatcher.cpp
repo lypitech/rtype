@@ -1,10 +1,14 @@
 #include "rtnt/Core/dispatcher.hpp"
-
 #include "rtnt/Core/Packets/connect.hpp"
+#include "rtnt/Core/Packets/disconnect.hpp"
 
 namespace rtnt::core {
 
-Dispatcher::Dispatcher() { _internal_bind<packet::internal::Connect>(); }
+Dispatcher::Dispatcher()
+{
+    _internal_bind<packet::internal::Connect>();
+    _internal_bind<packet::internal::Disconnect>();
+}
 
 void Dispatcher::dispatch(const std::shared_ptr<Session>& session, Packet& packet)
 {
