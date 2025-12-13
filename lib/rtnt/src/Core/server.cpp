@@ -62,7 +62,7 @@ void Server::onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> 
     if (session->handleIncoming(data, packet)) {
         _packetDispatcher.dispatch(session, packet);
 
-        if (packet.getId() >= 128 || _onMessage) {
+        if (packet.getId() >= 128 && _onMessage) {
             _onMessage(session, packet);
         }
     }
