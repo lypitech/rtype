@@ -44,7 +44,6 @@ jobs:
             libxi-dev \
             libxcursor-dev \
             libxinerama-dev \
-            libxbf-dev
 
       - name: Install system dependencies (Mac)
         if: matrix.os == 'macos-latest'
@@ -66,7 +65,7 @@ jobs:
           conan install . --output-folder=build --build=missing -s build_type=Release -s compiler.cppstd=23
 
       - name: Configure CMake
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -GNinja
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
 
       - name: Build Project
         run: cmake --build build --config Release
