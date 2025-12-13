@@ -15,14 +15,21 @@ Client::Client(asio::io_context& context)
 
 void Client::connect(const std::string& ip, const unsigned short port)
 {
-    if (!_onConnect || !_onDisconnect || !_onMessage) {
-        LOG_CRIT("Make sure you set the callback functions before trying to connect.");
-        return;
-    }
-
     if (_isConnected) {
         LOG_ERR("Trying to connect while already connected. Ignoring...");
         return;
+    }
+
+    if (!_onConnect) {
+        LOG_WARN("onConnect callback has not been set.");
+    }
+
+    if (!_onDisconnect) {
+        LOG_WARN("onDisconnect callback has not been set.");
+    }
+
+    if (!_onMessage) {
+        LOG_WARN("onMessage callback has not been set.");
     }
 
     LOG_INFO("Connecting to remote server {}:{}...", ip, port);
@@ -46,7 +53,7 @@ void Client::disconnect()
         return;
     }
 
-    packet::internal::Disconnect packet;
+    constexpr packet::internal::Disconnect packet{};
     _internal_send(packet);
     // stop(); /// fixme: this makes the program crash because of Asio async operations (closing the hardware interface before finishing async work). Maybe move this at another place?
     _serverSession.reset();
