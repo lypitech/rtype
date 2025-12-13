@@ -24,8 +24,11 @@ class SparseVectorView
 
     T &operator[](Key key)
     {
-        size_t index = _map.at(key);
-        return _vector[index];
+        auto [it, inserted] = _map.try_emplace(key, _vector.size());
+        if (inserted) {
+            _vector.emplace_back();
+        }
+        return _vector[it->second];
     }
 
     const T &operator[](Key key) const
