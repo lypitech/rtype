@@ -13,15 +13,10 @@ struct Connect
     static constexpr Flag kFlag = Flag::kReliable;
     static constexpr Name kName = INTERNAL_PACKET_NAME("CONNECT");
 
-    template <typename Archive>
-    void serialize(Archive&)
-    {
-    }
-
     static void onReceive(const std::shared_ptr<Session>& session, const Connect& /*packet*/)
     {
         const ConnectAck response{
-            .assignedSessionId = 88  // todo: fix magic number
+            .assignedSessionId = session->getId()
         };
 
         session->send(response);
