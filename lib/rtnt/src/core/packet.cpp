@@ -25,4 +25,4 @@ Result Header::parse(const ByteBuffer& data)
     return Result::success(header);
 }
 
-} // namespace rtnt::core::packet
+}  // namespace rtnt::core::packet

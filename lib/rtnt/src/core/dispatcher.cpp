@@ -1,4 +1,5 @@
 #include "rtnt/core/dispatcher.hpp"
+
 #include "rtnt/core/packets/connect.hpp"
 #include "rtnt/core/packets/disconnect.hpp"
 
