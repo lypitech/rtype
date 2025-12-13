@@ -20,6 +20,10 @@ public:
 class Animation : public rtecs::ASystem
 {
 public:
+    explicit Animation(rtecs::DynamicBitSet bitset)
+        : ASystem(std::move(bitset))
+    {
+    }
     void apply(rtecs::ECS& ecs) override;
 };
 
