@@ -1,10 +1,14 @@
 #include "rteng.hpp"
 
+#include <memory.h>
+
 #include "Renderer.hpp"
 // behaviour/component
 #include "SparseSet.hpp"
 #include "comp/Behaviour.hpp"
+#include "comp/Sprite.hpp"
 #include "logger/Thread.h"
+#include "sys/Sprite.hpp"
 
 namespace rteng {
 
@@ -83,6 +87,9 @@ void GameEngine::init()
     } else {
         _server->start();
     }
+    const auto bitset = _ecs->getComponentsBitSet<comp::Sprite>();
+    _ecs->registerSystem(std::make_unique<sys::Sprite>(bitset));
+    _ecs->registerSystem(std::make_unique<sys::Animation>(bitset));
     _isInit = true;
     _isRunning = true;
 }
@@ -107,10 +114,22 @@ void GameEngine::run()
         return;
     }
     _ioThread = std::make_unique<std::thread>(std::bind(&GameEngine::runContext, this));
+    bool firstRun = true;
     while (_isRunning && (!_isClient || !WindowShouldClose())) {
         // 1. Input (Input System)
         // 2. Update (Update System)
         // 3. ECS
+
+        if (firstRun) {  // Create a single entity.
+            _ecs->registerEntity<comp::Sprite>({
+                .shown = true,
+                .texture = LoadTexture("../../img.png"),  // Le client se trouve dans {build_dir}/client
+                .position = {0, 0},
+                .scale = 1.0f,
+                .color = {250, 252, 252, 255},
+            });
+            firstRun = false;
+        }
 
         // Update MonoBehaviour instances (Start called once, then Update each frame)
         {
