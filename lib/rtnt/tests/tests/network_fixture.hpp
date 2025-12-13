@@ -8,6 +8,7 @@
 #include "rtnt/Core/client.hpp"
 #include "rtnt/Core/server.hpp"
 #include "logger/Logger.h"
+#include "logger/Thread.h"
 
 class NetworkTest : public testing::Test {
 protected:
@@ -32,6 +33,7 @@ protected:
         server->start();
 
         ioThread = std::thread([this]() {
+            logger::setThreadLabel("IoThread");
             context.run();
         });
     }
