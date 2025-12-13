@@ -23,19 +23,45 @@ class Client : public Peer
 public:
     explicit Client(asio::io_context& context);
 
+    /**
+     * @brief   Sets the callback for when client successfully connects with the remote server.
+     * @note    The connection is considered successful whenever the @code __rtnt_internal_CONNECT_ACK@endcode packet
+                is received.
+     * @note    We recommend providing a lambda function.
+     * @param   callback    Function signature: @code void(std::shared_ptr<Session>)@endcode
+     */
     void onConnect(OnConnectFunction callback) { _onConnect = std::move(callback); }
+
+    /**
+     * @brief   Sets the callback for when the client disconnects.
+     * @note    This function isn't only called when calling the @code disconnect()@endcode function. The remote server
+     *          can disconnect the Client, in which case this the callback will also be triggered.
+     * @note    We recommend providing a lambda function.
+     * @param   callback    Function signature: @code void(std::shared_ptr<Session>)@endcode
+     */
     void onDisconnect(OnDisconnectFunction callback) { _onDisconnect = std::move(callback); }
+
+    /**
+     * @brief   Sets the callback for when a valid packet is received from the remote server.
+     * @note    We recommend providing a lambda function.
+     * @param   callback    Function signature: @code void(std::shared_ptr<Session>, Packet&)@endcode
+     */
     void onMessage(OnMessageFunction callback) { _onMessage = std::move(callback); }
 
     /**
      * @brief   Initiates the connection handshake.
      *
-     * This creates the Session and sends an initial 'CONNECT' packet to the server.
+     * This creates the Session and sends an initial @code __rtnt_internal_CONNECT@endcode packet to the server.
      * @param   ip      The server IP address.
      * @param   port    The server port.
      */
     void connect(const std::string& ip, unsigned short port);
 
+    /**
+     * @brief   Disconnects the client from the remote server
+     *
+     * Sends a @code __rtnt_internal_DISCONNECT@endcode to the server and immediately closes.
+     */
     void disconnect();
 
     /**
