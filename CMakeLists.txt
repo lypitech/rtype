@@ -31,7 +31,7 @@ if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     else()
         message(FATAL_ERROR "Conan toolchain not found.")
     endif()
-include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+endif()
 
 find_package(asio REQUIRED)
 find_package(raylib REQUIRED)
