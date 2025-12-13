@@ -102,7 +102,14 @@ private:
                 LOG_CRIT("Could not parse packet: {}", e.what());  // todo: better logging
                 return;
             }
-            callback(session, data);
+
+            try {
+                callback(session, data);
+            } catch (const std::exception& e) {
+                LOG_CRIT("Packet Handler Error (Packet #{}): {}", T::kId, e.what());
+            } catch (...) {
+                LOG_CRIT("Packet Handler Error (Packet #{}): Unknown error", T::kId);
+            }
         };
     }
 };
