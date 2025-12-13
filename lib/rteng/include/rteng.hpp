@@ -7,18 +7,19 @@
 
 #include "ASystem.hpp"
 #include "ECS.hpp"
-#include "Renderer.hpp"
-
-// components
-#include "comp/IO.hpp"
-#include "comp/Transform.hpp"
-// components->monobehaviours
 #include "MonoBehaviour.hpp"
+#include "Renderer.hpp"
 #include "comp/Behaviour.hpp"
+#include "comp/IO.hpp"
+#include "comp/Sprite.hpp"
+#include "comp/Transform.hpp"
+#include "comp/position.hpp"
 #include "rtnt/Core/client.hpp"
 #include "rtnt/Core/server.hpp"
 
 namespace rteng {
+
+#define ALL_COMPONENTS comp::Behaviour, comp::Position, comp::Transform, comp::IO, comp::Sprite
 
 class GameEngine
 {
@@ -60,7 +61,7 @@ public:
     }
 
     template <typename... component>
-    void registerEntity(const std::shared_ptr<rteng::behaviour::MonoBehaviour>& mono_behaviour = nullptr)
+    void registerEntity(const std::shared_ptr<behaviour::MonoBehaviour>& mono_behaviour = nullptr)
     {
         const rtecs::EntityID entityId = _ecs->registerEntity<component...>();
 
@@ -77,12 +78,9 @@ public:
         behaviourSparseSet.put(entityId, behaviourComp);
     }
 
-    // Rendering System
-    // Event System
-
 private:
     graphics::Renderer _renderer;
-    std::unique_ptr<rtecs::ECS> _ecs = rtecs::ECS::createWithComponents<comp::Transform, comp::IO, comp::Behaviour>();
+    std::unique_ptr<rtecs::ECS> _ecs = rtecs::ECS::createWithComponents<ALL_COMPONENTS>();
     asio::io_context _context;
     std::unique_ptr<rtnt::core::Client> _client;
     std::unique_ptr<rtnt::core::Server> _server;
