@@ -60,12 +60,13 @@ public:
         _ecs->registerComponent<component>();
     }
 
-    template <typename... component>
-    void registerEntity(const std::shared_ptr<behaviour::MonoBehaviour>& mono_behaviour = nullptr)
+    template <typename... Components>
+    void registerEntity(const std::shared_ptr<behaviour::MonoBehaviour>& mono_behaviour, Components&&... components)
     {
-        const rtecs::EntityID entityId = _ecs->registerEntity<component...>();
+        const rtecs::EntityID entityId =
+            _ecs->registerEntity<std::decay_t<Components>...>(std::forward<Components>(components)...);
 
-        if (!_ecs->hasEntityComponent<comp::Behaviour>(entityId)) {
+        if (!mono_behaviour || !_ecs->hasEntityComponent<comp::Behaviour>(entityId)) {
             return;
         }
         auto& behaviourComponents = _ecs->getComponent<comp::Behaviour>();
