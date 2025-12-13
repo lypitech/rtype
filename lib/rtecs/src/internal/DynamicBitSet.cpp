@@ -77,10 +77,17 @@ DynamicBitSet DynamicBitSet::operator|(const DynamicBitSet& other) const
 
 DynamicBitSet::BitRef DynamicBitSet::operator[](const size_t i)
 {
-    if (i >= _nbits) {
-        _bitsets.resize(i / 64);
+    const size_t blockIndex = i / 64;
+
+    if (blockIndex >= _bitsets.size()) {
+        _bitsets.resize(blockIndex + 1);
     }
-    return BitRef{_bitsets[i / 64], std::bitset<64>(i % 64)};
+    if (i >= _nbits) {
+        _nbits = i + 1;
+    }
+    std::bitset<64> mask;
+    mask.set(i % 64);
+    return BitRef{_bitsets[blockIndex], mask};
 }
 
 bool DynamicBitSet::operator[](const size_t i) const
