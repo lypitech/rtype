@@ -25,6 +25,9 @@ class Dispatcher final
     using PacketHandler = std::function<void(const std::shared_ptr<Session>&, Packet&)>;
 
 public:
+    /**
+     * Constructs a Dispatcher and automatically binds the internal packets' handlers.
+     */
     Dispatcher();
 
     /**

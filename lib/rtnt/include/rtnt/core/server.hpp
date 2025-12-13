@@ -23,11 +23,12 @@ class Server : public Peer
     using OnMessageFunction = std::function<void(std::shared_ptr<Session>, Packet&)>;
 
 public:
-    explicit Server(asio::io_context& context, const unsigned short port);
+    explicit Server(asio::io_context& context, unsigned short port);
 
     /**
      * @brief   Sets the callback for when a remote Peer connects to the Server.
-     * @note    A remote Peer is considered connected if he sends the packet CONNECT and the server accepts it.
+     * @note    A remote Peer is considered connected if he sends the packet @code __rtnt_internal_CONNECT@endcode and
+     *          the server accepts it.
      * @note    We recommend providing a lambda function.
      * @param   callback    Function signature: @code void(std::shared_ptr<Session>)@endcode
      */

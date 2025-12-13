@@ -67,10 +67,21 @@ public:
      */
     void send(Packet& packet);
 
+    /**
+     * @brief   Applies RUDP logic: reliable packets (resend logic) etc.
+     */
     void update();
 
+    /**
+     * @brief   Marks the session as closed.
+     * @note    This function does NOT remove the session from anywhere. It is up to the Peer child to do this.
+     */
     void disconnect();
 
+    /**
+     * @return  Session's unique ID.
+     * @note    By default, ID is equal to 0. It is overwritten when handshake with the remote client has been done.
+     */
     [[nodiscard]] session::Id getId() const { return _id; }
 
     /**
@@ -84,6 +95,9 @@ public:
      */
     [[nodiscard]] time_point<steady_clock> getLastSeenTimestamp() const { return _lastSeen; }
 
+    /**
+     * @return  Whether the session should be closed or not.
+     */
     [[nodiscard]] bool shouldClose() const { return _shouldClose; }
 
 private:

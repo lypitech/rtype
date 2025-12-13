@@ -34,9 +34,14 @@ public:
     /**
      * @brief   Starts the asynchronous @code receive@endcode loop.
      * @note    Requires the associated `io_context` to be running.
+     * @note    Requires the Peer not to be in a degraded state. See protected constructor.
      */
     void start() { receive(); }
 
+    /**
+     * @brief   Shuts down and closes the Peer's socket.
+     * @note    Peer will switch to a degraded state unless @code server()@endcode or @code client()@endcode is called.
+     */
     void stop();
 
     /**

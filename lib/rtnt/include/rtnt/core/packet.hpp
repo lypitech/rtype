@@ -191,10 +191,16 @@ struct Reader final
     Reader& operator&(T& data);
 };
 
+/**
+ * @brief   Redirects the @code &@endcode operator the Packet's read logic.
+ * @tparam  T       Packet struct
+ * @param   data    Data to read from
+ * @return  Reader instance
+ */
 template <typename T>
 Reader& Reader::operator&(T& data)
 {
-    _packet >> data;  // Redirects '&' to Packet's read logic
+    _packet >> data;
     return *this;
 }
 
