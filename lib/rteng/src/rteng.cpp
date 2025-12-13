@@ -89,14 +89,8 @@ void GameEngine::init()
 
 void GameEngine::init(int screenWidth, int screenHeight, const std::string& title, int fps)
 {
-    if (_isClient) {
-        _client->connect(_host, _port);
-        _renderer.init(screenWidth, screenHeight, title, fps);
-    } else {
-        _server->start();
-    }
-    _isInit = true;
-    _isRunning = true;
+    init();
+    _renderer.init(screenWidth, screenHeight, title, fps);
 }
 
 void GameEngine::runContext()
@@ -121,19 +115,18 @@ void GameEngine::run()
         // Update MonoBehaviour instances (Start called once, then Update each frame)
         {
             auto& behaviourComponents = _ecs->getComponent<comp::Behaviour>();
-            rtecs::SparseSet<comp::Behaviour>& behaviourSparseSet =
-                dynamic_cast<rtecs::SparseSet<comp::Behaviour>&>(behaviourComponents);
+            auto& behaviourSparseSet = dynamic_cast<rtecs::SparseSet<comp::Behaviour>&>(behaviourComponents);
 
             const float dt = GetFrameTime();
-            for (auto& b : behaviourSparseSet.getAll()) {
-                if (!b.instance) {
+            for (auto& [instance, started] : behaviourSparseSet.getAll()) {
+                if (!instance) {
                     continue;
                 }
-                if (!b.started) {
-                    b.instance->Start();
-                    b.started = true;
+                if (!started) {
+                    instance->Start();
+                    started = true;
                 }
-                b.instance->Update(dt);
+                instance->Update(dt);
             }
         }
         _ecs->applyAllSystems();
