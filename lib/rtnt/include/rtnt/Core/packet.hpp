@@ -357,7 +357,7 @@ public:
      * memory copying. For strings, see the dedicated operator.
      */
     template <typename T>
-    std::enable_if_t<std::is_standard_layout_v<T>, Packet&> operator<<(const T& data)
+    std::enable_if_t<std::is_trivially_copyable_v<T>, Packet&> operator<<(const T& data)
     {
         append(&data, sizeof(T));
         return *this;
@@ -385,7 +385,7 @@ public:
      * memory copying. For strings, see the dedicated operator.
      */
     template <typename T>
-    std::enable_if_t<std::is_standard_layout_v<T>, Packet&> operator>>(T& data)
+    std::enable_if_t<std::is_trivially_copyable_v<T>, Packet&> operator>>(T& data)
     {
         if (_readPosition + sizeof(T) > _buffer.size()) {
             throw std::runtime_error("Packet Underflow");
@@ -462,7 +462,7 @@ private:
 * @brief Global operator to WRITE a custom struct into a packet.
 */
 template <typename T>
-std::enable_if_t<!std::is_standard_layout_v<T>, Packet&> operator<<(Packet& p, const T& data)
+std::enable_if_t<!std::is_trivially_copyable_v<T>, Packet&> operator<<(Packet& p, const T& data)
 {
     const_cast<T&>(data).serialize(p);
     return p;
@@ -475,7 +475,7 @@ std::enable_if_t<!std::is_standard_layout_v<T>, Packet&> operator<<(Packet& p, c
  * @param   data    a
  */
 template <typename T>
-std::enable_if_t<!std::is_standard_layout_v<T>, Packet&> operator>>(Packet& p, T& data)
+std::enable_if_t<!std::is_trivially_copyable_v<T>, Packet&> operator>>(Packet& p, T& data)
 {
     packet::Reader reader{p};
     data.serialize(reader);
