@@ -67,6 +67,17 @@ void Client::update(milliseconds timeout)
         return;
     }
 
+    if (_serverSession->shouldClose()) {
+        LOG_INFO("Disconnected by server");
+        if (_onDisconnect) {
+            _onDisconnect();
+        }
+        stop(); /// todo: can make the program crash.
+        _serverSession.reset();
+        _isConnected = false;
+        return;
+    }
+
     auto now = steady_clock::now();
     auto lastSeenTimestamp = _serverSession->getLastSeenTimestamp();
     auto age = duration_cast<milliseconds>(now - lastSeenTimestamp);
