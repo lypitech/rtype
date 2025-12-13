@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rtnt/Common/constants.hpp"
-#include "rtnt/Core/packet.hpp"
+#include "rtnt/common/constants.hpp"
+#include "rtnt/core/packet.hpp"
 
 namespace rtnt::core::packet::internal {
 

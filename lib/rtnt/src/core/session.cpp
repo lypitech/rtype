@@ -1,9 +1,9 @@
-#include "rtnt/Core/session.hpp"
+#include "rtnt/core/session.hpp"
 
 #include <ranges>
 
 #include "logger/Logger.h"
-#include "rtnt/Common/utils.hpp"
+#include "rtnt/common/utils.hpp"
 
 namespace rtnt::core {
 

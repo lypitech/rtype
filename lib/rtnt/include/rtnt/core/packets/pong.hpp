@@ -1,15 +1,15 @@
 #pragma once
 
 #include "rtnt/Common/constants.hpp"
-#include "rtnt/Core/packet.hpp"
+#include "rtnt/core/packet.hpp"
 
 namespace rtnt::core::packet::internal {
 
-struct Ping
+struct Pong
 {
-    static constexpr Id kId = static_cast<uint16_t>(SystemMessageId::kPing);
+    static constexpr Id kId = static_cast<uint16_t>(SystemMessageId::kPong);
     static constexpr Flag kFlag = Flag::kUnreliable;
-    static constexpr Name kName = INTERNAL_PACKET_NAME("PING");
+    static constexpr Name kName = INTERNAL_PACKET_NAME("PONG");
 
     uint64_t timestamp;
 

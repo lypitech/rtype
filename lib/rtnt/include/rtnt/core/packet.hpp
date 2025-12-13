@@ -12,7 +12,7 @@
 #endif
 
 #include "logger/Logger.h"
-#include "rtnt/Common/constants.hpp"
+#include "rtnt/common/constants.hpp"
 
 namespace rtnt::core {
 
