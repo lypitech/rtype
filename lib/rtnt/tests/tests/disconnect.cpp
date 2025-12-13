@@ -30,24 +30,17 @@ TEST(rtnt, disconnect)
 
     server.onDisconnect([&](const std::shared_ptr<rtnt::core::Session>& session) {
         LOG_INFO("Server: Session disconnected (Endpoint: {})", session->getEndpoint().port());
-        // try {
-            serverDetectedDisconnectPromise.set_value(true);
-        // } catch (...) {
-            // Prevent double-set crashes if called multiple times
-        // }
+        serverDetectedDisconnectPromise.set_value(true);
     });
 
     client.onConnect([&]() {
         LOG_INFO("Client: Handshake complete, connected to server.");
-        // try {
-            clientConnectedPromise.set_value(true);
-        // } catch (...) {}
+        clientConnectedPromise.set_value(true);
     });
 
     server.start();
 
     std::thread ioThread([&context]() {
-        // Set a thread label for your logger if supported
         logger::setThreadLabel("IoThread");
         context.run();
     });
