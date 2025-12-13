@@ -98,6 +98,12 @@ void Session::send(Packet& packet)
     }
 }
 
+void Session::update()
+{
+    LOG_DEBUG("Updating session {}", _id);
+    // todo: apply rudp logic
+}
+
 void Session::disconnect()
 {
     this->_shouldClose = true;
