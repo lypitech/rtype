@@ -9,6 +9,9 @@
 #include "rtnt/core/client.hpp"
 #include "rtnt/core/server.hpp"
 
+namespace
+{
+
 struct Example
 {
     static constexpr rtnt::core::packet::Id kId = 1801;
@@ -25,6 +28,8 @@ struct Example
         LOG_INFO("Example packet received!");
     }
 };
+
+}
 
 TEST(rtnt, empty_packet)
 {
