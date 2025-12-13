@@ -1,0 +1,63 @@
+name: CI/CD R-Type
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["main", "dev"]
+
+jobs:
+  check-coding-style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Coding Style Script
+        run: |
+          chmod +x scripts/checker.sh
+          ./scripts/checker.sh
+
+  build-and-test:
+    needs: check-coding-style
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false # If one failed, don't cancel the other jobs (Kinda like a debug option)
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build build-essential
+
+      - name: Install system dependencies (Mac)
+        if: matrix.os == 'macos-latest'
+        run: brew install cmake ninja
+
+      - name: Setup Python (for Conan)
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install Conan
+        run: pip install conan
+
+      - name: Configure Conan Profile
+        run: conan profile detect --force
+
+      - name: Install Dependencies with Conan
+        run: conan install . --output-folder=build --build=missing -s build_type=Release
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
+
+      - name: Build Project
+        run: cmake --build build --config Release
+
+      - name: Run Tests
+        working-directory: build
+        run: ctest --output-on-failure -C Release
