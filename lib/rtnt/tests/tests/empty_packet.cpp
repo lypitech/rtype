@@ -11,17 +11,18 @@
 
 struct Example
 {
-    static constexpr rtnt::core::packet::Id   kId   = static_cast<rtnt::core::packet::Id>(130608);
+    static constexpr rtnt::core::packet::Id   kId   = 1801;
     static constexpr rtnt::core::packet::Name kName = "EXAMPLE";
 
-    // template <typename Archive>
-    // void serialize(Archive& ar)
-    // {
-    //     // Not serializing anything, meaning the packet doesn't have a body (payload).
-    // }
+    template <typename Archive>
+    void serialize(Archive&)
+    {
+        // Not serializing anything, meaning the packet doesn't have a body (payload).
+    }
 
-    static void onReceive(const std::shared_ptr<rtnt::core::Session>& session, const Example& pkt) {
-
+    static void onReceive(const std::shared_ptr<rtnt::core::Session>& session, const Example& pkt)
+    {
+        LOG_INFO("Example packet received!");
     }
 };
 
@@ -34,63 +35,76 @@ TEST(rtnt, empty_packet)
     rtnt::core::Server server(context, 4242);
     rtnt::core::Client client(context);
 
-    std::promise<uint32_t> promise;
-    auto future = promise.get_future();
+    std::promise<bool> clientConnectedPromise;
+    std::future<bool> clientConnectedFuture = clientConnectedPromise.get_future();
+
+    std::promise<size_t> packetSizePromise;
+    std::future<size_t> packetSizeFuture = packetSizePromise.get_future();
 
     server.getPacketDispatcher().bind<Example>();
 
-    LOG_DEBUG("Setting onMessage function of server");
-    server.onMessage([&](const auto& /*session*/, auto& packet) {
-        LOG_DEBUG("Server received a message!");
-
-        promise.set_value(packet.getPayload().size());
+    server.onConnect([](const std::shared_ptr<rtnt::core::Session>& session) {
+        LOG_DEBUG("Server: New session ({}) connected from {}", session->getId(), session->getEndpoint().port());
     });
 
-    server.onDisconnect([](const auto& session) {
-        LOG_DEBUG("Session {} disconnected", session.get()->getEndpoint().address().to_string());
+    server.onDisconnect([&](const std::shared_ptr<rtnt::core::Session>& session) {
+        LOG_INFO("Server: Session disconnected (Endpoint: {})", session->getEndpoint().port());
     });
 
-    server.onConnect([](const auto& session) {
-        LOG_DEBUG("Session {} connected", session.get()->getEndpoint().address().to_string());
+    server.onMessage([&](const std::shared_ptr<rtnt::core::Session>& /*session*/, const rtnt::core::Packet& packet) {
+        if (packet.getId() == Example::kId) {
+            packetSizePromise.set_value(packet.getPayload().size());
+        }
     });
 
-    LOG_DEBUG("Starting server");
+    client.onConnect([&]() {
+        LOG_INFO("Client: Handshake complete, connected to server.");
+        clientConnectedPromise.set_value(true);
+    });
+
     server.start();
 
-    LOG_DEBUG("Will run context in another thread");
     std::thread ioThread([&context]() {
         logger::setThreadLabel("IoThread");
-        LOG_DEBUG("Running context");
         context.run();
     });
 
-    LOG_DEBUG("Now waiting 400ms");
-    std::this_thread::sleep_for(std::chrono::milliseconds(400));
-
-    client.onConnect([&]() {
-        LOG_DEBUG("Handshake is done, client is connected!");
-    });
-
-    client.onDisconnect([]() { LOG_DEBUG("Client disconnected"); });
-
-    client.onMessage([](rtnt::core::Packet&) {});
-
-    LOG_DEBUG("Will connect");
     client.connect("127.0.0.1", 4242);
 
-    Example ex{};
+    ASSERT_EQ(clientConnectedFuture.wait_for(std::chrono::seconds(3)), std::future_status::ready)
+        << "Test Failed: Client did not connect within timeout.";
 
+    EXPECT_TRUE(clientConnectedFuture.get()) << "Client failed to connect.";
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    constexpr Example ex{};
     client.send(ex);
 
-    const std::future_status status = future.wait_for(std::chrono::seconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    EXPECT_EQ(status, std::future_status::ready) << "Test timed out!";
+    auto startTime = std::chrono::steady_clock::now();
+    uint32_t packetSize = 0;
+    bool packetReceived = false;
 
-    if (status == std::future_status::ready) {
-        auto obtainedSize = future.get();
-        LOG_INFO("Got packet payload size: {}", obtainedSize);
-        EXPECT_EQ(obtainedSize, 0);
+    while (std::chrono::steady_clock::now() - startTime < std::chrono::seconds(3)) {
+        server.update();
+        client.update();
+
+        if (packetSizeFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
+            packetSize = packetSizeFuture.get();
+            packetReceived = true;
+            client.disconnect();
+            break;
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+
+    ASSERT_TRUE(packetReceived) << "Test Failed: Server did not receive packet within timeout.";
+
+    EXPECT_EQ(packetSize, 0)
+        << std::format("Test Failed: Server did not received the correct packet size (got {}, expected 0).", packetSize);
 
     context.stop();
     if (ioThread.joinable()) {
