@@ -10,6 +10,12 @@ namespace rtnt::core {
 using asio::ip::udp;
 using namespace std::chrono;
 
+namespace session {
+
+using Id = uint32_t;
+
+}
+
 /**
  * @class   Session
  * @brief   Basically a logical connection with a remote peer.
@@ -63,6 +69,8 @@ public:
 
     void disconnect();
 
+    [[nodiscard]] session::Id getId() const { return _id; }
+
     /**
      * @return  The endpoint associated with this Session (the remote Peer).
      */
@@ -77,6 +85,8 @@ public:
     [[nodiscard]] bool shouldClose() const { return _shouldClose; }
 
 private:
+    const session::Id _id;
+
     const udp::endpoint _endpoint;
     SendToPeerFunction _sendToPeerFunction;
 
