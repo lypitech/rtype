@@ -9,6 +9,7 @@ namespace rteng::graphics {
 void Renderer::init(int screenWidth, int screenHeight, const std::string& title, int fps)
 {
     _isInit = true;
+    SetTraceLogLevel(LOG_WARNING);
     InitWindow(screenWidth, screenHeight, title.c_str());
     SetTargetFPS(fps);
 }
