@@ -17,10 +17,31 @@ namespace rtecs {
 // ================================
 //      SparseSet - Definition
 // ================================
+
+/**
+ * @brief Contiguous sparse-set implementation mapping entity ids to
+ * component instances.
+ *
+ * Storage layout:
+ * - `_dense` stores component instances compactly (dense array).
+ * - `_entities` stores the corresponding entity ids for each dense slot.
+ * - `_sparsePages` is a paged sparse array mapping an entity id to the
+ *   dense index. Each page is an array of optional indices of size
+ *   `kPageSize`.
+ *
+ * This design allows O(1) average-time `has`, `put`, and `remove` (the
+ * `remove` performs a swap-with-last in the dense array). The paged sparse
+ * array avoids allocating a huge flat sparse array for large entity ids.
+ */
 template <typename T>
 class SparseSet final : public ISparseSet
 {
-   public:
+public:
+    /**
+     * @brief Number of sparse entries in a single page. Tune to balance
+     * memory and indexing overhead. Internal indices are computed via
+     * page/offset arithmetic.
+     */
     static constexpr size_t kPageSize = 2048;
 
    private:
