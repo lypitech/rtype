@@ -121,13 +121,14 @@ void GameEngine::run()
         // 3. ECS
 
         if (firstRun) {  // Create a single entity.
-            _ecs->registerEntity<comp::Sprite>({
-                .shown = true,
-                .texture = LoadTexture("../../img.png"),  // Le client se trouve dans {build_dir}/client
-                .position = {0, 0},
-                .scale = 1.0f,
-                .color = {250, 252, 252, 255},
-            });
+            registerEntity<comp::Sprite>(
+                nullptr, {
+                             .shown = true,
+                             .texture = LoadTexture("../../img.png"),  // Le client se trouve dans {build_dir}/client
+                             .position = {0, 0},
+                             .scale = 1.0f,
+                             .color = {250, 252, 252, 255},
+                         });
             firstRun = false;
         }
 
