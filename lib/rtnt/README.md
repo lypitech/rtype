@@ -89,6 +89,7 @@ ctest --test-dir build/ --output-on-failure
 | Empty packet  |   ✅    |       |
 | String packet |   ✅    |       |
 | Broadcast     |   ✅    |       |
+| Vector packet |   ✅    |       |
 
 
 ## How to use
@@ -113,6 +114,7 @@ struct Example
 {
     static constexpr rtnt::core::packet::Id   kId   = 1801;      ///< Unique identifier of the packet.
                                                                  ///  MUST be in the range 128-65535!
+
     static constexpr rtnt::core::packet::Name kName = "EXAMPLE"; ///< Name that will be used in the logs.
                                                                  ///  Won't be transmitted through the network!
 
