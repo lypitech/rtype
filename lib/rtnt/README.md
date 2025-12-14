@@ -377,3 +377,17 @@ When receiving a packet, multiple checks are performed:
 - **Protocol ID:** If received protocol ID doesn't match the local protocol ID, packet is dropped.
 - **Payload size:** If given protocol size doesn't match the size of the payload received, packet is dropped, considered
   as corrupted.
+
+### Server <-> Client Handshake
+
+1. Whenever a client wants to connect to a server, it will send a `__rtnt_internal_CONNECT` packet (ID `0x01`).
+
+2. The remote server will receive that packet and process it. It will:
+- Add the client to its list of active sessions
+- Assign a unique identifier to that session
+- Send back a `__rtnt_internal_CONNECT_ACK` (ID `0x02`) packet with the assigned Session ID in it
+
+3. When the client will receive the `__rtnt_internal_CONNECT_ACK` (ID `0x02`) packet, it will mark itself as connected
+to the server.
+
+4. The handshake is complete.
