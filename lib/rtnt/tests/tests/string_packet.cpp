@@ -22,7 +22,7 @@ struct Example
 
 TEST_F(NetworkTest, string_packet)
 {
-    constexpr std::string strToTransmit{"hi lol"};
+    std::string strToTransmit{"hi lol"};
     std::string receivedString{};
 
     server->getPacketDispatcher().bind<Example>([&](const auto&, const Example& pkt) { receivedString = pkt.str; });
@@ -31,7 +31,7 @@ TEST_F(NetworkTest, string_packet)
 
     ASSERT_TRUE(waitFor([&]() { return client->isConnected(); })) << "Client failed to connect.";
 
-    constexpr Example ex{.str = strToTransmit};
+    Example ex{.str = strToTransmit};
     client->send(ex);
 
     ASSERT_TRUE(waitFor([&]() { return !receivedString.empty(); })) << "Server has received no EXAMPLE packet.";

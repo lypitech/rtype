@@ -22,7 +22,7 @@ struct Example
 
 TEST_F(NetworkTest, broadcast)
 {
-    constexpr std::string strToTransmit{"HI"};
+    std::string strToTransmit{"HI"};
     std::string receivedString{};
 
     client->getPacketDispatcher().bind<Example>([&](const std::shared_ptr<rtnt::core::Session>&, const Example& pkt) {
@@ -35,7 +35,7 @@ TEST_F(NetworkTest, broadcast)
 
     ASSERT_TRUE(waitFor([&]() { return client->isConnected(); })) << "Client failed to connect.";
 
-    constexpr Example ex{.str = strToTransmit};
+    Example ex{.str = strToTransmit};
 
     server->broadcast(ex);
 
