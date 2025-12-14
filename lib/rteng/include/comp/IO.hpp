@@ -4,9 +4,8 @@
 
 namespace comp {
 
-class IO
+struct IO
 {
-public:
     static constexpr uint8_t STATE_CHANGED_BIT = 0b10;
 
     enum class ButtonState : uint8_t
@@ -16,13 +15,18 @@ public:
         RELEASED = 0b10,  // just got released
         PRESSED = 0b11,   // just got pressed
     };
-    class Mouse
+    struct Mouse
     {
-    public:
         float x = 0;
         float y = 0;
         bool leftButton = false;
         bool rightButton = false;
+
+        template <typename Archive>
+        void serialize(Archive& ar)
+        {
+            ar & x & y & leftButton & rightButton;
+        }
     };
     ButtonState up;
     ButtonState down;
@@ -31,6 +35,11 @@ public:
     ButtonState action1;
     ButtonState action2;
     Mouse mouse;
+    template <typename Archive>
+    void serialize(Archive& ar)
+    {
+        ar & up & down & left & right & action1 & action2 & mouse;
+    }
 };
 
 }  // namespace comp
