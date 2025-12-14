@@ -37,6 +37,12 @@ find_package(asio REQUIRED)
 find_package(raylib REQUIRED)
 find_package(imgui REQUIRED)
 
+enable_testing()
+
+find_package(GTest REQUIRED)
+
+include(GoogleTest)
+
 add_subdirectory(lib/shuvlog)
 add_subdirectory(lib/rtnt)
 add_subdirectory(lib/cli_parser)
