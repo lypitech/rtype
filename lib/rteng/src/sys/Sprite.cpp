@@ -5,18 +5,9 @@
 
 namespace sys {
 
-void Sprite::apply(rtecs::ECS& ecs)
+void Sprite::apply(rtecs::ECS&)
 {
-    rtecs::ISparseSet& spriteComponents = ecs.getComponent<comp::Sprite>();
-    auto& spritesSparseSet = dynamic_cast<rtecs::SparseSet<comp::Sprite>&>(spriteComponents);
-
-    for (const auto& [shown, texture, position, scale, color] : spritesSparseSet.getAll()) {
-        if (!shown) {
-            return;
-        }
-        const Vector2 pos = {position.x, position.y};
-        DrawTextureEx(texture, pos, 0.0f, scale, color);
-    }
+    // TODO: create.
 }
 
 // void hide(comp::Sprite& sprite) { sprite.shown = false; }
