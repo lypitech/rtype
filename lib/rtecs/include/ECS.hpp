@@ -144,6 +144,7 @@ private:
     {
         const size_t hashcode = typeid(Component).hash_code();
         _componentView.emplace(hashcode, std::make_unique<SparseSet<Component>>());
+        LOG_DEBUG("Registered new component({})", typeid(Component).name());
     }
 
     /**
@@ -161,6 +162,7 @@ private:
 
         const EntityID id = _entityList.size() - 1;
 
+        LOG_DEBUG("Created entity.");
         (emplaceComponent(id, std::forward<Components>(components)), ...);
         return id;
     }
@@ -209,6 +211,7 @@ private:
         static_assert(std::is_base_of_v<ASystem, System>, "System must inherit from ASystem");
         const size_t hashcode = typeid(System).hash_code();
         _systemView.emplace(hashcode, std::move(system));
+        LOG_DEBUG("Registered new system({})", typeid(System).name());
     }
 
     /**
