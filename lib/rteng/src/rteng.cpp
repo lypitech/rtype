@@ -143,23 +143,11 @@ void GameEngine::run()
         return;
     }
     _ioThread = std::make_unique<std::thread>(std::bind(&GameEngine::runContext, this));
-    bool firstRun = true;
     while (_isRunning && (!_isClient || !WindowShouldClose())) {
         // 1. Input (Input System)
         // 2. Update (Update System)
         // 3. ECS
 
-        if (firstRun) {  // Create a single entity.
-            registerEntity<comp::Sprite>(
-                nullptr, {
-                             .shown = true,
-                             .texture = LoadTexture("../../img.png"),  // Le client se trouve dans {build_dir}/client
-                             .position = {0, 0},
-                             .scale = 1.0f,
-                             .color = {250, 252, 252, 255},
-                         });
-            firstRun = false;
-        }
 
         // Update MonoBehaviour instances (Start called once, then Update each frame)
         {
