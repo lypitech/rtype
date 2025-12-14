@@ -61,7 +61,7 @@ enum class Error : uint8_t
  * @param   error   Error
  * @return  Converted string
  */
-inline std::string_view to_string(Error error)
+inline std::string_view to_string(const Error error)
 {
     switch (error) {
         case Error::kNone:
