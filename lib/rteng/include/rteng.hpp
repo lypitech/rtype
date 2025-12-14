@@ -63,6 +63,18 @@ public:
         const rtecs::EntityID entityId =
             _ecs->registerEntity<std::decay_t<Components>...>(std::forward<Components>(components)...);
 
+        if (!_client) {
+            const rtecs::DynamicBitSet bitmask = _ecs->getComponentsBitSet<Components...>();
+
+            packet::Spawn s;
+            s.id = entityId;
+            s.bitmask = bitmask.toBytes().first;
+            s.content.reserve((sizeof(std::decay_t<Components>) + ... + 0));
+            rtnt::core::Packet tempPacket(0);
+            (tempPacket << ... << components);
+            s.content = tempPacket.getPayload();
+            // Broadcast created packet.
+        }
         if (!mono_behaviour || !_ecs->hasEntityComponent<comp::Behaviour>(entityId)) {
             return entityId;
         }
