@@ -19,8 +19,7 @@ struct Spawn
     static constexpr std::string kName = "SPAWN";
 
     uint32_t id;                   ///< The id of the entity for future reference
-    uint32_t nbytes;               ///< The number of activated bytes in the bitmask
-    std::vector<uint8_t> bitmask;  ///< The bitmask of the components.
+    std::vector<uint8_t> bitmask;  ///< The index of the activated bytes.
     std::vector<uint8_t> content;  ///< The content of the components.
 
     template <typename Archive>
