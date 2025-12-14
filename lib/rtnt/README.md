@@ -9,7 +9,7 @@ It features a high-level packet system, automatic endianness handling, and a cal
 developers to focus on game logic rather than raw socket management.
 
 > [!NOTE]
-> This library is currently in version **1.1.0**. Things are prone to change!  
+> This library is currently in version **1.1.1**. Things are prone to change!  
 > Full [RUDP](https://en.wikipedia.org/wiki/Reliable_User_Datagram_Protocol) support will be introduced in version
 > **1.2.0**.  
 > Security layer (packet encryption and certificates) will be introduced in version **2.0.0**.  
@@ -179,42 +179,126 @@ void serialize(Archive& ar)
 > };
 > ```
 
-For now, fields can either be a primitive type (`int`, `floats`, basic `struct`) or a `std::string`. Anything else will
-result in undefined behavior.
+For now, fields can either be a primitive type (`int`, `floats`, basic `struct`), `std::string` or a `std::vector`
+(containing supported types). Anything else will result in undefined behavior.
 
 ### 2. Server
 
-Creating a server is relatively simple. You just have to specify the port you want the server to be hosted on and
+Hosting a server is relatively simple. You just have to specify the port you want the server to be hosted on and
 everything else will be handled automatically.
 
-Whenever you're ready, call the `run()` function of both `Server` and `asio::io_context`, and you're good to go!
+Whenever you're ready, call the `run()` function of both `Server` and `asio::io_context`.  
+After that, don't forget to periodically update the server with the `update()` function.
 
 You can set a callback for each session connection/disconnection, with the `onConnect` and `onDisconnect` functions.
 
-Full example:
+Full example (**PRONE TO CHANGE**):
 ```c++
 #include "rtnt/core/server.hpp"
 
 int main()
 {
-    unsigned short port{4242};
+    constexpr unsigned short port = 4242;
+    constexpr size_t TPS = 20;  // Number of time the server will refresh its state per second.
+                                // This doesn't affect the I/O operations, they will still run in real-time.
+    
     asio::io_context ctx;
+    std::thread ioThread;
+
     rtnt::core::Server server(ctx, port);
 
     server.onConnect([](const std::shared_ptr<rtnt::core::Session>& session) {
         LOG_INFO("New client connected! ID: {}", session->getId());
     });
-    
+
     server.onDisconnect([](const std::shared_ptr<rtnt::core::Session>& session) {
         LOG_INFO("Client disconnected. ID: {}", session->getId());
     });
 
     server.start();
-    ctx.run(); // You can run this in another thread (it is responsible for the I/O operations).
+
+    ioThread = std::thread([this]() {
+        logger::setThreadLabel("IoThread"); // Not MANDATORY but heavily recommended for easier log reading.
+        ctx.run();
+    });
+    
+    auto start = std::chrono::steady_clock::now();
+
+    while (true) {
+        server->update();   // This function can take quite some time, especially during heavy connections load.
+                            // Consider implementing a dynamic sleep, will be done in v1.2.X.
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1 / TPS * 1000));
+    }
+
+    ctx.stop();
+
+    if (ioThread.joinable()) {
+        ioThread.join();
+    }
 }
 ```
 
 ### 3. Client
+
+Creating a client is similar to hosting a server. Simply call the `connect()` function with the remote server's IP and
+port. Everything else is done under the hood.
+
+The client will notify you when you are successfully connected with the remote server via the `onConnect` callback.  
+The connection is considered successful whenever the remote server responds with the right packet.
+
+Whenever you're ready, call the `run()` function of `asio::io_context`.  
+After that, don't forget to periodically update the client with the `update()` function.
+
+You can also set a callback for when the client is/gets disconnected, with the `onDisconnect` function.
+
+Full example (**PRONE TO CHANGE**):
+```c++
+#include "rtnt/core/client.hpp"
+
+int main()
+{
+    constexpr std::string_view ip = "127.0.0.1";
+    constexpr unsigned short port = 4242;
+    constexpr size_t TPS = 20;  // Number of time the client will refresh its state per second.
+                                // This doesn't affect the I/O operations, they will still run in real-time.
+
+    asio::io_context ctx;
+    std::thread ioThread;
+
+    rtnt::core::Client client(ctx);
+
+    client.onConnect([]() {
+        LOG_INFO("Client connected!");
+    });
+
+    client.onDisconnect([]() {
+        LOG_INFO("Client disconnected.");
+    });
+
+    client.connect(ip, port);
+
+    ioThread = std::thread([this]() {
+        logger::setThreadLabel("IoThread"); // Not MANDATORY but heavily recommended for easier log reading.
+        ctx.run();
+    });
+    
+    auto start = std::chrono::steady_clock::now();
+
+    while (true) {
+        client->update();   // This function can take quite some time, especially during heavy connections load.
+                            // Consider implementing a dynamic sleep, will be done in v1.2.X.
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1 / TPS * 1000));
+    }
+
+    ctx.stop();
+
+    if (ioThread.joinable()) {
+        ioThread.join();
+    }
+}
+```
 
 ### 4. Packet handling
 
