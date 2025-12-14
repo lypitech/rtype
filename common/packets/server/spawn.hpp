@@ -4,10 +4,8 @@
 
 namespace packet {
 
-// TODO: add entity attributes.
 using packetId = rtnt::core::packet::Id;
 
-#pragma pack(push, 1)
 /**
  * @struct packet::Spawn
  *
@@ -17,18 +15,20 @@ using packetId = rtnt::core::packet::Id;
 struct Spawn
 {
     static constexpr auto kId = static_cast<packetId>(type::Server::kSpawn);
-    static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
+    static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr std::string kName = "SPAWN";
 
-    uint32_t id;  ///< The id of the spawned entity.
+    uint32_t id;                   ///< The id of the entity for future reference
+    uint32_t nbytes;               ///< The number of activated bytes in the bitmask
+    std::vector<uint8_t> bitmask;  ///< The bitmask of the components.
+    std::vector<uint8_t> content;  ///< The content of the components.
 
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        ar & id;
+        ar & bitmask & content;
     }
 };
-#pragma pack(pop)
 
 }  // namespace packet
 
