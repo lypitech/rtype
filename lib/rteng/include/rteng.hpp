@@ -10,16 +10,12 @@
 #include "MonoBehaviour.hpp"
 #include "Renderer.hpp"
 #include "comp/Behaviour.hpp"
-#include "comp/IO.hpp"
-#include "comp/Sprite.hpp"
-#include "comp/Transform.hpp"
-#include "comp/position.hpp"
+#include "packets/server/spawn.hpp"
 #include "rtnt/Core/client.hpp"
 #include "rtnt/Core/server.hpp"
+#include "spawnFactory.hpp"
 
 namespace rteng {
-
-#define ALL_COMPONENTS comp::Behaviour, comp::Position, comp::Transform, comp::IO, comp::Sprite
 
 class GameEngine
 {
