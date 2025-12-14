@@ -8,8 +8,8 @@
 
 #include "logger/Logger.h"
 #include "logger/Thread.h"
-#include "rtnt/Core/client.hpp"
-#include "rtnt/Core/server.hpp"
+#include "rtnt/core/client.hpp"
+#include "rtnt/core/server.hpp"
 
 class NetworkTest : public testing::Test
 {
