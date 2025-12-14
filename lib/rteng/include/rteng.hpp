@@ -51,19 +51,20 @@ public:
         return _server->getPacketDispatcher().bind(func);
     }
     template <typename component>
-    void registerComponent()
+    void registerComponent() const
     {
         _ecs->registerComponent<component>();
     }
 
     template <typename... Components>
-    void registerEntity(const std::shared_ptr<behaviour::MonoBehaviour>& mono_behaviour, Components&&... components)
+    rtecs::EntityID registerEntity(const std::shared_ptr<behaviour::MonoBehaviour>& mono_behaviour,
+                                   Components&&... components)
     {
         const rtecs::EntityID entityId =
             _ecs->registerEntity<std::decay_t<Components>...>(std::forward<Components>(components)...);
 
         if (!mono_behaviour || !_ecs->hasEntityComponent<comp::Behaviour>(entityId)) {
-            return;
+            return entityId;
         }
         auto& behaviourComponents = _ecs->getComponent<comp::Behaviour>();
         auto& behaviourSparseSet = dynamic_cast<rtecs::SparseSet<comp::Behaviour>&>(behaviourComponents);
@@ -73,6 +74,7 @@ public:
         behaviourComp.started = false;
 
         behaviourSparseSet.put(entityId, behaviourComp);
+        return entityId;
     }
 
 private:
