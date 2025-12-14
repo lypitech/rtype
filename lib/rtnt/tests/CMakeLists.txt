@@ -6,6 +6,7 @@ set(RTNT_TEST_SOURCES
     tests/string_packet.cpp
     tests/disconnect.cpp
     tests/broadcast.cpp
+    tests/vector_packet.cpp
 )
 
 add_executable(rtnt_tests ${RTNT_TEST_SOURCES})
