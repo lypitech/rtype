@@ -13,9 +13,6 @@ namespace rtecs {
 
 class DynamicBitSet
 {
-    std::vector<std::bitset<64>> _bitsets;
-    size_t _nbits = 0;
-
 public:
     /**
      * @brief Proxy type used for mutable access to a single bit.
@@ -41,13 +38,13 @@ public:
 
     /** @brief Default constructor creating an empty bitset. */
     explicit DynamicBitSet() = default;
+
     /**
      * @brief Construct a `DynamicBitSet` from a byte array.
      *
-     * @param bytes The byte array representing the bitset.
-     * @param nbits The number of bits to track.
+     * @param bytes The byte array containing the index of activated bytes.
      */
-    explicit DynamicBitSet(std::vector<uint8_t> bytes, size_t nbits);
+    explicit DynamicBitSet(const std::vector<uint8_t> &bytes);
 
     /** @brief Serialize the bitset to a byte array. */
     [[nodiscard]]
@@ -76,6 +73,10 @@ public:
     bool operator[](size_t i) const;
     /** @brief Compare two bitsets for equality. */
     bool operator==(const DynamicBitSet &) const;
+
+private:
+    std::vector<std::bitset<64>> _bitsets;
+    size_t _nbits = 0;  ///< The index of the last activated bit.
 };
 
 }  // namespace rtecs
