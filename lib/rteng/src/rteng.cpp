@@ -15,7 +15,7 @@ namespace rteng {
 GameEngine::GameEngine(std::string host, unsigned short port)
     : _client(std::make_unique<rtnt::core::Client>(_context)), _host(host), _port(port)
 {
-    _client->onMessage([](rtnt::core::Packet&) { LOG_INFO("Received message."); });
+    _client->onMessage([](rtnt::core::Packet& packet) { LOG_INFO("Received message (#{}).", packet.getId()); });
     _client->onConnect([]() { LOG_INFO("Successfully connected."); });
     _client->onDisconnect([]() { LOG_INFO("Disconnected from host."); });
 }
