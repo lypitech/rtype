@@ -32,8 +32,7 @@ bool DynamicBitSet::BitRef::operator==(const BitRef& other) const { return block
 //      DynamicBitSet
 // =======================
 
-DynamicBitSet::DynamicBitSet(std::vector<uint8_t> bytes, size_t nbits)
-    : _nbits(nbits)
+DynamicBitSet::DynamicBitSet(const std::vector<uint8_t>& bytes)
 {
     const size_t nblocks = (_nbits / 64) + !!(_nbits % 64);
     _bitsets.resize(nblocks);
