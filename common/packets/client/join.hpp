@@ -1,7 +1,7 @@
 #pragma once
 
 #include "enums/packets.hpp"
-#include "rtnt/Core/packet.hpp"
+#include "rtnt/core/packet.hpp"
 
 namespace packet {
 

@@ -11,8 +11,8 @@
 #include "Renderer.hpp"
 #include "comp/Behaviour.hpp"
 #include "packets/server/spawn.hpp"
-#include "rtnt/Core/client.hpp"
-#include "rtnt/Core/server.hpp"
+#include "rtnt/core/client.hpp"
+#include "rtnt/core/server.hpp"
 #include "spawnFactory.hpp"
 
 namespace rteng {
