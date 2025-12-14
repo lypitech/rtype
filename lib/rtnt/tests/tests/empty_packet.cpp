@@ -26,7 +26,7 @@ TEST_F(NetworkTest, empty_packet)
 
     ASSERT_TRUE(waitFor([&]() { return client->isConnected(); })) << "Client failed to connect.";
 
-    constexpr Example ex{};
+    Example ex{};
     client->send(ex);
 
     EXPECT_TRUE(waitFor([&]() { return packetSize == 0; })) << "Server has received no EXAMPLE packet.";
