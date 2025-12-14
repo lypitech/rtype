@@ -9,6 +9,7 @@
 #include "comp/Sprite.hpp"
 #include "logger/Thread.h"
 #include "sys/Sprite.hpp"
+#include "sys/rectangle.hpp"
 
 namespace rteng {
 
@@ -82,8 +83,23 @@ void GameEngine::onServerDisconnect(std::function<void(std::shared_ptr<rtnt::cor
 
 void GameEngine::init()
 {
+    using SessionPtr = std::shared_ptr<rtnt::core::Session>;
+
     if (_isClient) {
         _client->connect(_host, _port);
+        registerPacketHandler<packet::Spawn>([this](const SessionPtr&, const packet::Spawn& packet) {
+            const rtecs::DynamicBitSet bitset(packet.bitmask);
+
+            if (_serverToClient.contains(packet.id)) {
+                LOG_TRACE_R3("Entity has already been created, ignoring...");
+                return;
+            }
+            const rtecs::EntityID real = _ecs->registerEntity(bitset);
+            _serverToClient.emplace(packet.id, real);
+            _factory.apply(*_ecs, real, bitset, packet.content);
+        });
+        const auto bitset = _ecs->getComponentsBitSet<comp::Rectangle, comp::Position>();
+        _ecs->registerSystem(std::make_unique<sys::Rectangle>(bitset));
     } else {
         _server->start();
     }
