@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "ASystem.hpp"
+#include "ECS.hpp"
 #include "comp/Sprite.hpp"
 
 namespace sys {
@@ -10,18 +11,18 @@ namespace sys {
 class Sprite : public rtecs::ASystem
 {
 public:
-    explicit Sprite(rtecs::DynamicBitSet bitset)
-        : ASystem(std::move(bitset))
+    explicit Sprite(const std::unique_ptr<rtecs::ECS>& ecs)
+        : ASystem(ecs->getComponentsBitSet<comp::Sprite, comp::Position>())
     {
     }
-    void apply(rtecs::ECS& ecs) override;  // equivalent of render.
+    void apply(rtecs::ECS& ecs) override;
 };
 
 class Animation : public rtecs::ASystem
 {
 public:
-    explicit Animation(rtecs::DynamicBitSet bitset)
-        : ASystem(std::move(bitset))
+    explicit Animation(const std::unique_ptr<rtecs::ECS>& ecs)
+        : ASystem(ecs->getComponentsBitSet<comp::Sprite>())
     {
     }
     void apply(rtecs::ECS& ecs) override;

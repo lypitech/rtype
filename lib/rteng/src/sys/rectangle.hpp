@@ -9,8 +9,8 @@ namespace sys {
 class Rectangle : public rtecs::ASystem
 {
 public:
-    explicit Rectangle(rtecs::DynamicBitSet bitset)
-        : ASystem(std::move(bitset))
+    explicit Rectangle(const std::unique_ptr<rtecs::ECS>& ecs)
+        : ASystem(ecs->getComponentsBitSet<comp::Rectangle, comp::Position>())
     {
     }
     void apply(rtecs::ECS& ecs) override;
