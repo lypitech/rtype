@@ -13,9 +13,21 @@
 
 namespace rteng {
 
+GameEngine* kInstance = nullptr;
+
+GameEngine& GameEngine::getInstance()
+{
+    if (kInstance == nullptr) {
+        LOG_FATAL("GameEngine in not instantiated yet. ");
+        std::exit(1);
+    }
+    return *kInstance;
+}
+
 GameEngine::GameEngine(std::string host, unsigned short port)
     : _client(std::make_unique<rtnt::core::Client>(_context)), _host(host), _port(port)
 {
+    kInstance = this;
     _client->onMessage([](rtnt::core::Packet& packet) { LOG_INFO("Received message (#{}).", packet.getId()); });
     _client->onConnect([]() { LOG_INFO("Successfully connected."); });
     _client->onDisconnect([]() { LOG_INFO("Disconnected from host."); });
@@ -24,6 +36,7 @@ GameEngine::GameEngine(std::string host, unsigned short port)
 GameEngine::GameEngine(unsigned short port)
     : _server(std::make_unique<rtnt::core::Server>(_context, port)), _port(port), _isClient(false)
 {
+    kInstance = this;
     using SessionPtr = std::shared_ptr<rtnt::core::Session>;
 
     _server->onMessage([](SessionPtr, rtnt::core::Packet&) { LOG_INFO("Received message from cli."); });
