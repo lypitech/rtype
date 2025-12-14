@@ -39,9 +39,8 @@ DynamicBitSet::DynamicBitSet(std::vector<uint8_t> bytes, size_t nbits)
     _bitsets.resize(nblocks);
 
     for (size_t i = 0; i < _nbits; i++) {
-        if ((bytes[i / 8] & (1 << (i % 8))) != 0) {
-            _bitsets[i / 64].set(i % 64);
-        }
+        (*this)[bytes[i] - 1] = true;
+        _nbits = nbits;
     }
 }
 
@@ -50,7 +49,6 @@ std::pair<std::vector<uint8_t>, size_t> DynamicBitSet::toBytes() const
     const size_t nbytes = (_nbits / 8) + !!(_nbits % 8);
     std::vector<uint8_t> bytes(nbytes, 0);
 
-    bytes.resize(nbytes);
     for (size_t i = 0; i < _nbits; i++) {
         if ((*this)[i]) {
             bytes[i / 8] |= (1 << (i % 8));
