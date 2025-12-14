@@ -111,14 +111,13 @@ void GameEngine::init()
             _serverToClient.emplace(packet.id, real);
             _factory.apply(*_ecs, real, bitset, packet.content);
         });
-        const auto bitset = _ecs->getComponentsBitSet<comp::Rectangle, comp::Position>();
-        _ecs->registerSystem(std::make_unique<sys::Rectangle>(bitset));
     } else {
         _server->start();
     }
-    const auto bitset = _ecs->getComponentsBitSet<comp::Sprite>();
-    _ecs->registerSystem(std::make_unique<sys::Sprite>(bitset));
-    _ecs->registerSystem(std::make_unique<sys::Animation>(bitset));
+    _ecs->registerSystem(std::make_unique<sys::Sprite>(_ecs));
+    _ecs->registerSystem(std::make_unique<sys::Animation>(_ecs));
+    _ecs->registerSystem(std::make_unique<sys::Rectangle>(_ecs));
+    _ecs->registerSystem(std::make_unique<sys::IO>(_ecs));
     _isInit = true;
     _isRunning = true;
 }
