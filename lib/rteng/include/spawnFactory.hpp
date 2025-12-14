@@ -44,7 +44,7 @@ private:
     void registerComponent()
     {
         _creators.push_back([](rtecs::ECS& ecs, size_t entityId, rtnt::core::Packet& p) {
-            LOG_DEBUG("Called for entityID: {} and type {}", entityId, typeid(T).name());
+            LOG_DEBUG("Reassembling component ({})", typeid(T).name());
             T component;
 
             p >> component;
