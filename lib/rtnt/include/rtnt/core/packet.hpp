@@ -352,9 +352,11 @@ public:
      */
     explicit Packet(const packet::Id id, const packet::Flag flag = packet::Flag::kUnreliable,
                     const uint8_t channelId = 0)
-        : _messageId(id), _flag(flag), _channelId(channelId)
-    {
-    }
+        : _messageId(id), _flag(flag), _channelId(channelId) {}
+
+    /// TMP!!
+    explicit Packet(const std::vector<uint8_t>& data)
+        : _messageId(0), _flag(packet::Flag::kUnreliable), _channelId(0), _buffer(data) {}
 
     /* Serializing methods */
     /**
