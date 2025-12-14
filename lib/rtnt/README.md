@@ -369,7 +369,7 @@ Every packet is prefixed with a fixed-size header to ensure integrity and identi
 |     0x13     |  2 (`u16`)   |     `payloadSize`     | Size of the user data following the header.                                                                                                                   |
 |     0x15     |  4 (`u32`)   |      `checksum`       | [CRC32](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) checksum to validate payload integrity and detect packet corruption **(not implemented yet)**. |
 
-Header size: 25 bytes.
+*Header size: 25 bytes.*
 
 When receiving a packet, multiple checks are performed:
 - **Header size:** If received data is too small to contain a `rtnt` header, packet is dropped, considered as random
@@ -377,6 +377,12 @@ When receiving a packet, multiple checks are performed:
 - **Protocol ID:** If received protocol ID doesn't match the local protocol ID, packet is dropped.
 - **Payload size:** If given protocol size doesn't match the size of the payload received, packet is dropped, considered
   as corrupted.
+
+> [!IMPORTANT]
+> As you can see, some fields are not implemented yet, because the RUDP logic is not done yet.  
+> See you in v1.2.0!  
+> That being said, these fields are still transmitted through the network (with empty values), they just have no use for
+> now.
 
 ### Server <-> Client Handshake
 
