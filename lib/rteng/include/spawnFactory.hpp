@@ -7,11 +7,12 @@
 #include "comp/IO.hpp"
 #include "comp/Sprite.hpp"
 #include "comp/Transform.hpp"
+#include "comp/rect.hpp"
 #include "rtnt/Core/packet.hpp"
 
 namespace rteng {
 
-#define ALL_COMPONENTS comp::Behaviour, comp::Position, comp::Transform, comp::IO, comp::Sprite
+#define ALL_COMPONENTS comp::Behaviour, comp::Position, comp::Transform, comp::IO, comp::Sprite, comp::Rectangle
 
 class ComponentFactory
 {
