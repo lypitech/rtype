@@ -7,6 +7,8 @@
 #include "ISparseSet.hpp"
 #include "SparseSet.hpp"
 #include "SparseVectorView.hpp"
+#include "View.hpp"
+#include "logger/Logger.h"
 
 namespace rtecs {
 
@@ -99,6 +101,20 @@ private:
     ECS &operator=(const ECS &) = delete;
     ECS(ECS &&) = default;
     ECS &operator=(ECS &&) = default;
+
+    /**
+     * @brief Creates a View to iterate over entities having all specified components.
+     *
+     *  Usage: @code for (auto [pos, vel] : ecs.view<Position, Velocity>()) { ... }@endcode
+     *
+     * @returns A @code View@endcode to iterate over said entities.
+     *
+     */
+    template <typename... Components>
+    View<Components...> view()
+    {
+        return View<Components...>(dynamic_cast<SparseSet<Components> &>(getComponent<Components>())...);
+    }
 
     /**
      * @brief Convenience factory creating an `ECS` and registering the
