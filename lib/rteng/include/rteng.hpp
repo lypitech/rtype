@@ -83,8 +83,11 @@ private:
     graphics::Renderer _renderer;
     std::unique_ptr<rtecs::ECS> _ecs = rtecs::ECS::createWithComponents<ALL_COMPONENTS>();
     asio::io_context _context;
+    std::unordered_map<rtecs::EntityID, rtecs::EntityID> _serverToClient;
+    //   entityID on the server ^               ^ Real entityID
     std::unique_ptr<rtnt::core::Client> _client;
     std::unique_ptr<rtnt::core::Server> _server;
+    ComponentFactory _factory;
     std::string _host{"localhost"};
     std::unique_ptr<std::thread> _ioThread;
     unsigned short _port;
