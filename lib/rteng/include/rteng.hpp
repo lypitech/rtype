@@ -41,6 +41,8 @@ public:
     void onServerConnect(std::function<void(std::shared_ptr<rtnt::core::Session>)> callback);
     void onServerMessage(std::function<void(std::shared_ptr<rtnt::core::Session>, rtnt::core::Packet&)> callback);
 
+    static GameEngine& getInstance();
+
     void registerSystems(std::vector<std::unique_ptr<rtecs::ASystem> > systems);
     template <typename T>
     void registerPacketHandler(std::function<void(const std::shared_ptr<rtnt::core::Session>&, const T&)> func)
@@ -88,6 +90,11 @@ public:
         behaviourSparseSet.put(entityId, behaviourComp);
         return entityId;
     }
+
+    [[nodiscard]] const graphics::Renderer& getRenderer() const { return _renderer; }
+    [[nodiscard]] bool isClient() const { return _isClient; }
+    [[nodiscard]] const std::unique_ptr<rtnt::core::Client>& getClient() const { return _client; }
+    [[nodiscard]] const std::unique_ptr<rtnt::core::Server>& getServer() const { return _server; }
 
 private:
     graphics::Renderer _renderer;
