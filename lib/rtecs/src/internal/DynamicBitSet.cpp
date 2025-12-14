@@ -34,23 +34,19 @@ bool DynamicBitSet::BitRef::operator==(const BitRef& other) const { return block
 
 DynamicBitSet::DynamicBitSet(const std::vector<uint8_t>& bytes)
 {
-    const size_t nblocks = (_nbits / 64) + !!(_nbits % 64);
-    _bitsets.resize(nblocks);
-
-    for (size_t i = 0; i < _nbits; i++) {
-        (*this)[bytes[i] - 1] = true;
-        _nbits = nbits;
+    for (unsigned char byte : bytes) {
+        (*this)[byte] = true;
     }
 }
 
+// This should be returning a vector of the index of activated bytes .
 std::pair<std::vector<uint8_t>, size_t> DynamicBitSet::toBytes() const
 {
-    const size_t nbytes = (_nbits / 8) + !!(_nbits % 8);
-    std::vector<uint8_t> bytes(nbytes, 0);
+    std::vector<uint8_t> bytes;
 
     for (size_t i = 0; i < _nbits; i++) {
         if ((*this)[i]) {
-            bytes[i / 8] |= (1 << (i % 8));
+            bytes.push_back(i);
         }
     }
     return {bytes, _nbits};
@@ -95,15 +91,12 @@ DynamicBitSet DynamicBitSet::operator|(const DynamicBitSet& other) const
 {
     DynamicBitSet result;
     const size_t limit = std::max(_nbits, other._nbits);
-    size_t set = 0;
 
     for (size_t i = 0; i < limit; i++) {
         bool bitA = (i < _nbits) ? _bitsets[i / 64][i % 64] : false;
         bool bitB = (i < other._nbits) ? other._bitsets[i / 64][i % 64] : false;
         result[i] = bitA || bitB;
-        set += bitA || bitB;
     }
-    result._nbits = set;
     return result;
 }
 
