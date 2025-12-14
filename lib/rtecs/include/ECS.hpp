@@ -13,17 +13,56 @@ namespace rtecs {
 using Entity = DynamicBitSet;
 using EntityID = size_t;
 using SystemID = size_t;
+/**
+ * @brief Type used to identify a component type in runtime maps.
+ *
+ * Uses `typeid(...).hash_code()` to produce a stable key for component
+ * registration/lookups.
+ */
 using ComponentID = decltype(typeid(ISparseSet).hash_code());
 
+/**
+ * @brief Helper: a vector of strong references to a component type.
+ *
+ * Used as the element type when returning groups of component references
+ * (for example `getMultipleComponents`).
+ */
 template <typename Component>
 using ComponentGroup = std::vector<std::reference_wrapper<Component>>;
 
+/**
+ * @brief Tuple of `ComponentGroup`s for variadic component queries.
+ */
 template <typename... Components>
 using ComponentGroupList = std::tuple<ComponentGroup<Components>...>;
 
+/**
+ * @brief Main ECS container.
+ *
+ * Responsibilities:
+ * - Register component storage (`registerComponent<T>()`).
+ * - Register systems (`registerSystem`).
+ * - Create/register entities with an associated component mask and
+ *   component instances (`registerEntity`).
+ * - Query components by entity or by component group.
+ *
+ * Design notes:
+ * - Entities are represented by an `Entity` (`DynamicBitSet`) mask and
+ *   stored in `_entityList` where their `EntityID` is the index.
+ * - Component storage is type-erased behind `ISparseSet` and kept in a
+ *   `SparseVectorView` mapping `ComponentID` -> `ISparseSet`.
+ * - Component lookups use `typeid(T).hash_code()` as the runtime key.
+ */
 class ECS final
 {
-   private:
+private:
+    /**
+     * @brief Construct or assign a component instance for `id` inside the
+     *        appropriate `SparseSet<Component>`.
+     *
+     * This forwards the provided component to the concrete `SparseSet`
+     * instance stored in `_componentView`.
+     */
     template <typename Component>
     void emplaceComponent(EntityID id, Component &&component)
     {
@@ -34,6 +73,14 @@ class ECS final
         sparseSet.put(id, std::forward<Component>(component));
     }
 
+    /**
+     * @brief Build a `DynamicBitSet` with a single bit set for the given
+     *        component type.
+     *
+     * The returned bitset has the bit corresponding to the dense index of
+     * the component registration set to `true`. Used to compose entity
+     * masks when registering entities or matching systems.
+     */
     template <typename Component>
     DynamicBitSet getComponentBitSet() const
     {
@@ -53,6 +100,13 @@ class ECS final
     ECS(ECS &&) = default;
     ECS &operator=(ECS &&) = default;
 
+    /**
+     * @brief Convenience factory creating an `ECS` and registering the
+     *        given component types.
+     *
+     * Example: `ECS::createWithComponents<Position, Velocity>()` will
+     * register those component types and return an `ECS` instance.
+     */
     template <typename... Components>
     static std::unique_ptr<ECS> createWithComponents()
     {
@@ -63,6 +117,10 @@ class ECS final
 
     ~ECS() = default;
 
+    /**
+     * @brief Build a combined component mask for the provided component
+     *        types (bitwise OR of each component's bitset).
+     */
     template <typename... Components>
     DynamicBitSet getComponentsBitSet() const
     {
@@ -75,6 +133,12 @@ class ECS final
         return std::get<ComponentGroup<Component>>(tuple);
     }
 
+    /**
+     * @brief Register component storage for `Component`.
+     *
+     * After calling this the ECS can store instances of `Component` and
+     * return references via `getComponent` / `getComponentOf`.
+     */
     template <typename Component>
     void registerComponent()
     {
@@ -82,6 +146,12 @@ class ECS final
         _componentView.emplace(hashcode, std::make_unique<SparseSet<Component>>());
     }
 
+    /**
+     * @brief Register a new entity and optionally emplace provided
+     *        component instances.
+     *
+     * The returned `EntityID` is the entity's index in `_entityList`.
+     */
     template <typename... Components>
     EntityID registerEntity(Components &&...components)
     {
@@ -95,6 +165,10 @@ class ECS final
         return id;
     }
 
+    /**
+     * @brief Register a new entity with an empty instance set but a
+     *        component mask reflecting the provided component types.
+     */
     template <typename... Components>
     EntityID registerEntity()
     {
@@ -104,12 +178,18 @@ class ECS final
         return _entityList.size() - 1;
     }
 
+    /**
+     * @brief Register a new entity with the provided component mask.
+     */
     EntityID registerEntity(const DynamicBitSet &entity)
     {
         _entityList.push_back(entity);
         return _entityList.size() - 1;
     }
 
+    /**
+     * @brief Check whether `entityId` has `Component` (by mask test).
+     */
     template <typename Component>
     bool hasEntityComponent(EntityID entityId)
     {
@@ -119,6 +199,10 @@ class ECS final
         return (entity & componentBitset) == componentBitset;
     }
 
+    /**
+     * @brief Register a system instance. Systems must derive from
+     *        `ASystem`.
+     */
     template <typename System>
     void registerSystem(std::unique_ptr<System> system)
     {
@@ -127,6 +211,9 @@ class ECS final
         _systemView.emplace(hashcode, std::move(system));
     }
 
+    /**
+     * @brief Apply the system type `System` (dispatch by typeid).
+     */
     template <typename System>
     void applySystem()
     {
@@ -135,8 +222,15 @@ class ECS final
         applySystem(hashcode);
     }
 
+    /** @brief Apply all registered systems. */
     void applyAllSystems();
 
+    /**
+     * @brief Return the `ISparseSet` backing storage for `Component`.
+     *
+     * Caller is responsible for casting to a concrete `SparseSet<T>` if
+     * they need access to typed operations.
+     */
     template <typename Component>
     ISparseSet &getComponent()
     {
@@ -144,6 +238,13 @@ class ECS final
         return *_componentView[hashcode];
     };
 
+    /**
+     * @brief Collect and return groups of component references for
+     *        entities matching the provided component types.
+     *
+     * Returns a tuple of vectors (one per component type) containing
+     * references to each matched component instance.
+     */
     template <typename... Components>
     ComponentGroupList<Components...> getMultipleComponents()
     {
@@ -159,6 +260,14 @@ class ECS final
         return tuple;
     }
 
+    /**
+     * @brief Retrieve a component instance for `entity` by type.
+     *
+     * This performs a lookup in the concrete `SparseSet<Component>` and
+     * returns a reference to the component. Behavior is undefined if the
+     * entity does not actually own the component (caller must ensure
+     * membership with `hasEntityComponent`).
+     */
     template <typename Component>
     Component &getComponentOf(EntityID entity)
     {
