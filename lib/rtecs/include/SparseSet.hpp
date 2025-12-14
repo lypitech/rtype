@@ -61,6 +61,19 @@ public:
 
    public:
     /**
+     * @brief Get the dense list of entities that possess this component.
+     *
+     * @returns A vector of the indice for the corresponding entities.
+     *
+     * Indices match the getAll() vector.
+     */
+    [[nodiscard]]
+    const std::vector<size_t> &getEntities() const noexcept
+    {
+        return _entities;
+    }
+
+    /**
      * @brief Get a reference of the entity.
      *
      * @param id The id of the entity.
