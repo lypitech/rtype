@@ -8,7 +8,7 @@
 #include "comp/Sprite.hpp"
 #include "comp/Transform.hpp"
 #include "comp/rect.hpp"
-#include "rtnt/Core/packet.hpp"
+#include "rtnt/core/packet.hpp"
 
 namespace rteng {
 
