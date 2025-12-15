@@ -16,7 +16,7 @@ struct UpdatePosition
 {
     static constexpr auto kId = static_cast<packetId>(type::Server::kUpdatePosition);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
-    static constexpr std::string kName = "UPDATE_POSITION";
+    static constexpr rtnt::core::packet::Name kName = "UPDATE_POSITION";
 
     uint32_t id;          ///< The id of the entity
     uint16_t position_x;  //< The x position of the entity

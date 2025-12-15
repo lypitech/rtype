@@ -16,7 +16,7 @@ struct UserInput
 {
     static constexpr packetId kId = static_cast<packetId>(type::Client::kUserInput);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
-    static constexpr std::string kName = "USER_INPUT";
+    static constexpr rtnt::core::packet::Name kName = "USER_INPUT";
 
     uint8_t input_mask;  ///< The input bitmask of the currently pressed actions.
 
