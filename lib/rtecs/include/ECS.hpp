@@ -265,7 +265,7 @@ public:
     {
         const size_t hashcode = typeid(Component).hash_code();
         return *_componentView[hashcode];
-    };
+    }
 
     /**
      * @brief Collect and return groups of component references for
