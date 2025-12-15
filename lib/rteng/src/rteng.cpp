@@ -7,7 +7,11 @@
 #include "SparseSet.hpp"
 #include "comp/Behaviour.hpp"
 #include "comp/Sprite.hpp"
+#include "handlers/client_side/handlers.hpp"
+#include "handlers/server/handlers.hpp"
 #include "logger/Thread.h"
+#include "packets/client/user_input.hpp"
+#include "sys/IO.hpp"
 #include "sys/Sprite.hpp"
 #include "sys/rectangle.hpp"
 
@@ -96,22 +100,12 @@ void GameEngine::onServerDisconnect(std::function<void(std::shared_ptr<rtnt::cor
 
 void GameEngine::init()
 {
-    using SessionPtr = std::shared_ptr<rtnt::core::Session>;
-
     if (_isClient) {
+        registerPacketHandler<packet::Spawn>(client_side::handlers::handleSpawn);
+        registerPacketHandler<packet::UpdatePosition>(client_side::handlers::handleUpdatePosition);
         _client->connect(_host, _port);
-        registerPacketHandler<packet::Spawn>([this](const SessionPtr&, const packet::Spawn& packet) {
-            const rtecs::DynamicBitSet bitset(packet.bitmask);
-
-            if (_serverToClient.contains(packet.id)) {
-                LOG_TRACE_R3("Entity has already been created, ignoring...");
-                return;
-            }
-            const rtecs::EntityID real = _ecs->registerEntity(bitset);
-            _serverToClient.emplace(packet.id, real);
-            _factory.apply(*_ecs, real, bitset, packet.content);
-        });
     } else {
+        registerPacketHandler<packet::UserInput>(server_side::handlers::handleUserInput);
         _server->start();
     }
     _ecs->registerSystem(std::make_unique<sys::Sprite>(_ecs));
@@ -147,6 +141,7 @@ void GameEngine::run()
         // 2. Update (Update System)
         // 3. ECS
 
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));  // pas niquer le ssd/proc
 
         // Update MonoBehaviour instances (Start called once, then Update each frame)
         {
@@ -165,12 +160,14 @@ void GameEngine::run()
                 instance->Update(dt);
             }
         }
+        if (_isClient) {
+            BeginDrawing();
+            ClearBackground(WHITE);
+        }
         _ecs->applyAllSystems();
 
         // 4. Render (Rendering System)
         if (_isClient) {
-            BeginDrawing();
-            ClearBackground(WHITE);
             _renderer.drawText("Hello R-Type Engine!", 190, 200, 20, LIGHTGRAY);
 
             EndDrawing();
