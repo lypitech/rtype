@@ -61,6 +61,14 @@ The interface will be strictly reserved for **Developer Tools** (Debug builds) a
 * **Immediate Mode GUI:**
     A UI paradigm where the interface is redrawn from scratch every single frame. It is stateless (you don't create a "Button Object", you just call `if (Button("Click Me"))`). This makes it perfect for game engines where the state changes constantly.
 
+* **RTT (Round-Trip time):**
+This is the exact time (in milliseconds) it takes for a message to leave your Client, arrive at the Server, be processed, and return to the Client.
+
+* **Jitter:**
+That's the variance (instability) of your Ping :
+	* *Good connection:* Your ping is stable at 50ms (50, 51, 50, 50, 49). Jitter is close to 0.
+	* *Bad connection:* Your ping fluctuates wildly (20ms, then 150ms, then 30ms, then 200ms). Jitter is high.
+
 * **Runtime Inspection:**
     The ability to look at the value of variables (health, speed, position) while the software is actually running, without pausing it.
 
