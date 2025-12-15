@@ -48,7 +48,7 @@ Since we chose **Raylib** (which is an Immediate Mode graphics library), **Dear 
 
 ## 3. Implementation Strategy
 
-We will use **rlImGui**, a backend binding that connects Dear ImGui specifically to Raylib.
+We will use **[rlImGui](https://github.com/raylib-extras/rlImGui)**, a backend binding that connects Dear ImGui specifically to Raylib.
 The interface will be strictly reserved for **Developer Tools** (Debug builds) and will provide:
 1.  **Console:** A command line to execute server commands directly.
 2.  **Profiler:** A visual display of FPS and memory usage.
