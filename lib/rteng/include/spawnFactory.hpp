@@ -7,6 +7,7 @@
 #include "comp/IO.hpp"
 #include "comp/Sprite.hpp"
 #include "comp/Transform.hpp"
+#include "comp/position.hpp"
 #include "comp/rect.hpp"
 #include "rtnt/core/packet.hpp"
 
