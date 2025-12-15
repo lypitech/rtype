@@ -143,6 +143,16 @@ private:
         return (getComponentBitSet<Components>() | ...);
     }
 
+    /**
+     * @brief Get the list of all registered entity signatures.
+     * Useful for iterating over all valid IDs (0 to size-1).
+     */
+    [[nodiscard]]
+    const std::vector<Entity> &getEntities() const
+    {
+        return _entityList;
+    }
+
     template <typename Component, typename... TupleTypes>
     static constexpr ComponentGroup<Component> &getComponentGroup(std::tuple<TupleTypes...> &tuple)
     {
