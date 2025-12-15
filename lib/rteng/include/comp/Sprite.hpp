@@ -1,17 +1,14 @@
 #pragma once
 
-#include <raylib.h>
-
-#include "position.hpp"
+#include "rect.hpp"
 
 namespace comp {
 
 struct Sprite
 {
     bool shown = true;
-    Texture2D texture = {};
     float scale = 1.0f;
-    Color color = {0, 0, 0, 0};
+    MyColor color = {0, 0, 0, 0};
 
     template <typename Archive>
     void serialize(Archive&)
