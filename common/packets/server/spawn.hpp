@@ -25,7 +25,7 @@ struct Spawn
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        ar & bitmask & content;
+        ar & id & bitmask & content;
     }
 };
 

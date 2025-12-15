@@ -6,7 +6,6 @@ namespace packet {
 
 using packetId = rtnt::core::packet::Id;
 
-#pragma pack(push, 1)
 /**
  * @struct packet::Start
  *
@@ -25,6 +24,5 @@ struct Start
         ar;
     }
 };
-#pragma pack(pop)
 
 }  // namespace packet
