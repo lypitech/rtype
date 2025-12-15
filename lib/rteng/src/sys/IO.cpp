@@ -5,7 +5,11 @@
 #include "ECS.hpp"
 #include "SparseSet.hpp"
 #include "comp/IO.hpp"
+#include "comp/position.hpp"
+#include "enums/input.hpp"
+#include "packets/client/user_input.hpp"
 #include "raylib.h"
+#include "rteng.hpp"
 
 namespace sys {
 
@@ -34,10 +38,10 @@ static comp::IO::ButtonState updateButtonState(KeyboardKey key, comp::IO::Button
 
 void IO::apply(rtecs::ECS& ecs)
 {
-    auto& ioComponents = ecs.getComponent<comp::IO>();
-    rtecs::SparseSet<comp::IO>& ioSparseSet = dynamic_cast<rtecs::SparseSet<comp::IO>&>(ioComponents);
-
-    for (auto& ioComp : ioSparseSet.getAll()) {
+    if (!rteng::GameEngine::getInstance().isClient()) {
+        return;
+    }
+    for (const auto& [p, ioComp] : ecs.view<comp::Position, comp::IO>()) {
         ioComp.up = updateButtonState(KEY_UP, ioComp.up);
         ioComp.down = updateButtonState(KEY_DOWN, ioComp.down);
         ioComp.left = updateButtonState(KEY_LEFT, ioComp.left);
