@@ -55,6 +55,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 
 if (MSVC)
+    target_compile_definitions(${PROJECT_NAME}
+    PUBLIC
+        WIN32_LEAN_AND_MEAN
+        NOMINMAX
+        NOGDI
+        NOUSER
+    )
     target_compile_options(${PROJECT_NAME} PRIVATE /W4 /permissive-)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE
