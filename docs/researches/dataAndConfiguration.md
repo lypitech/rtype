@@ -53,7 +53,7 @@ C++ is a strongly typed language, while JSON is not. This library provides safe 
 
 ---
 
-## 4. Use Cases in R-Type
+## 4. Use-cases in R-Type
 
 We will use this library for two critical aspects:
 
