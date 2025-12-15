@@ -1,4 +1,5 @@
 #pragma once
+#include "ECS.hpp"
 #include "enums/packets.hpp"
 #include "rtnt/core/packet.hpp"
 
@@ -18,14 +19,15 @@ struct WorldInit
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr std::string kName = "WORLD_INIT";
 
-    uint16_t stage;                     ///< The current started stage.
-    uint32_t size;                      ///< The number of entities to create at initialization.
-    std::vector<std::string> entities;  ///< The list of created entities at this point. // TODO: Change type to entity.
+    uint16_t stage;                              ///< The current started stage.
+    std::vector<std::vector<uint8_t>> bitsets;   ///< The bitsets of all the created entities.
+    std::vector<rtecs::EntityID> ids;            ///< The ids of all the created entities.
+    std::vector<std::vector<uint8_t>> entities;  ///< The content of all created entities.
 
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        ar & stage & size & entities;
+        ar & stage & bitsets & ids & entities;
     }
 };
 
