@@ -16,8 +16,10 @@ void Rectangle::apply(rtecs::ECS& ecs)
             continue;
         }
 
-        DrawRectangleLines(pos.x, pos.y, rect.width, rect.height, rect.outline);
-        DrawRectangle(pos.x, pos.y, rect.width, rect.height, rect.inFill);
+        Color col{rect.outline.r, rect.outline.g, rect.outline.b, rect.outline.a};
+        DrawRectangleLines(pos.x, pos.y, rect.width, rect.height, col);
+        col = Color{rect.inFill.r, rect.inFill.g, rect.inFill.b, rect.inFill.a};
+        DrawRectangle(pos.x, pos.y, rect.width, rect.height, col);
     }
 }
 
