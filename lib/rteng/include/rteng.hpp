@@ -11,6 +11,7 @@
 #include "Renderer.hpp"
 #include "comp/Behaviour.hpp"
 #include "packets/server/spawn.hpp"
+#include "packets/server/world_init.hpp"
 #include "rtnt/core/client.hpp"
 #include "rtnt/core/server.hpp"
 #include "spawnFactory.hpp"
@@ -95,6 +96,8 @@ public:
         behaviourSparseSet.put(entityId, behaviourComp);
         return entityId;
     }
+
+    packet::WorldInit createWorldInit();
 
     [[nodiscard]] const graphics::Renderer& getRenderer() const { return _renderer; }
     [[nodiscard]] bool isClient() const { return _isClient; }
