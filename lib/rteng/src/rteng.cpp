@@ -44,7 +44,11 @@ GameEngine::GameEngine(unsigned short port)
     using SessionPtr = std::shared_ptr<rtnt::core::Session>;
 
     _server->onMessage([](SessionPtr, rtnt::core::Packet&) { LOG_INFO("Received message from cli."); });
-    _server->onConnect([](SessionPtr) { LOG_INFO("Accepting new connection."); });
+    _server->onConnect([this](SessionPtr s) {
+        LOG_INFO("Accepting new connection.");
+        auto id = registerEntity<comp::Position, comp::Rectangle>(nullptr, {25, 25}, {true, 150, 150, BLACK, RED});
+        _clientToServer.emplace(s->getId(), id);
+    });
     _server->onDisconnect([](SessionPtr) { LOG_INFO("Client disconnected."); });
 }
 
