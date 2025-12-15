@@ -18,9 +18,8 @@ void handleUserInput(const SessionPtr& s, const packet::UserInput& packet)
         x -= (packet.input_mask & static_cast<uint8_t>(game::Input::kLeft)) ? 10.0f : 0.0f;
         y += (packet.input_mask & static_cast<uint8_t>(game::Input::kDown)) ? 10.0f : 0.0f;
         y -= (packet.input_mask & static_cast<uint8_t>(game::Input::kUp)) ? 10.0f : 0.0f;
-        GameEngine::getInstance().getServer()->sendTo(
-            s, packet::UpdatePosition{static_cast<uint32_t>(id), static_cast<uint16_t>(x), static_cast<uint16_t>(y), 0,
-                                      0});
+        GameEngine::getInstance().getServer()->broadcast(packet::UpdatePosition{
+            static_cast<uint32_t>(id), static_cast<uint16_t>(x), static_cast<uint16_t>(y), 0, 0});
     }
 }
 
