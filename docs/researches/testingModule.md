@@ -17,7 +17,7 @@ The specific constraints driving our testing strategy are:
 2.  **CI/CD Automation:** We must implement a Continuous Integration (CI) pipeline to automatically build and test the project after every change.
 3.  **Stability:** As we are building a custom Game Engine, we need to ensure that adding a new feature (like a new monster) does not break existing features (like movement).
 
-To meet these requirements, we have selected **Google Test (GTest)** combined with **Google Mock (GMock)**.
+To meet these requirements, we have selected **[Google Test](https://github.com/google/googletest) (GTest)** combined with **Google Mock (GMock)**.
 
 ---
 
@@ -26,7 +26,7 @@ To meet these requirements, we have selected **Google Test (GTest)** combined wi
 We chose Google Test not just because it is popular, but because it solves specific technical challenges of the R-Type project:
 
 ### A. Simulation of Network Events (Mocking)
-This is the most critical reason. Our server communicates via the network (UDP/TCP). Testing the server logic by manually launching a client every time is slow and unreliable.
+This is the most critical reason. Our server communicates via the network (RUDP). Testing the server logic by manually launching a client every time is slow and unreliable.
 **Google Mock (GMock)** is included with GTest and allows us to create "Fake" (Mock) network clients.
 * *Use Case:* We can write a test that pretends to send a "Player Shoot" packet to the server. We then verify if the server created a missile entity, **without** needing a real network connection. This ensures we can validate the "Server Robustness" in isolation.
 
