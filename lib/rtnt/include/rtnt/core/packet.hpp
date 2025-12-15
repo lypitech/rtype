@@ -3,9 +3,10 @@
 #include <format>
 #include <vector>
 #include <type_traits>
+#include <limits>
 
 #if defined(_WIN32)
-#include <winsock2.h>
+#include <windows.h>
 #elif defined(__linux__)
 #include <arpa/inet.h>
 
@@ -385,28 +386,6 @@ public:
         append(str.data(), size);
         return *this;
     }
-
-    /**
-     * @brief       Specialization to safely write @code std::vector@endcode.
-     * @warning     T MUST be serializable by rtnt (no complex types).
-     * @tparam      T       Type of data that is contained in the vector
-     * @param       data    Const reference to the vector to write
-     */
-    template <typename T>
-    Packet& operator<<(const std::vector<T>& data)
-    {
-        if (data.size() > std::numeric_limits<uint16_t>::max()) {
-            throw std::runtime_error("Vector is too large to serialize (limit 65535)");
-        }
-
-        const auto size = static_cast<uint16_t>(data.size());
-        *this << size;
-
-        for (const auto& element : data) {
-            *this << element;
-        }
-        return *this;
-    }
     /* --------------------- */
 
     /* Deserializing methods */
@@ -444,27 +423,6 @@ public:
         str.assign(_buffer.begin() + static_cast<long>(_readPosition),
                    _buffer.begin() + static_cast<long>(_readPosition) + size);
         _readPosition += size;
-        return *this;
-    }
-
-    /**
-     * @brief   Specialization to safely read @code std::vector@endcode.
-     * Reads a 2-byte length prefix followed by the elements.
-     */
-    template <typename T>
-    Packet& operator>>(std::vector<T>& data)
-    {
-        uint16_t size = 0;
-
-        *this >> size;
-        if (_readPosition + size > _buffer.size()) {
-            throw std::runtime_error("Packet Underflow");
-        }
-
-        data.resize(size);
-        for (auto& element : data) {
-            *this >> element;
-        }
         return *this;
     }
     /* ------------------- */
@@ -543,6 +501,46 @@ operator>>(Packet& p, T& data)
         data.serialize(reader);
         return p;
     }
+}
+
+/**
+ * @brief       Specialization to safely write @code std::vector@endcode.
+ * @warning     T MUST be serializable by rtnt (no complex types).
+ * @tparam      T       Type of data that is contained in the vector
+ * @param       p       Packet to write into
+ * @param       data    Const reference to the vector to write
+ */
+template <typename T>
+Packet& operator<<(Packet& p, const std::vector<T>& data)
+{
+    if (data.size() > std::numeric_limits<uint16_t>::max()) {
+        throw std::runtime_error("Vector is too large to serialize (limit 65535)");
+    }
+
+    const auto size = static_cast<uint16_t>(data.size());
+    p << size;
+
+    for (const auto& element : data) {
+        p << element;
+    }
+    return p;
+}
+
+/**
+ * @brief   Specialization to safely read @code std::vector@endcode.
+ * Reads a 2-byte length prefix followed by the elements.
+ */
+template <typename T>
+Packet& operator>>(Packet& p, std::vector<T>& data)
+{
+    uint16_t size = 0;
+    p >> size;
+
+    data.resize(size);
+    for (auto& element : data) {
+        p >> element;
+    }
+    return p;
 }
 
 }  // namespace rtnt::core
