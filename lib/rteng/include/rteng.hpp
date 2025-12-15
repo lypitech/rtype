@@ -75,7 +75,7 @@ public:
             rtnt::core::Packet tempPacket(0);
             (tempPacket << ... << components);
             s.content = tempPacket.getPayload();
-            // Broadcast created packet.
+            _server->broadcast(s);
         }
         if (!mono_behaviour || !_ecs->hasEntityComponent<comp::Behaviour>(entityId)) {
             return entityId;
