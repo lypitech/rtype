@@ -108,9 +108,11 @@ void GameEngine::init()
     if (_isClient) {
         registerPacketHandler<packet::Spawn>(client_side::handlers::handleSpawn);
         registerPacketHandler<packet::UpdatePosition>(client_side::handlers::handleUpdatePosition);
+        _tps = 60;
         _client->connect(_host, _port);
     } else {
         registerPacketHandler<packet::UserInput>(server_side::handlers::handleUserInput);
+        _tps = 1;
         _server->start();
     }
     _ecs->registerSystem(std::make_unique<sys::Sprite>(_ecs));
@@ -141,19 +143,22 @@ void GameEngine::run()
         return;
     }
     _ioThread = std::make_unique<std::thread>(std::bind(&GameEngine::runContext, this));
+    const auto timePerFrame = std::chrono::nanoseconds(1000000000 / _tps);
+    auto nextUpdate = std::chrono::steady_clock::now();
     while (_isRunning && (!_isClient || !WindowShouldClose())) {
         // 1. Input (Input System)
         // 2. Update (Update System)
         // 3. ECS
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));  // pas niquer le ssd/proc
+        nextUpdate += timePerFrame;
 
         // Update MonoBehaviour instances (Start called once, then Update each frame)
         {
+            const float dt = GetFrameTime();
             auto& behaviourComponents = _ecs->getComponent<comp::Behaviour>();
             auto& behaviourSparseSet = dynamic_cast<rtecs::SparseSet<comp::Behaviour>&>(behaviourComponents);
 
-            const float dt = GetFrameTime();
             for (auto& [instance, started] : behaviourSparseSet.getAll()) {
                 if (!instance) {
                     continue;
@@ -179,6 +184,10 @@ void GameEngine::run()
         }
 
         // 5. Timer (Timer System)
+        if (!_isClient) {
+            _server->update();
+        }
+        std::this_thread::sleep_until(nextUpdate);
     }
 }
 
