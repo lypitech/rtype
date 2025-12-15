@@ -46,7 +46,8 @@ GameEngine::GameEngine(unsigned short port)
     _server->onMessage([](SessionPtr, rtnt::core::Packet&) { LOG_INFO("Received message from cli."); });
     _server->onConnect([this](SessionPtr s) {
         LOG_INFO("Accepting new connection.");
-        auto id = registerEntity<comp::Position, comp::Rectangle>(nullptr, {25, 25}, {true, 150, 150, BLACK, RED});
+        auto id = registerEntity<comp::IO, comp::Position, comp::Rectangle>(nullptr, {}, {25, 25},
+                                                                            {true, 150, 150, BLACK, RED});
         _clientToServer.emplace(s->getId(), id);
     });
     _server->onDisconnect([](SessionPtr) { LOG_INFO("Client disconnected."); });
