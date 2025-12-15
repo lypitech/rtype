@@ -16,6 +16,7 @@ void Rectangle::apply(rtecs::ECS& ecs)
             continue;
         }
 
+        DrawRectangleLines(pos.x, pos.y, rect.width, rect.height, rect.outline);
         DrawRectangle(pos.x, pos.y, rect.width, rect.height, rect.inFill);
     }
 }
