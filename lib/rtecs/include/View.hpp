@@ -123,7 +123,7 @@ private:
 
     static size_t findSmallestIndex(SparseSet<Components>&... sets)
     {
-        size_t minSize = std::numeric_limits<size_t>::max();
+        size_t minSize = (std::numeric_limits<size_t>::max)();
         size_t minIndex = 0;
         size_t currentIndex = 0;
 
