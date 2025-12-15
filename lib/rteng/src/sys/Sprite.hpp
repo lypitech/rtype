@@ -5,6 +5,7 @@
 #include "ASystem.hpp"
 #include "ECS.hpp"
 #include "comp/Sprite.hpp"
+#include "comp/position.hpp"
 
 namespace sys {
 
