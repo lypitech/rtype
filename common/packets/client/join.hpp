@@ -17,7 +17,7 @@ struct Join
 {
     static constexpr packetId kId = static_cast<packetId>(type::Client::kJoin);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
-    static constexpr std::string kName = "JOIN";
+    static constexpr rtnt::core::packet::Name kName = "JOIN";
 
     std::string username;  ///< The username of the joining player.
     uint8_t room_id;       ///< The id of the room to join. 0 for any.

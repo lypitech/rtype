@@ -16,7 +16,7 @@ struct UpdateHealth
 {
     static constexpr auto kId = static_cast<packetId>(type::Server::kUpdateHealth);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
-    static constexpr std::string kName = "UPDATE_HEALTH";
+    static constexpr rtnt::core::packet::Name kName = "UPDATE_HEALTH";
 
     uint32_t id;
     uint32_t health;
