@@ -13,6 +13,7 @@ project(r-type_client
 if (PROJECT_IS_TOP_LEVEL)
     message(WARNING "Building Client standalone, adding Shuvlog, cli_parsing and rtnt manually")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/shuvlog shuvlog)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/cli_parser   cli_parser)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rteng rteng)
 endif()
 
@@ -28,6 +29,7 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/../lib/cli_parser/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
 )
 
