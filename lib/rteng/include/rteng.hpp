@@ -100,6 +100,11 @@ public:
     [[nodiscard]] bool isClient() const { return _isClient; }
     [[nodiscard]] const std::unique_ptr<rtnt::core::Client>& getClient() const { return _client; }
     [[nodiscard]] const std::unique_ptr<rtnt::core::Server>& getServer() const { return _server; }
+    [[nodiscard]] const BindingMap& getBindingMap() const { return _serverToClient; }
+    [[nodiscard]] BindingMap& getBindingMap() { return _serverToClient; }
+    [[nodiscard]] const SrvBindingMap& getSrvBindingMap() const { return _clientToServer; }
+    [[nodiscard]] std::unique_ptr<rtecs::ECS>& getEcs() { return _ecs; }
+    [[nodiscard]] ComponentFactory& getFactory() { return _factory; }
 
 private:
     graphics::Renderer _renderer;
