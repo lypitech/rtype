@@ -22,7 +22,7 @@ The client must not contain any critical game logic (such as monster death or da
 
 We compared three candidate libraries for the client implementation.
 
-| Criteria | **SFML** (Simple and Fast Multimedia Library) | **SDL2** (Simple DirectMedia Layer) | **Raylib** |
+| Criteria | **[SFML](https://www.sfml-dev.org/fr/)** (Simple and Fast Multimedia Library) | **[SDL2](https://www.libsdl.org/)** (Simple DirectMedia Layer) | **[Raylib](https://www.raylib.com/)** |
 | :--- | :--- | :--- | :--- |
 | **Language & Style** | **C++ (Object-Oriented)**. Uses native classes and methods. | **C (Low Level)**. Manual memory and structure management. | **C (C++ Wrap)**. "Immediate Mode" style (see glossary). |
 | **Productivity** | **Average**. Clean API but imposes a sometimes rigid code structure (state management). | **Low**. Requires a lot of configuration code ("boilerplate") to display a simple window. | **High**. Very few lines of code needed for an immediate visual result. |
