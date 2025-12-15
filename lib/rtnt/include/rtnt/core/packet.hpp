@@ -513,7 +513,7 @@ operator>>(Packet& p, T& data)
 template <typename T>
 Packet& operator<<(Packet& p, const std::vector<T>& data)
 {
-    if (data.size() > std::numeric_limits<uint16_t>::max()) {
+    if (data.size() > (std::numeric_limits<uint16_t>::max)()) {
         throw std::runtime_error("Vector is too large to serialize (limit 65535)");
     }
 
