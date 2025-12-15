@@ -52,6 +52,25 @@ void IO::apply(rtecs::ECS& ecs)
         ioComp.mouse.y = GetMouseY();
         ioComp.mouse.leftButton = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
         ioComp.mouse.rightButton = IsMouseButtonDown(MOUSE_RIGHT_BUTTON);
+        packet::UserInput input{};
+        if (ioComp.up == comp::IO::ButtonState::DOWN || ioComp.up == comp::IO::ButtonState::PRESSED) {
+            input.input_mask |= static_cast<uint8_t>(game::Input::kUp);
+        }
+        if (ioComp.down == comp::IO::ButtonState::DOWN || ioComp.down == comp::IO::ButtonState::PRESSED) {
+            input.input_mask |= static_cast<uint8_t>(game::Input::kDown);
+        }
+        if (ioComp.left == comp::IO::ButtonState::DOWN || ioComp.left == comp::IO::ButtonState::PRESSED) {
+            input.input_mask |= static_cast<uint8_t>(game::Input::kLeft);
+        }
+        if (ioComp.right == comp::IO::ButtonState::DOWN || ioComp.right == comp::IO::ButtonState::PRESSED) {
+            input.input_mask |= static_cast<uint8_t>(game::Input::kRight);
+        }
+        if (input.input_mask == 0) {
+            return;
+        }
+        if (const auto& cli = rteng::GameEngine::getInstance().getClient()) {
+            cli->send(input);
+        }
     }
 }
 
