@@ -123,6 +123,13 @@ void GameEngine::init()
     _isRunning = true;
 }
 
+void GameEngine::onServerDisconnect(std::function<void(std::shared_ptr<rtnt::core::Session>)> func)
+{
+    if (!_isClient) {
+        _server->onDisconnect(std::move(func));
+    }
+}
+
 void GameEngine::init(int screenWidth, int screenHeight, const std::string& title, int fps)
 {
     init();
@@ -149,8 +156,6 @@ void GameEngine::run()
         // 1. Input (Input System)
         // 2. Update (Update System)
         // 3. ECS
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));  // pas niquer le ssd/proc
         nextUpdate += timePerFrame;
 
         // Update MonoBehaviour instances (Start called once, then Update each frame)
