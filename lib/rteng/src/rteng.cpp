@@ -79,8 +79,8 @@ GameEngine::GameEngine(unsigned short port)
     _server->onMessage([](SessionPtr, rtnt::core::Packet&) { LOG_INFO("Received message from cli."); });
     _server->onConnect([this](SessionPtr s) {
         LOG_INFO("Accepting new connection.");
-        auto id = registerEntity<comp::IO, comp::Position, comp::Rectangle>(nullptr, {}, {25, 25},
-                                                                            {true, 150, 150, BLACK, RED});
+        auto id = registerEntity<comp::IO, comp::Position, comp::Rectangle>(
+            nullptr, {}, {25, 25}, {true, 150, 150, {0, 0, 0, 255}, {255, 0, 0, 255}});
         _clientToServer.emplace(s->getId(), id);
         _server->sendTo(s, createWorldInit());
     });

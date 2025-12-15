@@ -8,6 +8,12 @@ struct MyColor
     unsigned char g;  // Color green value
     unsigned char b;  // Color blue value
     unsigned char a;  // Color alpha value
+
+    template <typename Archive>
+    void serialize(Archive& ar)
+    {
+        ar & r & g & b & a;
+    }
 };
 
 struct Rectangle
