@@ -17,6 +17,11 @@
 
 namespace rteng {
 
+using BindingMap = std::unordered_map<rtecs::EntityID, rtecs::EntityID>;
+//                       entityID on the server ^                ^ Real entityID
+using SrvBindingMap = std::unordered_map<rtnt::core::session::Id, rtecs::EntityID>;
+//                      server sessionID ^                        ^ Real entityID
+
 class GameEngine
 {
 public:
@@ -100,8 +105,8 @@ private:
     graphics::Renderer _renderer;
     std::unique_ptr<rtecs::ECS> _ecs = rtecs::ECS::createWithComponents<ALL_COMPONENTS>();
     asio::io_context _context;
-    std::unordered_map<rtecs::EntityID, rtecs::EntityID> _serverToClient;
-    //   entityID on the server ^               ^ Real entityID
+    SrvBindingMap _clientToServer;  ///< a map binding the Session id to the corresponding entityID
+    BindingMap _serverToClient;     ///< a map binding entityID(server) to entityID(client)
     std::unique_ptr<rtnt::core::Client> _client;
     std::unique_ptr<rtnt::core::Server> _server;
     ComponentFactory _factory;
