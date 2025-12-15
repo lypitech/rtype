@@ -28,6 +28,39 @@ GameEngine& GameEngine::getInstance()
     return *kInstance;
 }
 
+packet::WorldInit GameEngine::createWorldInit()
+{
+    packet::WorldInit packet;
+    packet.stage = 1;
+
+    const auto& entities = _ecs->getEntities();
+
+    for (size_t id = 0; id < entities.size(); ++id) {
+        const rtecs::DynamicBitSet& storedMask = entities[id];
+        rtnt::core::Packet contentStream(0);
+        size_t componentIndex = 0;
+
+        auto packIfPresent = [&]<typename T>(T) {
+            if (storedMask[componentIndex]) {
+                auto& sparseSet = dynamic_cast<rtecs::SparseSet<T>&>(_ecs->getComponent<T>());
+
+                if (auto val = sparseSet.get(id)) {
+                    contentStream << val.value().get();
+                }
+            }
+            componentIndex++;
+        };
+
+        std::apply([&](auto... args) { (packIfPresent(args), ...); }, std::tuple<ALL_COMPONENTS>{});
+
+        packet.ids.push_back(static_cast<rtecs::EntityID>(id));
+        packet.bitsets.push_back(storedMask.toBytes().first);
+        packet.entities.push_back(contentStream.getPayload());
+    }
+
+    return packet;
+}
+
 GameEngine::GameEngine(std::string host, unsigned short port)
     : _client(std::make_unique<rtnt::core::Client>(_context)), _host(host), _port(port)
 {
@@ -49,6 +82,7 @@ GameEngine::GameEngine(unsigned short port)
         auto id = registerEntity<comp::IO, comp::Position, comp::Rectangle>(nullptr, {}, {25, 25},
                                                                             {true, 150, 150, BLACK, RED});
         _clientToServer.emplace(s->getId(), id);
+        _server->sendTo(s, createWorldInit());
     });
     _server->onDisconnect([](SessionPtr) { LOG_INFO("Client disconnected."); });
 }
@@ -96,18 +130,12 @@ void GameEngine::onServerConnect(std::function<void(std::shared_ptr<rtnt::core::
     }
 }
 
-void GameEngine::onServerDisconnect(std::function<void(std::shared_ptr<rtnt::core::Session>)> func)
-{
-    if (!_isClient) {
-        _server->onDisconnect(func);
-    }
-}
-
 void GameEngine::init()
 {
     if (_isClient) {
         registerPacketHandler<packet::Spawn>(client_side::handlers::handleSpawn);
         registerPacketHandler<packet::UpdatePosition>(client_side::handlers::handleUpdatePosition);
+        registerPacketHandler<packet::WorldInit>(client_side::handlers::handleWorldInit);
         _tps = 60;
         _client->connect(_host, _port);
     } else {
@@ -153,9 +181,6 @@ void GameEngine::run()
     const auto timePerFrame = std::chrono::nanoseconds(1000000000 / _tps);
     auto nextUpdate = std::chrono::steady_clock::now();
     while (_isRunning && (!_isClient || !WindowShouldClose())) {
-        // 1. Input (Input System)
-        // 2. Update (Update System)
-        // 3. ECS
         nextUpdate += timePerFrame;
 
         // Update MonoBehaviour instances (Start called once, then Update each frame)
@@ -190,7 +215,7 @@ void GameEngine::run()
 
         // 5. Timer (Timer System)
         if (!_isClient) {
-            _server->update();
+            _server->update(std::chrono::milliseconds(10000000));
         }
         std::this_thread::sleep_until(nextUpdate);
     }
