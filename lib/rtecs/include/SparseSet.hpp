@@ -44,7 +44,7 @@ public:
      */
     static constexpr size_t kPageSize = 2048;
 
-   private:
+private:
     using SparseElement = size_t;
     using OptionalSparseElement = std::optional<SparseElement>;
     using Sparse = std::array<OptionalSparseElement, kPageSize>;
@@ -59,7 +59,7 @@ public:
     [[nodiscard]]
     static size_t getSparseIndex(size_t id);
 
-   public:
+public:
     /**
      * @brief Get the dense list of entities that possess this component.
      *

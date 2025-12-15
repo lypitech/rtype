@@ -95,7 +95,7 @@ private:
 
     void applySystem(SystemID id);
 
-   public:
+public:
     explicit ECS() = default;
     ECS(const ECS &) = delete;
     ECS &operator=(const ECS &) = delete;
@@ -306,7 +306,7 @@ private:
         return sparseSet.get(entity);
     }
 
-   private:
+private:
     std::vector<Entity> _entityList;
     SparseVectorView<ComponentID, std::unique_ptr<ISparseSet>> _componentView;
     SparseVectorView<SystemID, std::unique_ptr<ASystem>> _systemView;

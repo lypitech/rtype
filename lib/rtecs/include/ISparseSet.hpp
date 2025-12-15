@@ -16,7 +16,7 @@ class DynamicBitSet;
  */
 class ISparseSet
 {
-   public:
+public:
     virtual ~ISparseSet() = default;
 
     /**
