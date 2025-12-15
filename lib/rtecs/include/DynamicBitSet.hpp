@@ -25,7 +25,7 @@ public:
         std::bitset<64> &block;
         std::bitset<64> mask;
 
-       public:
+    public:
         explicit BitRef(std::bitset<64> &b, std::bitset<64> m);
 
         /** @return bit value as boolean */

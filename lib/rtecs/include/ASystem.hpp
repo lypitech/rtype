@@ -10,10 +10,10 @@ class ECS;  // Forward declaration for ECS type
 
 class ASystem
 {
-   private:
+private:
     DynamicBitSet _mask;
 
-   protected:
+protected:
     [[nodiscard]]
     const DynamicBitSet &getMask() const noexcept
     {
