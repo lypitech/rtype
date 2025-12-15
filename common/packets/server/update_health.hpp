@@ -6,7 +6,6 @@ namespace packet {
 
 using packetId = rtnt::core::packet::Id;
 
-#pragma pack(push, 1)
 /**
  * @struct packet::UpdateHealth
  *
@@ -28,7 +27,6 @@ struct UpdateHealth
         ar & id & health;
     }
 };
-#pragma pack(pop)
 
 }  // namespace packet
 

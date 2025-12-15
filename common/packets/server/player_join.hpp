@@ -1,12 +1,11 @@
 #pragma once
 #include "enums/packets.hpp"
-#include "rtnt/Core/packet.hpp"
+#include "rtnt/core/packet.hpp"
 
 namespace packet {
 
 using packetId = rtnt::core::packet::Id;
 
-#pragma pack(push, 1)
 /**
  * @struct packet::PlayerJoin
  *
@@ -29,7 +28,6 @@ struct PlayerJoin
         ar & id & status;
     }
 };
-#pragma pack(pop)
 
 }  // namespace packet
 

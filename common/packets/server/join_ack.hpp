@@ -6,7 +6,6 @@ namespace packet {
 
 using packetId = rtnt::core::packet::Id;
 
-#pragma pack(push, 1)
 /**
  * @struct packet::JoinAck
  *
@@ -28,7 +27,6 @@ struct JoinAck
         ar & id & status;
     }
 };
-#pragma pack(pop)
 
 }  // namespace packet
 
