@@ -74,7 +74,8 @@ ctest --output-on-failure
 
 To play the game, you must launch the **Server** first, followed by one or more **Clients**.
 
-> **Important:** The command-line flags defined below are **mandatory**. Failing to provide them will cause the application to crash.
+> [!IMPORTANT]
+> The command-line flags defined below are **mandatory**. Failing to provide them will cause the application to crash.
 
 ### 1. Starting the Server
 
