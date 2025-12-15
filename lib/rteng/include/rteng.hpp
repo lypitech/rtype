@@ -107,6 +107,7 @@ public:
     [[nodiscard]] ComponentFactory& getFactory() { return _factory; }
 
 private:
+    int _tps{60};
     graphics::Renderer _renderer;
     std::unique_ptr<rtecs::ECS> _ecs = rtecs::ECS::createWithComponents<ALL_COMPONENTS>();
     asio::io_context _context;
