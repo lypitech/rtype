@@ -443,6 +443,7 @@ public:
 
         str.assign(_buffer.begin() + static_cast<long>(_readPosition),
                    _buffer.begin() + static_cast<long>(_readPosition) + size);
+        _readPosition += size;
         return *this;
     }
 
