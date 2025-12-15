@@ -63,8 +63,64 @@ ctest --output-on-failure
 ```
 
 ## Usage instructions
+To play the game, you must launch the **Server** first, followed by one or more **Clients**.
+
+> **Important:** The command-line flags defined below are **mandatory**. Failing to provide them will cause the application to crash.
+
+### 1. Starting the Server
+The server requires a listening port to be specified using the `-p` flag.
+
+```sh
+# Syntax
+./build/Server/r-type_server -p <port>
+
+# Example: Start server on port 4242
+./build/Server/r-type_server -p 4242
+```
+
+### 2. Starting the Client
+The client requires both the target host IP (-h) and the target port (-p) to be specified.
+```sh
+# Syntax
+./build/Client/r-type_client -h <ip_address> -p <port>
+
+# Example: Connect to localhost on port 4242
+./build/Client/r-type_client -h 127.0.0.1 -p 4242
+
+# Example: Connect to a remote server
+./build/Client/r-type_client -h 192.168.1.50 -p 4242
+```
+
+### Controls
+Once in the game, use the following keys to pilote your ship:
+| Action | Key (Keyboard) |
+| :--- | :--- |
+| Move | Arrow Keys |
+| Exit | Escape |
 
 ## Quick-start information
+
+Want to play immediately? Follow these steps to build and run a local game.
+
+**1. Build the project:**
+Open a terminal in the project root and run:
+```sh
+conan install . --output-folder=build/ --build=missing -s compiler.cppstd=23
+cmake -B build/ -DCMAKE_BUILD_TYPE=Release
+cmake --build build/ --parallel
+```
+**2. Run the Server**
+Open a **new terminal** inside the project root and run this:
+```sh
+./build/Server/r-type_server -p 4242
+```
+
+**3. Run the Client**
+Open another **new terminal** inside the project root and run this:
+```sh
+./build/Client/r-type_client -h 127.0.0.1 -p 4242
+```
+> Note: You can open multiple terminal to run multiple clients at the same time !
 
 ## Useful links
 
@@ -74,6 +130,6 @@ See [LICENSE](/LICENSE.md).
 ## Authors / contacts
 louis.persin@epitech.eu  
 lysandre.boursette@epitech.eu  
-nathan.jeannot@epitech.eu  
+nathan.jeannot@epitech.eu 
 pierre.marguerie@epitech.eu  
 esteban.bouyault-yvanez@epitech.eu
