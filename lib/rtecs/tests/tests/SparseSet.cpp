@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "logger/Logger.h"
-#include "rtecs/rtecs.hpp"
+#include "../../include/components/SparseSet.hpp"
 
 TEST(SparseSet_create,
      create_single_entity_without_auto_initializer)
