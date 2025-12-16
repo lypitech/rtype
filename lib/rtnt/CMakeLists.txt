@@ -15,6 +15,10 @@ option(RTNT_BUILD_TESTS "Build the test suite" OFF)
 if(PROJECT_IS_TOP_LEVEL)
     message(WARNING "Building RTNT standalone, adding Shuvlog manually")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../shuvlog shuvlog)
+
+    if(NOT DEFINED RTNT_BUILD_TESTS)
+        set(RTNT_BUILD_TESTS ON)
+    endif()
 endif()
 
 # --- Dependencies ---
@@ -64,7 +68,10 @@ else()
 endif()
 
 # --- Tests ---
-if(RTNT_BUILD_TESTS OR PROJECT_IS_TOP_LEVEL)
-    enable_testing()
+if(RTNT_BUILD_TESTS OR BUILD_TESTS)
+    if (PROJECT_IS_TOP_LEVEL)
+        enable_testing()
+        find_package(GTest REQUIRED)
+    endif()
     add_subdirectory(tests)
 endif()
