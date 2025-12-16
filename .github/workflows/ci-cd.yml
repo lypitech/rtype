@@ -79,12 +79,7 @@ jobs:
         with:
           name: rtype-binaries-${{ matrix.os }}
           path: |
-            build/bin/r-type_client*
-            build/bin/r-type_server*
-            build/Release/r-type_client*
-            build/Release/r-type_server*
-            build/r-type_client*
-            build/r-type_server*
-            assets/
+            build/**/r-type_client*
+            build/**/r-type_server*
           retention-days: 5
           if-no-files-found: warn
