@@ -45,4 +45,4 @@ public:
     virtual void clear() noexcept = 0;
 };
 
-}  // namespace rtecs
+}  // namespace rtecs::sparse
