@@ -1,8 +1,9 @@
 #pragma once
 
 #include <sys/types.h>
-#include <memory>
+
 #include <array>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -251,4 +252,4 @@ void SparseSet<T>::clear() noexcept
     _sparsePages.clear();
 }
 
-}  // namespace rtecs
+}  // namespace rtecs::sparse

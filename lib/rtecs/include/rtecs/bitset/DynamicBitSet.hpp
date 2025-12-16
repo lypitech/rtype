@@ -81,4 +81,4 @@ private:
     size_t _nbits = 0;  ///< The index of the last activated bit.
 };
 
-}  // namespace rtecs
+}  // namespace rtecs::bitset

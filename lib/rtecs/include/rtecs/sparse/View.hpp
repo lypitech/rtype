@@ -144,4 +144,4 @@ private:
     }
 };
 
-}  // namespace rtecs
+}  // namespace rtecs::sparse
