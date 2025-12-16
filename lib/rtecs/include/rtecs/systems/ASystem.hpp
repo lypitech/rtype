@@ -2,26 +2,26 @@
 
 #include <utility>
 
-#include "DynamicBitSet.hpp"
+#include "../bitset/DynamicBitSet.hpp"
 
-namespace rtecs {
+namespace rtecs::system {
 
 class ECS;  // Forward declaration for ECS type
 
 class ASystem
 {
 private:
-    DynamicBitSet _mask;
+   bitset::DynamicBitSet _mask;
 
 protected:
     [[nodiscard]]
-    const DynamicBitSet &getMask() const noexcept
+    const bitset::DynamicBitSet &getMask() const noexcept
     {
         return _mask;
     };
 
 public:
-    explicit ASystem(DynamicBitSet mask)
+    explicit ASystem(bitset::DynamicBitSet mask)
         : _mask(std::move(mask)) {};
     virtual ~ASystem() = default;
 

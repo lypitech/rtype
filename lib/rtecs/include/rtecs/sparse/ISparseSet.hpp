@@ -2,12 +2,12 @@
 
 #include <cstddef>
 
-namespace rtecs {
+namespace rtecs::sparse {
 
 class DynamicBitSet;
 
 /**
- * @brief Abstract interface for a sparse-set container used by the ECS.
+ * @brief Interface for a sparse-set container used by the ECS.
  *
  * `ISparseSet` exposes the minimum operations required by the engine to
  * interact with component storage without coupling to a concrete
@@ -18,13 +18,6 @@ class ISparseSet
 {
 public:
     virtual ~ISparseSet() = default;
-
-    /**
-     * @brief Return a mask representing which component slot this sparse-set
-     * corresponds to. The mask can be combined with entity masks to test
-     * entity membership for systems.
-     */
-    DynamicBitSet getMask();
 
     /**
      * @brief Check if the sparse-set has the given entity.

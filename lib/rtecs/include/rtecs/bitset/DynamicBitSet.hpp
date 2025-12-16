@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace rtecs {
+namespace rtecs::bitset {
 
 /**
  * @file DynamicBitSet.hpp
