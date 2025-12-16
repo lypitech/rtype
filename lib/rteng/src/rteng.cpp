@@ -79,8 +79,22 @@ GameEngine::GameEngine(unsigned short port)
     _server->onMessage([](SessionPtr, rtnt::core::Packet&) { LOG_INFO("Received message from cli."); });
     _server->onConnect([this](SessionPtr s) {
         LOG_INFO("Accepting new connection.");
+
+        static const std::vector<comp::MyColor> palette = {
+            {255, 0, 0, 255},    // red
+            {0, 255, 0, 255},    // green
+            {0, 0, 255, 255},    // blue
+            {255, 255, 0, 255},  // yellow
+            {255, 0, 255, 255},  // magenta
+            {0, 255, 255, 255},  // cyan
+        };
+
+        const size_t index = _clientToServer.size() % palette.size();
+        const comp::MyColor fillColor = palette[index];
+
         auto id = registerEntity<comp::IO, comp::Position, comp::Rectangle>(
-            nullptr, {}, {25, 25}, {true, 150, 150, {0, 0, 0, 255}, {255, 0, 0, 255}});
+            nullptr, {}, {25, 25}, {true, 150, 150, {0, 0, 0, 255}, fillColor});
+
         _clientToServer.emplace(s->getId(), id);
         _server->sendTo(s, createWorldInit());
     });
