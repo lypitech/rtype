@@ -7,11 +7,15 @@ project(r-type
     LANGUAGES CXX
 )
 
-# --- Conan setup check ---
-if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
-    include("${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
-else()
-    message(FATAL_ERROR "Conan toolchain not found. Did you run 'conan install .' ?")
+option(BUILD_TEST "Build the unit tests" OFF)
+
+# --- Dependencies ---
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+        include("${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+    else()
+        message(FATAL_ERROR "Conan toolchain not found.")
+    endif()
 endif()
 
 # --- Build options ---
@@ -24,24 +28,17 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# --- Dependencies ---
-if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
-        include("${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
-    else()
-        message(FATAL_ERROR "Conan toolchain not found.")
-    endif()
-endif()
 
 find_package(asio REQUIRED)
 find_package(raylib REQUIRED)
 find_package(imgui REQUIRED)
 
-enable_testing()
-
-find_package(GTest REQUIRED)
-
-include(GoogleTest)
+if(BUILD_TESTS)
+    enable_testing()
+    find_package(GTest REQUIRED)
+    include(GoogleTest)
+    message(STATUS "Building with Tests ENABLED")
+endif()
 
 add_subdirectory(lib/shuvlog)
 add_subdirectory(lib/rtnt)
