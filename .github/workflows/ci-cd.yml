@@ -51,6 +51,21 @@ jobs:
       - name: Configure Conan Profile
         run: conan profile detect --force
 
+      - name: Get Conan home
+        id: conan_home
+        shell: bash
+        run: |
+          echo "home=$(conan config home)" >> $GITHUB_OUTPUT
+
+      - name: Cache Conan packages
+        id: cache-conan
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.conan_home.outputs.home }}
+          key: conan-${{ matrix.os }}-${{ hashFiles('conanfile.txt') }}
+          restore-keys: |
+            conan-${{ matrix.os }}-
+
       - name: Install Dependencies with Conan
         shell: bash
         run: |
