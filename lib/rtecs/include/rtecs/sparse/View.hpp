@@ -5,7 +5,7 @@
 
 #include "SparseSet.hpp"
 
-namespace rtecs {
+namespace rtecs::sparse {
 
 /**
  * @brief A class to iterate over entities containing a set of components.

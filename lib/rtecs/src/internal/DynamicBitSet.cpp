@@ -1,10 +1,10 @@
-#include "DynamicBitSet.hpp"
+#include "rtecs/bitset/DynamicBitSet.hpp"
 
 #include <algorithm>
 #include <ranges>
 #include <vector>
 
-using namespace rtecs;
+using namespace rtecs::bitset;
 
 // =======================
 //         BitRef
