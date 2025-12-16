@@ -2,9 +2,9 @@ name: CI/CD R-Type
 
 on:
   push:
-    branches: ["**"]
+    branches: ["*/ci-cd"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "dev"]
 
 jobs:
   check-coding-style:
@@ -23,6 +23,7 @@ jobs:
       fail-fast: false # If one failed, don't cancel the other jobs (Kinda like a debug option)
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+        arch: [x86_64, arm64]
 
     steps:
       - uses: actions/checkout@v4
@@ -70,7 +71,7 @@ jobs:
 
       - name: Build Project
         shell: bash
-        run: cmake --build build --config Release
+        run: cmake --build build --config Release --parallel
 
       - name: Run Tests
         working-directory: build
