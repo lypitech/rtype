@@ -11,7 +11,7 @@ class ECS;  // Forward declaration for ECS type
 class ASystem
 {
 private:
-   bitset::DynamicBitSet _mask;
+    bitset::DynamicBitSet _mask;
 
 protected:
     [[nodiscard]]
@@ -28,4 +28,4 @@ public:
     virtual void apply(ECS &ecs) = 0;
 };
 
-}  // namespace rtecs
+}  // namespace rtecs::system

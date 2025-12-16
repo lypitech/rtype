@@ -2,13 +2,13 @@
 
 #include <memory>
 
-#include "systems/ASystem.hpp"
 #include "bitset/DynamicBitSet.hpp"
+#include "logger/Logger.h"
 #include "sparse/ISparseSet.hpp"
 #include "sparse/SparseSet.hpp"
 #include "sparse/SparseVectorView.hpp"
 #include "sparse/View.hpp"
-#include "logger/Logger.h"
+#include "systems/ASystem.hpp"
 
 namespace rtecs {
 
@@ -36,7 +36,6 @@ using SystemID = size_t;
 class ECS final
 {
 private:
-
     void applySystem(SystemID id);
 
 public:
@@ -50,7 +49,6 @@ public:
 
 private:
     std::vector<Entity> _entityList;
-
 };
 
 }  // namespace rtecs
