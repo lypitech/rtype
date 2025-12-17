@@ -3,6 +3,7 @@
 #define INTERNAL_PACKET_NAME(name) "__rtnt_internal_" name
 
 #include <cstdint>
+#include <vector>
 
 namespace rtnt {
 
@@ -13,6 +14,13 @@ static constexpr uint16_t PROTOCOL_ID = 0x1801;
 ///
 /// todo: Prone to change
 static constexpr uint16_t PROTOCOL_VER = 0x0001;
+
+namespace core
+{
+
+using ByteBuffer = std::vector<uint8_t>;
+
+}
 
 namespace core::packet {
 
