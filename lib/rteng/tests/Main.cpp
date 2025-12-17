@@ -4,7 +4,8 @@
 #include "TestEnvironment.hpp"
 
 // Add a flag or argument to control execution type
-int main(int argc, char* argv[])
+int main(int argc,
+         char* argv[])
 {
     bool is_automated_test = false;  // Implement a check here if possible
 

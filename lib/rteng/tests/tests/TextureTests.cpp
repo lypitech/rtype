@@ -17,7 +17,8 @@ protected:
     }
 };
 
-TEST_F(RaylibRendererTest, TextureLoadingReturnsUniqueId)
+TEST_F(RaylibRendererTest,
+       TextureLoadingReturnsUniqueId)
 {
     // Change test_asset.png to the path of your texture
     int id1 = renderer->loadTexture("test_asset.png");

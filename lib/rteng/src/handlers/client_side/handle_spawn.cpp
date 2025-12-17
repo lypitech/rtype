@@ -3,7 +3,8 @@
 
 namespace rteng::client_side::handlers {
 
-void handleSpawn(const SessionPtr&, const packet::Spawn& packet)
+void handleSpawn(const SessionPtr&,
+                 const packet::Spawn& packet)
 {
     const rtecs::DynamicBitSet bitset(packet.bitmask);
     BindingMap& binding_map = GameEngine::getInstance().getBindingMap();

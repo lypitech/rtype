@@ -5,7 +5,8 @@ namespace rteng::client_side::handlers {
 
 using Vec = std::vector<std::vector<uint8_t>>;
 
-void handleWorldInit(const SessionPtr&, const packet::WorldInit& packet)
+void handleWorldInit(const SessionPtr&,
+                     const packet::WorldInit& packet)
 {
     LOG_DEBUG("Handling WorldInit.");
     for (size_t i = 0; i < packet.bitsets.size(); i++) {

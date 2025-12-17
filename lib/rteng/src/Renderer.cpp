@@ -6,7 +6,10 @@
 
 namespace rteng::graphics {
 
-void Renderer::init(int screenWidth, int screenHeight, const std::string& title, int fps)
+void Renderer::init(int screenWidth,
+                    int screenHeight,
+                    const std::string& title,
+                    int fps)
 {
     _isInit = true;
     SetTraceLogLevel(LOG_WARNING);
@@ -28,7 +31,10 @@ Renderer::~Renderer()
     }
 }
 
-void Renderer::drawTexture(int textureId, const Rect& source, const Rect& dest, float rotation)
+void Renderer::drawTexture(int textureId,
+                           const Rect& source,
+                           const Rect& dest,
+                           float rotation)
 {
     if (!_isInit) {
         return;
@@ -44,7 +50,8 @@ void Renderer::drawTexture(int textureId, const Rect& source, const Rect& dest, 
     DrawTexturePro(*_textures[textureId], sourceRec, destRec, origin, rotation, WHITE);
 }
 
-void Renderer::drawRectangle(const Rect& rect, const Color& color)
+void Renderer::drawRectangle(const Rect& rect,
+                             const Color& color)
 {
     if (!_isInit) {
         return;
@@ -52,7 +59,11 @@ void Renderer::drawRectangle(const Rect& rect, const Color& color)
     DrawRectangle(rect.x, rect.y, rect.width, rect.height, color);
 }
 
-void Renderer::drawText(const std::string& text, int posX, int posY, int fontSize, const Color& color)
+void Renderer::drawText(const std::string& text,
+                        int posX,
+                        int posY,
+                        int fontSize,
+                        const Color& color)
 {
     if (!_isInit) {
         return;

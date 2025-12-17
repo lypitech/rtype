@@ -6,10 +6,12 @@
 
 namespace rteng::server_side::handlers {
 
-void handleUserInput(const SessionPtr& s, const packet::UserInput& packet)
+void handleUserInput(const SessionPtr& s,
+                     const packet::UserInput& packet)
 {
     const rtecs::EntityID id = GameEngine::getInstance().getSrvBindingMap().at(s->getId());
-    rtecs::ISparseSet& positions = GameEngine::getInstance().getEcs()->getComponent<comp::Position>();
+    rtecs::ISparseSet& positions =
+        GameEngine::getInstance().getEcs()->getComponent<comp::Position>();
 
     if (const auto& position = dynamic_cast<rtecs::SparseSet<comp::Position>&>(positions).get(id)) {
         auto& [x, y] = position.value().get();

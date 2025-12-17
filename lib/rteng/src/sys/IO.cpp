@@ -20,7 +20,8 @@ namespace sys {
 //    UP    |  DOWN   | PRESSED  |
 //   DOWN   |  DOWN   |   DOWN   |
 //   DOWN   |   UP    | RELEASED |
-static comp::IO::ButtonState updateButtonState(KeyboardKey key, comp::IO::ButtonState previousState)
+static comp::IO::ButtonState updateButtonState(KeyboardKey key,
+                                               comp::IO::ButtonState previousState)
 {
     constexpr uint8_t DOWN_BIT = static_cast<uint8_t>(comp::IO::ButtonState::DOWN);
 
@@ -53,16 +54,20 @@ void IO::apply(rtecs::ECS& ecs)
         ioComp.mouse.leftButton = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
         ioComp.mouse.rightButton = IsMouseButtonDown(MOUSE_RIGHT_BUTTON);
         packet::UserInput input{};
-        if (ioComp.up == comp::IO::ButtonState::DOWN || ioComp.up == comp::IO::ButtonState::PRESSED) {
+        if (ioComp.up == comp::IO::ButtonState::DOWN ||
+            ioComp.up == comp::IO::ButtonState::PRESSED) {
             input.input_mask |= static_cast<uint8_t>(game::Input::kUp);
         }
-        if (ioComp.down == comp::IO::ButtonState::DOWN || ioComp.down == comp::IO::ButtonState::PRESSED) {
+        if (ioComp.down == comp::IO::ButtonState::DOWN ||
+            ioComp.down == comp::IO::ButtonState::PRESSED) {
             input.input_mask |= static_cast<uint8_t>(game::Input::kDown);
         }
-        if (ioComp.left == comp::IO::ButtonState::DOWN || ioComp.left == comp::IO::ButtonState::PRESSED) {
+        if (ioComp.left == comp::IO::ButtonState::DOWN ||
+            ioComp.left == comp::IO::ButtonState::PRESSED) {
             input.input_mask |= static_cast<uint8_t>(game::Input::kLeft);
         }
-        if (ioComp.right == comp::IO::ButtonState::DOWN || ioComp.right == comp::IO::ButtonState::PRESSED) {
+        if (ioComp.right == comp::IO::ButtonState::DOWN ||
+            ioComp.right == comp::IO::ButtonState::PRESSED) {
             input.input_mask |= static_cast<uint8_t>(game::Input::kRight);
         }
         if (input.input_mask == 0) {

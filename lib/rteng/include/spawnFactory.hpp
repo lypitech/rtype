@@ -13,7 +13,8 @@
 
 namespace rteng {
 
-#define ALL_COMPONENTS comp::Behaviour, comp::Position, comp::Transform, comp::IO, comp::Sprite, comp::Rectangle
+#define ALL_COMPONENTS \
+    comp::Behaviour, comp::Position, comp::Transform, comp::IO, comp::Sprite, comp::Rectangle
 
 class ComponentFactory
 {
@@ -25,7 +26,10 @@ public:
     /**
      * @brief Populates the entity according to given bitmask
      */
-    void apply(rtecs::ECS& ecs, size_t entityId, rtecs::DynamicBitSet bitmask, const std::vector<uint8_t>& data)
+    void apply(rtecs::ECS& ecs,
+               size_t entityId,
+               rtecs::DynamicBitSet bitmask,
+               const std::vector<uint8_t>& data)
     {
         rtnt::core::Packet reader(data);
 
