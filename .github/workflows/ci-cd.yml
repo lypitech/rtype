@@ -1,10 +1,8 @@
 name: CI/CD R-Type
 
 on:
-  push:
-    branches: ["**"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "dev"]
 
 jobs:
   check-coding-style:
@@ -53,6 +51,21 @@ jobs:
       - name: Configure Conan Profile
         run: conan profile detect --force
 
+      - name: Get Conan home
+        id: conan_home
+        shell: bash
+        run: |
+          echo "home=$(conan config home)" >> $GITHUB_OUTPUT
+
+      - name: Cache Conan packages
+        id: cache-conan
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.conan_home.outputs.home }}
+          key: conan-${{ matrix.os }}-${{ hashFiles('conanfile.txt') }}
+          restore-keys: |
+            conan-${{ matrix.os }}-
+
       - name: Install Dependencies with Conan
         shell: bash
         run: |
@@ -66,12 +79,22 @@ jobs:
 
       - name: Configure CMake
         shell: bash
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -DBUILD_TESTS=ON
 
       - name: Build Project
         shell: bash
-        run: cmake --build build --config Release
+        run: cmake --build build --config Release --parallel
 
       - name: Run Tests
         working-directory: build
         run: ctest --output-on-failure -C Release
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtype-binaries-${{ matrix.os }}
+          path: |
+            build/**/r-type_client*
+            build/**/r-type_server*
+          retention-days: 5
+          if-no-files-found: warn

@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
 #include <raylib.h>
 
-#include "../../include/Renderer.h"
-
 class RaylibTestEnvironment : public testing::Environment
 {
 public:

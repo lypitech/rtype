@@ -16,6 +16,10 @@ option(RTENG_BUILD_TESTS "Build the test suite" OFF)
 if(PROJECT_IS_TOP_LEVEL)
     message(WARNING "Building RTENG standalone, adding Shuvlog manually")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../shuvlog shuvlog)
+
+    if(NOT DEFINED RTENG_BUILD_TESTS)
+        set(RTENG_BUILD_TESTS ON)
+    endif()
 endif()
 
 # --- Sources / Headers ---
@@ -71,7 +75,10 @@ else()
 endif()
 
 # --- Tests ---
-if(RTENG_BUILD_TESTS OR PROJECT_IS_TOP_LEVEL)
-    enable_testing()
+if(RTENG_BUILD_TESTS OR BUILD_TESTS)
+    if (PROJECT_IS_TOP_LEVEL)
+        enable_testing()
+        find_package(GTest REQUIRED)
+    endif()
     add_subdirectory(tests)
 endif()
