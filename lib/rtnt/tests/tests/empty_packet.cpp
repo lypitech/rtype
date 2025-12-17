@@ -12,7 +12,8 @@ struct Example
 
 }  // namespace
 
-TEST_F(NetworkTest, empty_packet)
+TEST_F(NetworkTest,
+       empty_packet)
 {
     size_t packetSize = 0;
 
@@ -29,5 +30,6 @@ TEST_F(NetworkTest, empty_packet)
     Example ex{};
     client->send(ex);
 
-    EXPECT_TRUE(waitFor([&]() { return packetSize == 0; })) << "Server has received no EXAMPLE packet.";
+    EXPECT_TRUE(waitFor([&]() { return packetSize == 0; }))
+        << "Server has received no EXAMPLE packet.";
 }

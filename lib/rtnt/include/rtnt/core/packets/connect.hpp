@@ -13,7 +13,8 @@ struct Connect
     static constexpr Flag kFlag = Flag::kReliable;
     static constexpr Name kName = INTERNAL_PACKET_NAME("CONNECT");
 
-    static void onReceive(const std::shared_ptr<Session>& session, const Connect& /*packet*/)
+    static void onReceive(const std::shared_ptr<Session>& session,
+                          const Connect& /*packet*/)
     {
         const ConnectAck response{.assignedSessionId = session->getId()};
 

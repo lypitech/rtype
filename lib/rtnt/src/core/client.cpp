@@ -13,7 +13,8 @@ Client::Client(asio::io_context& context)
     _internal_registerInternalPacketHandlers();
 }
 
-void Client::connect(const std::string& ip, const unsigned short port)
+void Client::connect(const std::string& ip,
+                     const unsigned short port)
 {
     if (_isConnected) {
         LOG_ERR("Trying to connect while already connected. Ignoring...");
@@ -37,9 +38,10 @@ void Client::connect(const std::string& ip, const unsigned short port)
     const asio::ip::address address = asio::ip::make_address(ip);
 
     _serverEndpoint = udp::endpoint(address, port);
-    _serverSession = std::make_shared<Session>(_serverEndpoint, [this](std::shared_ptr<ByteBuffer> rawBytes) {
-        this->sendToTarget(_serverEndpoint, rawBytes);
-    });
+    _serverSession =
+        std::make_shared<Session>(_serverEndpoint, [this](std::shared_ptr<ByteBuffer> rawBytes) {
+            this->sendToTarget(_serverEndpoint, rawBytes);
+        });
     start();
 
     packet::internal::Connect packet;
@@ -92,10 +94,13 @@ void Client::update(milliseconds timeout)
     }
 }
 
-void Client::onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> data)
+void Client::onReceive(const udp::endpoint& sender,
+                       std::shared_ptr<ByteBuffer> data)
 {
     if (sender != _serverEndpoint || !_serverSession) {
-        LOG_WARN("Received data that doesn't come from the remote server. Probably random internet noise, skipping...");
+        LOG_WARN(
+            "Received data that doesn't come from the remote server. Probably random internet "
+            "noise, skipping...");
         return;
     }
 
@@ -113,7 +118,8 @@ void Client::onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> 
 void Client::_internal_registerInternalPacketHandlers()
 {
     _packetDispatcher._internal_bind<packet::internal::ConnectAck>(
-        [this](const std::shared_ptr<Session>& /*session*/, const packet::internal::ConnectAck& packet) {
+        [this](const std::shared_ptr<Session>& /*session*/,
+               const packet::internal::ConnectAck& packet) {
             LOG_DEBUG("Received ID: {}", packet.assignedSessionId);
             this->_isConnected = true;
 

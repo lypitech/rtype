@@ -51,7 +51,8 @@ public:
      * @param   data    Data to send (raw bytes)
      * @note    This is a fire-and-forget operation. No delivery guarantee at this level (managed by RUDP, Session).
      */
-    void sendToTarget(const udp::endpoint& target, std::shared_ptr<ByteBuffer> data);
+    void sendToTarget(const udp::endpoint& target,
+                      std::shared_ptr<ByteBuffer> data);
 
     /**
      * @return  The local port the Peer is bound to.
@@ -65,7 +66,8 @@ protected:
      * @param   context Asio I/O context
      */
     explicit Peer(asio::io_context& context)
-        : _context(context), _socket(context)
+        : _context(context),
+          _socket(context)
     {
     }
 
@@ -88,7 +90,8 @@ protected:
      * @param   sender  The endpoint that sent the data
      * @param   data    The raw data received (raw bytes)
      */
-    virtual void onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> data) = 0;
+    virtual void onReceive(const udp::endpoint& sender,
+                           std::shared_ptr<ByteBuffer> data) = 0;
 
 private:
     asio::io_context& _context;

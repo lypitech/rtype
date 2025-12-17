@@ -20,16 +20,19 @@ struct Example
 
 }  // namespace
 
-TEST_F(NetworkTest, broadcast)
+TEST_F(NetworkTest,
+       broadcast)
 {
     std::string strToTransmit{"HI"};
     std::string receivedString{};
 
-    client->getPacketDispatcher().bind<Example>([&](const std::shared_ptr<rtnt::core::Session>&, const Example& pkt) {
-        receivedString = pkt.str;
-    });
+    client->getPacketDispatcher().bind<Example>(
+        [&](const std::shared_ptr<rtnt::core::Session>&, const Example& pkt) {
+            receivedString = pkt.str;
+        });
 
-    server->getPacketDispatcher().bind<Example>([&](const auto&, const Example& pkt) { receivedString = pkt.str; });
+    server->getPacketDispatcher().bind<Example>(
+        [&](const auto&, const Example& pkt) { receivedString = pkt.str; });
 
     client->connect("127.0.0.1", 4242);
 
@@ -39,7 +42,8 @@ TEST_F(NetworkTest, broadcast)
 
     server->broadcast(ex);
 
-    ASSERT_TRUE(waitFor([&]() { return !receivedString.empty(); })) << "Server has received no EXAMPLE packet.";
+    ASSERT_TRUE(waitFor([&]() { return !receivedString.empty(); }))
+        << "Server has received no EXAMPLE packet.";
 
     EXPECT_EQ(receivedString, strToTransmit);
 }
