@@ -15,8 +15,7 @@ static constexpr uint16_t PROTOCOL_ID = 0x1801;
 /// todo: Prone to change
 static constexpr uint16_t PROTOCOL_VER = 0x0001;
 
-namespace core
-{
+namespace core {
 
 using ByteBuffer = std::vector<uint8_t>;
 

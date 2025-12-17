@@ -1,6 +1,6 @@
-#include <format>
-
 #include "rtnt/common/utils.hpp"
+
+#include <format>
 
 namespace rtnt {
 
