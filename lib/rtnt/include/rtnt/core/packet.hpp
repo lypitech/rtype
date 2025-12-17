@@ -21,8 +21,6 @@ namespace rtnt::core {
 class Packet;  // Forward declaration needed for packet::Reader
 class Session;
 
-using ByteBuffer = std::vector<uint8_t>;
-
 namespace packet {
 
 using Id = uint16_t;
@@ -90,7 +88,7 @@ inline std::string_view to_string(const Error error)
 struct Header final
 {
     uint16_t protocolId =
-        PROTOCOL_ID;  ///< Magic number representig unique ID of the protocol, to avoid internet noise
+        PROTOCOL_ID;  ///< Magic number representing unique ID of the protocol, to avoid internet noise
     uint16_t protocolVersion = PROTOCOL_VER;  ///< Protocol version, to reject mismatch peers
     uint32_t sequenceId = 0;                  ///< The unique, incrementing ID of this packet
     uint32_t acknowledgeId = 0;               ///< Sequence ID of the latest packet received
