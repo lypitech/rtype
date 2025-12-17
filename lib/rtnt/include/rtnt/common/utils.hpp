@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <bit>
+#include <array>
 
 #include "rtnt/common/constants.hpp"
 
