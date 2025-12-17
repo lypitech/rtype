@@ -20,12 +20,14 @@ struct Example
 
 }  // namespace
 
-TEST_F(NetworkTest, string_packet)
+TEST_F(NetworkTest,
+       string_packet)
 {
     std::string strToTransmit{"hi lol"};
     std::string receivedString{};
 
-    server->getPacketDispatcher().bind<Example>([&](const auto&, const Example& pkt) { receivedString = pkt.str; });
+    server->getPacketDispatcher().bind<Example>(
+        [&](const auto&, const Example& pkt) { receivedString = pkt.str; });
 
     client->connect("127.0.0.1", 4242);
 
@@ -34,7 +36,8 @@ TEST_F(NetworkTest, string_packet)
     Example ex{.str = strToTransmit};
     client->send(ex);
 
-    ASSERT_TRUE(waitFor([&]() { return !receivedString.empty(); })) << "Server has received no EXAMPLE packet.";
+    ASSERT_TRUE(waitFor([&]() { return !receivedString.empty(); }))
+        << "Server has received no EXAMPLE packet.";
 
     EXPECT_EQ(receivedString, strToTransmit);
 }

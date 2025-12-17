@@ -30,7 +30,8 @@ class Session
     using SendToPeerFunction = std::function<void(std::shared_ptr<ByteBuffer>)>;
 
 public:
-    explicit Session(udp::endpoint endpoint, SendToPeerFunction sendToPeerFunction);
+    explicit Session(udp::endpoint endpoint,
+                     SendToPeerFunction sendToPeerFunction);
 
     /**
      * @brief   Processes incoming raw data and attempts to construct a valid Packet.
@@ -46,7 +47,8 @@ public:
      * @return  @code false@endcode if the packet is either random internet noise, coming from an outdated Peer,
      * corrupted or invalid.
      */
-    bool handleIncoming(std::shared_ptr<ByteBuffer> rawData, Packet& outPacket);
+    bool handleIncoming(std::shared_ptr<ByteBuffer> rawData,
+                        Packet& outPacket);
 
     template <typename T>
     void send(const T& packetData)

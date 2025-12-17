@@ -9,7 +9,8 @@ namespace rtnt::core {
 
 static std::atomic<session::Id> globalSessionIdCounter{0};
 
-Session::Session(udp::endpoint endpoint, SendToPeerFunction sendToPeerFunction)
+Session::Session(udp::endpoint endpoint,
+                 SendToPeerFunction sendToPeerFunction)
     : _id(globalSessionIdCounter++),
       _endpoint(std::move(endpoint)),
       _sendToPeerFunction(std::move(sendToPeerFunction)),
@@ -17,18 +18,21 @@ Session::Session(udp::endpoint endpoint, SendToPeerFunction sendToPeerFunction)
 {
 }
 
-bool Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData, Packet& outPacket)
+bool Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData,
+                             Packet& outPacket)
 {
     LOG_TRACE_R3(
         "Handling incoming raw data\n"
         "Size: {} bytes\n"
         "Data (N): {}",
-        rawData->size(), byteBufferToHexString(*rawData));
+        rawData->size(),
+        byteBufferToHexString(*rawData));
 
     const packet::parsing::Result headerParsingResult = packet::Header::parse(*rawData);
 
     if (!headerParsingResult) {
-        LOG_TRACE_R3("Error while handling packet: {}", packet::parsing::to_string(headerParsingResult.error));
+        LOG_TRACE_R3("Error while handling packet: {}",
+                     packet::parsing::to_string(headerParsingResult.error));
         return false;
     }
 
@@ -88,8 +92,13 @@ void Session::send(Packet& packet)
         "Checksum: {}\n"
         "Raw header (H): {}\n"
         "Raw buffer (N): {}",
-        header.sequenceId, header.acknowledgeId, header.acknowledgeBitfield, header.messageId, header.flags,
-        header.packetSize, header.checksum,
+        header.sequenceId,
+        header.acknowledgeId,
+        header.acknowledgeBitfield,
+        header.messageId,
+        header.flags,
+        header.packetSize,
+        header.checksum,
         byteBufferToHexString(rawBuffer->begin(), rawBuffer->begin() + sizeof(packet::Header)),
         byteBufferToHexString(rawBuffer->begin() + sizeof(packet::Header), rawBuffer->end()));
 

@@ -36,7 +36,8 @@ public:
      * @param   callback    Function to call whenever a packet of type T is received
      */
     template <typename T>
-    void bind(std::function<void(const std::shared_ptr<Session>&, const T&)> callback)
+    void bind(std::function<void(const std::shared_ptr<Session>&,
+                                 const T&)> callback)
     {
         packet::verifyUserPacketData<T>();
         registerHandler<T>(callback);
@@ -59,7 +60,8 @@ public:
     /**
      * @brief   Routes an incoming packet to the correct handler.
      */
-    void dispatch(const std::shared_ptr<Session>& session, Packet& packet);
+    void dispatch(const std::shared_ptr<Session>& session,
+                  Packet& packet);
 
 private:
     friend class Server;
@@ -68,7 +70,8 @@ private:
     std::unordered_map<packet::Id, PacketHandler> _handlers;
 
     template <typename T>
-    void _internal_bind(std::function<void(const std::shared_ptr<Session>&, const T&)> callback)
+    void _internal_bind(std::function<void(const std::shared_ptr<Session>&,
+                                           const T&)> callback)
     {
         packet::verifyInternalPacketData<T>();
         registerHandler<T>(callback);
@@ -87,7 +90,8 @@ private:
      * @param   callback    Function to call whenever a packet of type T is received
      */
     template <typename T>
-    void registerHandler(std::function<void(const std::shared_ptr<Session>&, const T&)> callback)
+    void registerHandler(std::function<void(const std::shared_ptr<Session>&,
+                                            const T&)> callback)
     {
         packet::Id packetId = T::kId;
 

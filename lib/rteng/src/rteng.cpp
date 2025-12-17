@@ -61,22 +61,30 @@ packet::WorldInit GameEngine::createWorldInit()
     return packet;
 }
 
-GameEngine::GameEngine(std::string host, unsigned short port)
-    : _client(std::make_unique<rtnt::core::Client>(_context)), _host(host), _port(port)
+GameEngine::GameEngine(std::string host,
+                       unsigned short port)
+    : _client(std::make_unique<rtnt::core::Client>(_context)),
+      _host(host),
+      _port(port)
 {
     kInstance = this;
-    _client->onMessage([](rtnt::core::Packet& packet) { LOG_INFO("Received message (#{}).", packet.getId()); });
+    _client->onMessage(
+        [](rtnt::core::Packet& packet) { LOG_INFO("Received message (#{}).", packet.getId()); });
     _client->onConnect([]() { LOG_INFO("Successfully connected."); });
     _client->onDisconnect([]() { LOG_INFO("Disconnected from host."); });
 }
 
 GameEngine::GameEngine(unsigned short port)
-    : _server(std::make_unique<rtnt::core::Server>(_context, port)), _port(port), _isClient(false)
+    : _server(std::make_unique<rtnt::core::Server>(_context,
+                                                   port)),
+      _port(port),
+      _isClient(false)
 {
     kInstance = this;
     using SessionPtr = std::shared_ptr<rtnt::core::Session>;
 
-    _server->onMessage([](SessionPtr, rtnt::core::Packet&) { LOG_INFO("Received message from cli."); });
+    _server->onMessage(
+        [](SessionPtr, rtnt::core::Packet&) { LOG_INFO("Received message from cli."); });
     _server->onConnect([this](SessionPtr s) {
         LOG_INFO("Accepting new connection.");
 
@@ -130,7 +138,8 @@ void GameEngine::onClientDisconnect(std::function<void()> callback)
     }
 }
 
-void GameEngine::onServerMessage(std::function<void(std::shared_ptr<rtnt::core::Session>, rtnt::core::Packet&)> func)
+void GameEngine::onServerMessage(std::function<void(std::shared_ptr<rtnt::core::Session>,
+                                                    rtnt::core::Packet&)> func)
 {
     if (!_isClient) {
         _server->onMessage(func);
@@ -172,7 +181,10 @@ void GameEngine::onServerDisconnect(std::function<void(std::shared_ptr<rtnt::cor
     }
 }
 
-void GameEngine::init(int screenWidth, int screenHeight, const std::string& title, int fps)
+void GameEngine::init(int screenWidth,
+                      int screenHeight,
+                      const std::string& title,
+                      int fps)
 {
     init();
     _renderer.init(screenWidth, screenHeight, title, fps);
@@ -201,7 +213,8 @@ void GameEngine::run()
         {
             const float dt = GetFrameTime();
             auto& behaviourComponents = _ecs->getComponent<comp::Behaviour>();
-            auto& behaviourSparseSet = dynamic_cast<rtecs::SparseSet<comp::Behaviour>&>(behaviourComponents);
+            auto& behaviourSparseSet =
+                dynamic_cast<rtecs::SparseSet<comp::Behaviour>&>(behaviourComponents);
 
             for (auto& [instance, started] : behaviourSparseSet.getAll()) {
                 if (!instance) {

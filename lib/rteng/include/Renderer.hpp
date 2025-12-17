@@ -21,14 +21,25 @@ class Renderer
 public:
     Renderer() = default;
 
-    void init(int screenWidth, int screenHeight, const std::string& title, int fps = 60);
+    void init(int screenWidth,
+              int screenHeight,
+              const std::string& title,
+              int fps = 60);
     ~Renderer();
 
-    void drawTexture(int textureId, const Rect& source, const Rect& dest, float rotation);
+    void drawTexture(int textureId,
+                     const Rect& source,
+                     const Rect& dest,
+                     float rotation);
 
-    void drawRectangle(const Rect& rect, const Color& color);
+    void drawRectangle(const Rect& rect,
+                       const Color& color);
 
-    void drawText(const std::string& text, int posX, int posY, int fontSize, const Color& color);
+    void drawText(const std::string& text,
+                  int posX,
+                  int posY,
+                  int fontSize,
+                  const Color& color);
 
     std::weak_ptr<Texture2D> loadTexture(const std::string& filePath);
 

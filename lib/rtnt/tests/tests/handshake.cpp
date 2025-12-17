@@ -2,7 +2,8 @@
 
 #include "network_fixture.hpp"
 
-TEST_F(NetworkTest, handshake)
+TEST_F(NetworkTest,
+       handshake)
 {
     bool clientConnected = false;
 

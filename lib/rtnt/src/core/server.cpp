@@ -5,7 +5,8 @@
 
 namespace rtnt::core {
 
-Server::Server(asio::io_context& context, const unsigned short port)
+Server::Server(asio::io_context& context,
+               const unsigned short port)
     : Peer(context)
 {
     server(port);
@@ -33,7 +34,8 @@ void Server::update(milliseconds timeout)
     }
 }
 
-void Server::onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> data)
+void Server::onReceive(const udp::endpoint& sender,
+                       std::shared_ptr<ByteBuffer> data)
 {
     std::shared_ptr<Session> session;
 
@@ -50,8 +52,10 @@ void Server::onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> 
 
         LOG_TRACE_R3("Is CONNECT packet, creating session.");
 
-        session = std::make_shared<Session>(
-            sender, [this, sender](std::shared_ptr<ByteBuffer> rawBytes) { this->sendToTarget(sender, rawBytes); });
+        session =
+            std::make_shared<Session>(sender, [this, sender](std::shared_ptr<ByteBuffer> rawBytes) {
+                this->sendToTarget(sender, rawBytes);
+            });
         _sessions[sender] = session;
 
         if (_onConnect) {

@@ -13,7 +13,8 @@ class Sprite : public rtecs::ASystem
 {
 public:
     explicit Sprite(const std::unique_ptr<rtecs::ECS>& ecs)
-        : ASystem(ecs->getComponentsBitSet<comp::Sprite, comp::Position>())
+        : ASystem(ecs->getComponentsBitSet<comp::Sprite,
+                                           comp::Position>())
     {
     }
     void apply(rtecs::ECS& ecs) override;

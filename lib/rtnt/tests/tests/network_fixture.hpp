@@ -55,7 +55,8 @@ protected:
     }
 
     template <typename Func>
-    bool waitFor(Func condition, std::chrono::milliseconds timeout = std::chrono::seconds(2))
+    bool waitFor(Func condition,
+                 std::chrono::milliseconds timeout = std::chrono::seconds(2))
     {
         const auto start = std::chrono::steady_clock::now();
 

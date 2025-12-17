@@ -24,7 +24,8 @@ class Server : public Peer
     using OnMessageFunction = std::function<void(std::shared_ptr<Session>, Packet&)>;
 
 public:
-    explicit Server(asio::io_context& context, unsigned short port);
+    explicit Server(asio::io_context& context,
+                    unsigned short port);
 
     /**
      * @brief   Sets the callback for when a remote Peer connects to the Server.
@@ -58,7 +59,8 @@ public:
     void update(milliseconds timeout = seconds(10));
 
     template <typename T>
-    void sendTo(const std::shared_ptr<Session>& session, const T& packetData)
+    void sendTo(const std::shared_ptr<Session>& session,
+                const T& packetData)
     {
         packet::verifyUserPacketData<T>();
         _internal_sendTo(session, packetData);
@@ -68,7 +70,7 @@ public:
     void broadcast(const T& packetData)
     {
         packet::verifyUserPacketData<T>();
-        for (auto &session: _sessions | std::views::values) {
+        for (auto& session : _sessions | std::views::values) {
             _internal_sendTo(session, packetData);
         }
     }
@@ -76,7 +78,8 @@ public:
     [[nodiscard]] Dispatcher& getPacketDispatcher() { return this->_packetDispatcher; }
 
 protected:
-    void onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> data) override;
+    void onReceive(const udp::endpoint& sender,
+                   std::shared_ptr<ByteBuffer> data) override;
 
 private:
     std::map<udp::endpoint, std::shared_ptr<Session>> _sessions;
@@ -88,7 +91,8 @@ private:
     OnMessageFunction _onMessage;
 
     template <typename T>
-    void _internal_sendTo(const std::shared_ptr<Session>& session, const T& packetData)
+    void _internal_sendTo(const std::shared_ptr<Session>& session,
+                          const T& packetData)
     {
         packet::verifyPacketData<T>();
 

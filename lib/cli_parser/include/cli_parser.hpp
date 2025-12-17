@@ -23,7 +23,8 @@ public:
      * @param argc The number of element in argv.
      * @param argv The arguments given to the program.
      */
-    explicit Parser(int argc, const char* argv[]);
+    explicit Parser(int argc,
+                    const char* argv[]);
     ~Parser() = default;
 
     /**

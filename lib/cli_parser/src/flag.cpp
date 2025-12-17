@@ -6,8 +6,10 @@
 
 namespace cli_parser {
 
-Flag::Flag(std::string flag, std::string value)
-    : _flag(std::move(flag)), _value(std::move(value))
+Flag::Flag(std::string flag,
+           std::string value)
+    : _flag(std::move(flag)),
+      _value(std::move(value))
 {
     detectType();
 }

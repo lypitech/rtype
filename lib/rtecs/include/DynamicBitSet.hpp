@@ -26,7 +26,8 @@ public:
         std::bitset<64> mask;
 
     public:
-        explicit BitRef(std::bitset<64> &b, std::bitset<64> m);
+        explicit BitRef(std::bitset<64> &b,
+                        std::bitset<64> m);
 
         /** @return bit value as boolean */
         explicit operator bool() const;
@@ -48,7 +49,8 @@ public:
 
     /** @brief Serialize the bitset to a byte array. */
     [[nodiscard]]
-    std::pair<std::vector<uint8_t>, size_t> toBytes() const;
+    std::pair<std::vector<uint8_t>,
+              size_t> toBytes() const;
 
     /** @return The number of bits tracked by the bitset. */
     [[nodiscard]] size_t size() const { return _nbits; }

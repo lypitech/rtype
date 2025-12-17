@@ -9,8 +9,10 @@ using namespace rtecs;
 // =======================
 //         BitRef
 // =======================
-DynamicBitSet::BitRef::BitRef(std::bitset<64>& b, const std::bitset<64> m)
-    : block(b), mask(m)
+DynamicBitSet::BitRef::BitRef(std::bitset<64>& b,
+                              const std::bitset<64> m)
+    : block(b),
+      mask(m)
 {
 }
 
@@ -40,7 +42,9 @@ DynamicBitSet::DynamicBitSet(const std::vector<uint8_t>& bytes)
 }
 
 // This should be returning a vector of the index of activated bytes .
-std::pair<std::vector<uint8_t>, size_t> DynamicBitSet::toBytes() const
+std::pair<std::vector<uint8_t>,
+          size_t>
+DynamicBitSet::toBytes() const
 {
     std::vector<uint8_t> bytes;
 
@@ -54,20 +58,23 @@ std::pair<std::vector<uint8_t>, size_t> DynamicBitSet::toBytes() const
 
 bool DynamicBitSet::any() const
 {
-    return std::ranges::any_of(_bitsets.begin(), _bitsets.end(),
-                               [](const std::bitset<64> bitset) { return bitset.any(); });
+    return std::ranges::any_of(_bitsets.begin(), _bitsets.end(), [](const std::bitset<64> bitset) {
+        return bitset.any();
+    });
 };
 
 bool DynamicBitSet::all() const
 {
-    return std::ranges::all_of(_bitsets.begin(), _bitsets.end(),
-                               [](const std::bitset<64> bitset) { return bitset.all(); });
+    return std::ranges::all_of(_bitsets.begin(), _bitsets.end(), [](const std::bitset<64> bitset) {
+        return bitset.all();
+    });
 }
 
 bool DynamicBitSet::none() const
 {
-    return std::ranges::none_of(_bitsets.begin(), _bitsets.end(),
-                                [](const std::bitset<64> bitset) { return bitset.none(); });
+    return std::ranges::none_of(_bitsets.begin(), _bitsets.end(), [](const std::bitset<64> bitset) {
+        return bitset.none();
+    });
 };
 
 void DynamicBitSet::clear()

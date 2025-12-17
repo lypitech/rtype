@@ -55,7 +55,8 @@ public:
      * @param   ip      The server IP address.
      * @param   port    The server port.
      */
-    void connect(const std::string& ip, unsigned short port);
+    void connect(const std::string& ip,
+                 unsigned short port);
 
     /**
      * @brief   Disconnects the client from the remote server
@@ -87,7 +88,8 @@ public:
     [[nodiscard]] Dispatcher& getPacketDispatcher() { return this->_packetDispatcher; }
 
 protected:
-    void onReceive(const udp::endpoint& sender, std::shared_ptr<ByteBuffer> data) override;
+    void onReceive(const udp::endpoint& sender,
+                   std::shared_ptr<ByteBuffer> data) override;
 
 private:
     udp::endpoint _serverEndpoint;

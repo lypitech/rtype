@@ -11,7 +11,8 @@ struct Disconnect
     static constexpr Flag kFlag = Flag::kReliable;
     static constexpr Name kName = INTERNAL_PACKET_NAME("DISCONNECT");
 
-    static void onReceive(const std::shared_ptr<Session>& session, const Disconnect& /*packet*/)
+    static void onReceive(const std::shared_ptr<Session>& session,
+                          const Disconnect& /*packet*/)
     {
         LOG_DEBUG("Received DISCONNECT packet, killing session.");
         session->disconnect();

@@ -10,7 +10,8 @@ class Rectangle : public rtecs::ASystem
 {
 public:
     explicit Rectangle(const std::unique_ptr<rtecs::ECS>& ecs)
-        : ASystem(ecs->getComponentsBitSet<comp::Rectangle, comp::Position>())
+        : ASystem(ecs->getComponentsBitSet<comp::Rectangle,
+                                           comp::Position>())
     {
     }
     void apply(rtecs::ECS& ecs) override;

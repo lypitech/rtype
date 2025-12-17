@@ -26,7 +26,8 @@ public:
      * @param flag The "key" of the flag to create
      * @param value The "value" of the flag to create
      */
-    explicit Flag(std::string flag, std::string value);
+    explicit Flag(std::string flag,
+                  std::string value);
     ~Flag() = default;
 
     /**

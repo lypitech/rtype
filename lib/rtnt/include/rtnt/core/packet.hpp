@@ -1,9 +1,9 @@
 #pragma once
 
 #include <format>
-#include <vector>
-#include <type_traits>
 #include <limits>
+#include <type_traits>
+#include <vector>
 
 #if defined(_WIN32)
 #include <winsock2.h>
@@ -51,9 +51,9 @@ struct Result;
  */
 enum class Error : uint8_t
 {
-    kNone = 0x0,           ///< No error during parsing.
-    kDataTooSmall,         ///< Data is too small to contain a RTNT header.
-    kProtocolMismatch,     ///< Protocol ID received does not match local RTNT protocol ID.
+    kNone = 0x0,        ///< No error during parsing.
+    kDataTooSmall,      ///< Data is too small to contain a RTNT header.
+    kProtocolMismatch,  ///< Protocol ID received does not match local RTNT protocol ID.
     kPayloadSizeMismatch,  ///< Corrupted packet: Payload size does not match the one written in the header.
 };
 
@@ -89,15 +89,18 @@ inline std::string_view to_string(const Error error)
  */
 struct Header final
 {
-    uint16_t protocolId = PROTOCOL_ID;  ///< Magic number representig unique ID of the protocol, to avoid internet noise
+    uint16_t protocolId =
+        PROTOCOL_ID;  ///< Magic number representig unique ID of the protocol, to avoid internet noise
     uint16_t protocolVersion = PROTOCOL_VER;  ///< Protocol version, to reject mismatch peers
     uint32_t sequenceId = 0;                  ///< The unique, incrementing ID of this packet
     uint32_t acknowledgeId = 0;               ///< Sequence ID of the latest packet received
-    uint32_t acknowledgeBitfield = 0;  ///< Bitmask of the previous 32 received packets relative to acknowledge ID
-    Id messageId = 0x0;                ///< Command type (user-defined)
-    uint8_t flags = static_cast<uint8_t>(Flag::kUnreliable);  ///< Reliability flags (cf. packet::Flag)
-    uint16_t packetSize = 0;                                  ///< Size of the payload
-    uint32_t checksum = 0;                                    ///< CRC32 checksum to avoid corruption
+    uint32_t acknowledgeBitfield =
+        0;               ///< Bitmask of the previous 32 received packets relative to acknowledge ID
+    Id messageId = 0x0;  ///< Command type (user-defined)
+    uint8_t flags =
+        static_cast<uint8_t>(Flag::kUnreliable);  ///< Reliability flags (cf. packet::Flag)
+    uint16_t packetSize = 0;                      ///< Size of the payload
+    uint32_t checksum = 0;                        ///< CRC32 checksum to avoid corruption
 
     /**
      * @brief   Converts all fields from Host Byte Order (Little Endian)
@@ -253,18 +256,21 @@ void verifyPacketData()
 {
     static_assert(std::is_class_v<T>, "Packet data must be a struct.");
 
-    static_assert(requires { T::kId; }, "Packet struct is missing 'static constexpr uint16_t kId'.");
+    static_assert(
+        requires { T::kId; }, "Packet struct is missing 'static constexpr uint16_t kId'.");
 
     using IdType = decltype(T::kId);
 
-    static_assert(std::is_same_v<const Id, IdType>, "Packet kId must be a 16-bit unsigned integer (uint16_t).");
+    static_assert(std::is_same_v<const Id, IdType>,
+                  "Packet kId must be a 16-bit unsigned integer (uint16_t).");
 
     if constexpr (!requires { T::kName; }) {
         LOG_WARN(
             "Warning for Packet #{}: "
             "It is strongly recommended to give a name to the packets you define. "
             "Fallback to \"{}\".",
-            T::kId, UNKNOWN_PACKET_NAME);
+            T::kId,
+            UNKNOWN_PACKET_NAME);
     }
 }
 
@@ -351,13 +357,23 @@ public:
      * @param   flag        Reliability mode
      * @param   channelId   Virtual channel ID // todo: implement channel id lol
      */
-    explicit Packet(const packet::Id id, const packet::Flag flag = packet::Flag::kUnreliable,
+    explicit Packet(const packet::Id id,
+                    const packet::Flag flag = packet::Flag::kUnreliable,
                     const uint8_t channelId = 0)
-        : _messageId(id), _flag(flag), _channelId(channelId) {}
+        : _messageId(id),
+          _flag(flag),
+          _channelId(channelId)
+    {
+    }
 
     /// TMP!!
     explicit Packet(const std::vector<uint8_t>& data)
-        : _messageId(0), _flag(packet::Flag::kUnreliable), _channelId(0), _buffer(data) {}
+        : _messageId(0),
+          _flag(packet::Flag::kUnreliable),
+          _channelId(0),
+          _buffer(data)
+    {
+    }
 
     /* Serializing methods */
     /**
@@ -367,7 +383,9 @@ public:
      * memory copying. For strings, see the dedicated operator.
      */
     template <typename T>
-    std::enable_if_t<std::is_arithmetic_v<T> || std::is_enum_v<T>, Packet&> operator<<(const T& data)
+    std::enable_if_t<std::is_arithmetic_v<T> || std::is_enum_v<T>,
+                     Packet&>
+    operator<<(const T& data)
     {
         append(&data, sizeof(T));
         return *this;
@@ -396,7 +414,9 @@ public:
      * memory copying. For strings, see the dedicated operator.
      */
     template <typename T>
-    std::enable_if_t<std::is_arithmetic_v<T> || std::is_enum_v<T>, Packet&> operator>>(T& data)
+    std::enable_if_t<std::is_arithmetic_v<T> || std::is_enum_v<T>,
+                     Packet&>
+    operator>>(T& data)
     {
         if (_readPosition + sizeof(T) > _buffer.size()) {
             throw std::runtime_error("Packet Underflow");
@@ -461,7 +481,8 @@ private:
      * @param   data    Data to push
      * @param   size    Size of the data to push in bytes
      */
-    void append(const void* data, const size_t size)
+    void append(const void* data,
+                const size_t size)
     {
         const auto* ptr = static_cast<const uint8_t*>(data);
 
@@ -473,8 +494,10 @@ private:
  * @brief Global operator to WRITE a custom struct into a packet.
  */
 template <typename T>
-std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_enum_v<T>, Packet&>
-operator<<(Packet& p, const T& data)
+std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_enum_v<T>,
+                 Packet&>
+operator<<(Packet& p,
+           const T& data)
 {
     if constexpr (std::is_empty_v<T>) {
         return p;
@@ -491,8 +514,10 @@ operator<<(Packet& p, const T& data)
  * @param   data    a
  */
 template <typename T>
-std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_enum_v<T>, Packet&>
-operator>>(Packet& p, T& data)
+std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_enum_v<T>,
+                 Packet&>
+operator>>(Packet& p,
+           T& data)
 {
     if constexpr (std::is_empty_v<T>) {
         return p;
@@ -511,7 +536,8 @@ operator>>(Packet& p, T& data)
  * @param       data    Const reference to the vector to write
  */
 template <typename T>
-Packet& operator<<(Packet& p, const std::vector<T>& data)
+Packet& operator<<(Packet& p,
+                   const std::vector<T>& data)
 {
     if (data.size() > (std::numeric_limits<uint16_t>::max)()) {
         throw std::runtime_error("Vector is too large to serialize (limit 65535)");
@@ -531,7 +557,8 @@ Packet& operator<<(Packet& p, const std::vector<T>& data)
  * Reads a 2-byte length prefix followed by the elements.
  */
 template <typename T>
-Packet& operator>>(Packet& p, std::vector<T>& data)
+Packet& operator>>(Packet& p,
+                   std::vector<T>& data)
 {
     uint16_t size = 0;
     p >> size;

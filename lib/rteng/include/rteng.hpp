@@ -26,14 +26,18 @@ using SrvBindingMap = std::unordered_map<rtnt::core::session::Id, rtecs::EntityI
 class GameEngine
 {
 public:
-    explicit GameEngine(std::string host, unsigned short port);
+    explicit GameEngine(std::string host,
+                        unsigned short port);
 
     explicit GameEngine(unsigned short port);
 
     ~GameEngine();
 
     void init();
-    void init(int screenWidth, int screenHeight, const std::string& title, int fps = 60);
+    void init(int screenWidth,
+              int screenHeight,
+              const std::string& title,
+              int fps = 60);
 
     void run();
 
@@ -45,13 +49,15 @@ public:
 
     void onServerDisconnect(std::function<void(std::shared_ptr<rtnt::core::Session>)> callback);
     void onServerConnect(std::function<void(std::shared_ptr<rtnt::core::Session>)> callback);
-    void onServerMessage(std::function<void(std::shared_ptr<rtnt::core::Session>, rtnt::core::Packet&)> callback);
+    void onServerMessage(std::function<void(std::shared_ptr<rtnt::core::Session>,
+                                            rtnt::core::Packet&)> callback);
 
     static GameEngine& getInstance();
 
     void registerSystems(std::vector<std::unique_ptr<rtecs::ASystem> > systems);
     template <typename T>
-    void registerPacketHandler(std::function<void(const std::shared_ptr<rtnt::core::Session>&, const T&)> func)
+    void registerPacketHandler(std::function<void(const std::shared_ptr<rtnt::core::Session>&,
+                                                  const T&)> func)
     {
         if (_isClient) {
             return _client->getPacketDispatcher().bind(func);
@@ -68,8 +74,8 @@ public:
     rtecs::EntityID registerEntity(const std::shared_ptr<behaviour::MonoBehaviour>& mono_behaviour,
                                    Components&&... components)
     {
-        const rtecs::EntityID entityId =
-            _ecs->registerEntity<std::decay_t<Components>...>(std::forward<Components>(components)...);
+        const rtecs::EntityID entityId = _ecs->registerEntity<std::decay_t<Components>...>(
+            std::forward<Components>(components)...);
 
         if (!_client) {
             const rtecs::DynamicBitSet bitmask = _ecs->getComponentsBitSet<Components...>();
@@ -87,7 +93,8 @@ public:
             return entityId;
         }
         auto& behaviourComponents = _ecs->getComponent<comp::Behaviour>();
-        auto& behaviourSparseSet = dynamic_cast<rtecs::SparseSet<comp::Behaviour>&>(behaviourComponents);
+        auto& behaviourSparseSet =
+            dynamic_cast<rtecs::SparseSet<comp::Behaviour>&>(behaviourComponents);
 
         comp::Behaviour behaviourComp;
         behaviourComp.instance = mono_behaviour;
