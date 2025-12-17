@@ -118,7 +118,8 @@ public:
      * value-initialized Component).
      * @return `true` if the entity has been created, `false` otherwise.
      */
-    bool put(size_t id, T component = T{}) noexcept;
+    bool put(size_t id,
+             T component = T{}) noexcept;
 
     /**
      * @brief Remove the entity associated component from the sparse-set.
@@ -203,7 +204,8 @@ bool SparseSet<Component>::has(const size_t id) const noexcept
 }
 
 template <typename Component>
-bool SparseSet<Component>::put(const size_t id, Component component) noexcept
+bool SparseSet<Component>::put(const size_t id,
+                               Component component) noexcept
 {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = INDEX_OF(id, kPageSize);

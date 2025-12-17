@@ -31,8 +31,12 @@ public:
         using pointer = value_type*;
         using reference = value_type;
 
-        Iterator(SetsTuple sets, const std::vector<size_t>* entities, size_t index)
-            : _sets(sets), _entities(entities), _index(index)
+        Iterator(SetsTuple sets,
+                 const std::vector<size_t>* entities,
+                 size_t index)
+            : _sets(sets),
+              _entities(entities),
+              _index(index)
         {
             if (_index < _entities->size() && !valid()) {
                 ++(*this);

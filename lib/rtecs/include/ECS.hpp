@@ -66,11 +66,13 @@ private:
      * instance stored in `_componentView`.
      */
     template <typename Component>
-    void emplaceComponent(EntityID id, Component &&component)
+    void emplaceComponent(EntityID id,
+                          Component &&component)
     {
         const size_t hashcode = typeid(std::remove_reference_t<Component>).hash_code();
 
-        auto &sparseSet = static_cast<SparseSet<std::remove_reference_t<Component>> &>(*_componentView[hashcode]);
+        auto &sparseSet =
+            static_cast<SparseSet<std::remove_reference_t<Component>> &>(*_componentView[hashcode]);
 
         sparseSet.put(id, std::forward<Component>(component));
     }
@@ -113,7 +115,8 @@ public:
     template <typename... Components>
     View<Components...> view()
     {
-        return View<Components...>(dynamic_cast<SparseSet<Components> &>(getComponent<Components>())...);
+        return View<Components...>(
+            dynamic_cast<SparseSet<Components> &>(getComponent<Components>())...);
     }
 
     /**
@@ -153,7 +156,8 @@ public:
         return _entityList;
     }
 
-    template <typename Component, typename... TupleTypes>
+    template <typename Component,
+              typename... TupleTypes>
     static constexpr ComponentGroup<Component> &getComponentGroup(std::tuple<TupleTypes...> &tuple)
     {
         return std::get<ComponentGroup<Component>>(tuple);
@@ -283,7 +287,9 @@ public:
         ((bitset |= getComponentBitSet<Components>()), ...);
         for (const auto &entity : _entityList) {
             if ((entity & bitset) == bitset) {
-                (std::get<std::vector<Components>>(tuple).push_back(getComponentOf<Components>(entity)), ...);
+                (std::get<std::vector<Components>>(tuple).push_back(
+                     getComponentOf<Components>(entity)),
+                 ...);
             }
         }
         return tuple;
@@ -301,7 +307,8 @@ public:
     Component &getComponentOf(EntityID entity)
     {
         const ComponentID componentId = typeid(Component).hash_code();
-        auto sparseSet = dynamic_cast<SparseSet<Component>>(_componentView.getDenseIndex(componentId));
+        auto sparseSet =
+            dynamic_cast<SparseSet<Component>>(_componentView.getDenseIndex(componentId));
 
         return sparseSet.get(entity);
     }
