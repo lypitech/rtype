@@ -12,7 +12,7 @@ Result Header::parse(const ByteBuffer& data)
 
     Header header;
     std::memcpy(&header, data.data(), sizeof(Header));
-    header.toHost();
+    header.convertEndianness();
 
     if (header.protocolId != PROTOCOL_ID) {
         return Result::failure(Error::kProtocolMismatch);
