@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <bit>
+#include <string>
 
 #include "rtnt/common/constants.hpp"
 
@@ -17,8 +18,8 @@ T swap(T value)
         return value;
     }
 
-    if constexpr (std::endian::native ==
-                  std::endian::big) {  // no need to swap if already big endian
+    // no need to swap if already big endian
+    if constexpr (std::endian::native == std::endian::big) {
         return value;
     }
 
@@ -34,7 +35,7 @@ T swap(T value)
  * @brief   Converts a section of a ByteBuffer to a readable string in a hexadecimal form.
  * Mainly used for logging.
  *
- * @note    Only goes from begin to end. If you want to convert an entire ByteBuffer, simply call the other
+ * @note    Only goes from begin to end. If you want to convert an entire ByteBuffer, call the other
             overload.
  * @note    This function doesn't affect the buffer.
  *
