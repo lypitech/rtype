@@ -66,33 +66,53 @@ struct Example
             "v_f: {} (size: {})\n"
             "v_d: {} (size: {})\n"
             "v_s: {} (size: {})",
-            u8, u16, u32, u64,
-            s8, s16, s32, s64,
-            f, d,
+            u8,
+            u16,
+            u32,
+            u64,
+            s8,
+            s16,
+            s32,
+            s64,
+            f,
+            d,
             s,
-            v_u8, v_u8.size(), v_u16, v_u16.size(), v_u32, v_u32.size(), v_u64, v_u64.size(),
-            v_s8, v_s8.size(), v_s16, v_s16.size(), v_s32, v_s32.size(), v_s64, v_s64.size(),
-            v_f, v_f.size(), v_d, v_d.size(),
-            v_s, v_s.size());
+            v_u8,
+            v_u8.size(),
+            v_u16,
+            v_u16.size(),
+            v_u32,
+            v_u32.size(),
+            v_u64,
+            v_u64.size(),
+            v_s8,
+            v_s8.size(),
+            v_s16,
+            v_s16.size(),
+            v_s32,
+            v_s32.size(),
+            v_s64,
+            v_s64.size(),
+            v_f,
+            v_f.size(),
+            v_d,
+            v_d.size(),
+            v_s,
+            v_s.size());
     }
 
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        ar  & u8 & u16 & u32 & u64
-            & s8 & s16 & s32 & s64
-            & f & d
-            & s
-            & v_u8 & v_u16 & v_u32 & v_u64
-            & v_s8 & v_s16 & v_s32 & v_s64
-            & v_f & v_d
-            & v_s;
+        ar & u8 & u16 & u32 & u64 & s8 & s16 & s32 & s64 & f & d & s & v_u8 & v_u16 & v_u32 &
+            v_u64 & v_s8 & v_s16 & v_s32 & v_s64 & v_f & v_d & v_s;
     }
 };
 
 }  // namespace
 
-TEST_F(NetworkTest, complex_packet)
+TEST_F(NetworkTest,
+       complex_packet)
 {
     Example sent{
         .u8 = 0xFF,
@@ -110,21 +130,20 @@ TEST_F(NetworkTest, complex_packet)
 
         .s = "aymeric caca boudin 🥇",
 
-        .v_u8 = { 1, 2, 255 },
-        .v_u16 = { 100, 0xAABB, 65535 },
-        .v_u32 = { 100000, 0xAABBCCDD },
-        .v_u64 = { 0x1122334455667788, 999999 },
+        .v_u8 = {1, 2, 255},
+        .v_u16 = {100, 0xAABB, 65535},
+        .v_u32 = {100000, 0xAABBCCDD},
+        .v_u64 = {0x1122334455667788, 999999},
 
-        .v_s8 = { -1, -127, 50 },
-        .v_s16 = { -32000, 32000 },
-        .v_s32 = { -2000000, 2000000 },
-        .v_s64 = { -123456789, 123456789 },
+        .v_s8 = {-1, -127, 50},
+        .v_s16 = {-32000, 32000},
+        .v_s32 = {-2000000, 2000000},
+        .v_s64 = {-123456789, 123456789},
 
-        .v_f = { 1.1f, -2.5f, 100.0f },
-        .v_d = { 0.00001, -9999.9999, 3.1415926535 },
+        .v_f = {1.1f, -2.5f, 100.0f},
+        .v_d = {0.00001, -9999.9999, 3.1415926535},
 
-        .v_s = { "ermmmm", "what", "ermmm what the sigma 24-70 f2.8 art ii with a sony a7riii" }
-    };
+        .v_s = {"ermmmm", "what", "ermmm what the sigma 24-70 f2.8 art ii with a sony a7riii"}};
 
     std::optional<Example> received;
 

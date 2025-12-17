@@ -1,8 +1,8 @@
 #pragma once
 
 #include <algorithm>
-#include <bit>
 #include <array>
+#include <bit>
 
 #include "rtnt/common/constants.hpp"
 
@@ -13,11 +13,12 @@ namespace endian {
 template <typename T>
 T swap(T value)
 {
-    if constexpr (sizeof(T) == 1) { // 1-byte types don't need swapping (what do you wanna swap)
+    if constexpr (sizeof(T) == 1) {  // 1-byte types don't need swapping (what do you wanna swap)
         return value;
     }
 
-    if constexpr (std::endian::native == std::endian::big) { // no need to swap if already big endian
+    if constexpr (std::endian::native ==
+                  std::endian::big) {  // no need to swap if already big endian
         return value;
     }
 
@@ -27,7 +28,7 @@ T swap(T value)
     return std::bit_cast<T>(bytes);
 }
 
-}
+}  // namespace endian
 
 /**
  * @brief   Converts a section of a ByteBuffer to a readable string in a hexadecimal form.

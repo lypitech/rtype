@@ -1,9 +1,9 @@
 #pragma once
 
+#include <cstring>
 #include <limits>
 #include <type_traits>
 #include <vector>
-#include <cstring>
 
 #include "logger/Logger.h"
 #include "rtnt/common/constants.hpp"
