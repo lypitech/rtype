@@ -3,7 +3,8 @@
 #include "logger/Sinks/LogFileSink.h"
 #include "rteng.hpp"
 
-int main(const int argc, const char* argv[])
+int main(const int argc,
+         const char* argv[])
 {
     Logger::getInstance().addSink<logger::ConsoleSink>();
     // Logger::getInstance().addSink<logger::LogFileSink>("logs/client_latest.log");
