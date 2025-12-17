@@ -3,6 +3,7 @@
 #define INTERNAL_PACKET_NAME(name) "__rtnt_internal_" name
 
 #include <cstdint>
+#include <string_view>
 #include <vector>
 
 namespace rtnt {
