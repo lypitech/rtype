@@ -1,8 +1,32 @@
 #pragma once
 
-#include "rtnt/core/packet.hpp"
+#include <algorithm>
+#include <bit>
+
+#include "rtnt/common/constants.hpp"
 
 namespace rtnt {
+
+namespace endian {
+
+template <typename T>
+T swap(T value)
+{
+    if constexpr (sizeof(T) == 1) { // 1-byte types don't need swapping (what do you wanna swap)
+        return value;
+    }
+
+    if constexpr (std::endian::native == std::endian::big) { // no need to swap if already big endian
+        return value;
+    }
+
+    // reverse bytes
+    auto bytes = std::bit_cast<std::array<uint8_t, sizeof(T)>>(value);
+    std::ranges::reverse(bytes);
+    return std::bit_cast<T>(bytes);
+}
+
+}
 
 /**
  * @brief   Converts a section of a ByteBuffer to a readable string in a hexadecimal form.
