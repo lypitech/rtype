@@ -1,14 +1,13 @@
 cmake_minimum_required(VERSION 3.20)
 
+include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+
 project(rteng
-    VERSION 0.0.1
+    VERSION 1.0.0
     DESCRIPTION "R-Type Game Engine library"
     HOMEPAGE_URL "https://github.com/lypitech/rtype"
     LANGUAGES CXX
 )
-
-find_package(Threads REQUIRED)
-find_package(raylib REQUIRED)
 
 # --- Options ---
 option(RTENG_BUILD_TESTS "Build the test suite" OFF)
@@ -16,17 +15,18 @@ option(RTENG_BUILD_TESTS "Build the test suite" OFF)
 if(PROJECT_IS_TOP_LEVEL)
     message(WARNING "Building RTENG standalone, adding Shuvlog manually")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../shuvlog shuvlog)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../rtecs rtecs )
 endif()
 
 # --- Sources / Headers ---
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC
+    src/rteng.cpp
+)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../common
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
@@ -34,15 +34,8 @@ target_include_directories(${PROJECT_NAME}
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        asio::asio
-        rtnt
         shuvlog
         rtecs
-)
-
-target_link_libraries(rteng PUBLIC
-    raylib
-    Threads::Threads
 )
 
 # --- Output ---
@@ -62,7 +55,7 @@ if (MSVC)
         NOGDI
         NOUSER
     )
-    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /permissive-)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE
         -Wall -Wextra -Werror -pedantic
