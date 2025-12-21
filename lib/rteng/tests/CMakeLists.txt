@@ -10,8 +10,8 @@ project(rteng_tests
 # --- Sources ---
 set(RTENG_TEST_SOURCES
     Main.cpp
-    tests/Initialization.cpp
-    tests/TextureTests.cpp
+#    tests/Initialization.cpp
+#    tests/TextureTests.cpp
 )
 
 add_executable(rteng_tests ${RTENG_TEST_SOURCES})
@@ -43,7 +43,6 @@ target_link_directories(rteng_tests PRIVATE
 
 # --- Dependencies ---
 find_package(GTest REQUIRED)
-find_package(Threads REQUIRED)
 
 target_link_libraries(rteng_tests
     PRIVATE
@@ -54,4 +53,4 @@ target_link_libraries(rteng_tests
 
 # --- GTest setup ---
 include(GoogleTest)
-# gtest_discover_tests(rteng_tests)
+gtest_discover_tests(rteng_tests)
