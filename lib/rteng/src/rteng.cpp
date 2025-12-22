@@ -6,12 +6,6 @@
 namespace rteng {
 
 template <typename... Components>
-GameEngine::GameEngine()
-{
-    _ecs = rtecs::ECS::createWithComponents<Components...>();
-}
-
-template <typename... Components>
 rtecs::EntityID GameEngine::registerEntity(
     const std::shared_ptr<behaviour::MonoBehaviour>& mono_behaviour,
     Components&&... components)
