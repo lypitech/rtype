@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
+include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+
 project(r-type_server
     VERSION 0.0.1
     DESCRIPTION "R-Type Server"
@@ -12,12 +14,16 @@ if(PROJECT_IS_TOP_LEVEL)
     message(WARNING "Building Server standalone, adding Shuvlog and rtnt manually")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/shuvlog shuvlog)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/cli_parser cli_parser)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rtnt rtnt)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rteng rteng)
 endif()
 
 # --- Sources / Headers ---
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/lobby/lobby.cpp
+    src/lobby/lobby_manager.cpp
+    src/app.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -26,8 +32,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
 )
 
+find_package(asio REQUIRED)
+
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    asio::asio
+    rtnt
     rteng
     cli_parser
     shuvlog
@@ -52,7 +62,14 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 
 if (MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /permissive-)
+    target_compile_definitions(${PROJECT_NAME}
+            PUBLIC
+            WIN32_LEAN_AND_MEAN
+            NOMINMAX
+            NOGDI
+            NOUSER
+    )
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE
         -Wall -Wextra -Werror -pedantic
