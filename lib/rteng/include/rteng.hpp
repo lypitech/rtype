@@ -3,9 +3,9 @@
 #include <memory>
 #include <vector>
 
+#include "Behaviour.hpp"
 #include "ECS.hpp"
 #include "MonoBehaviour.hpp"
-#include "comp/Behaviour.hpp"
 
 namespace rteng {
 
