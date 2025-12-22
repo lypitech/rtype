@@ -5,8 +5,14 @@
 
 #include "ECS.hpp"
 #include "MonoBehaviour.hpp"
+#include "comp/Behaviour.hpp"
 
 namespace rteng {
+
+template <typename... Ts>
+struct ComponentsList
+{
+};
 
 /**
  * @class GameEngine
@@ -20,7 +26,10 @@ public:
      * @tparam Components The list of components to create the @code ecs@endcode with.
      */
     template <typename... Components>
-    explicit GameEngine();
+    explicit GameEngine(ComponentsList<Components...>)
+    {
+        _ecs = rtecs::ECS::createWithComponents<Components..., comp::Behaviour>();
+    }
 
     /**
      * @brief Registers a new entity into the @code ecs@endcode.
