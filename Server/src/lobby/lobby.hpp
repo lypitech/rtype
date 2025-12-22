@@ -1,24 +1,16 @@
 #pragma once
 #include <unordered_map>
 
+#include "concurrent_queue.hpp"
 #include "rteng.hpp"
 #include "rtnt/core/session.hpp"
 
-namespace comp {
-
-struct Dummy
-{
-    int k;
-};
-
-}  // namespace comp
-
-#define ALL_COMPONENTS comp::Dummy
+#define ALL_COMPONENTS comp::Type, comp::Position
 
 namespace lobby {
 
 using Id = uint32_t;
-using Callback = std::function<void()>;
+using Callback = std::function<void(rteng::GameEngine&)>;
 
 }  // namespace lobby
 
@@ -37,7 +29,7 @@ public:
 
 private:
     lobby::Id _roomId;
-    std::queue<lobby::Callback> _actionQueue;
+    utils::ConcurrentQueue<lobby::Callback> _actionQueue;
     rteng::GameEngine _engine;
     std::unordered_map<rtnt::core::session::Id, size_t> _players;
     std::atomic<bool> _isRunning;

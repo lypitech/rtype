@@ -1,5 +1,8 @@
 #include "lobby.hpp"
 
+#include "components/position.hpp"
+#include "components/type.hpp"
+#include "enums/entity_types.hpp"
 #include "logger/Thread.h"
 
 Lobby::Lobby(const lobby::Id id)
@@ -27,6 +30,12 @@ bool Lobby::join(const rtnt::core::session::Id sessionId)
     }
     _players.try_emplace(sessionId, 0);
     if (_players.contains(sessionId)) {
+        _actionQueue.push(
+            [](rteng::GameEngine&
+                   engine) {  // Create a new player entity on join (maybe do it otherwise)
+                engine.registerEntity<comp::Position, comp::Type>(
+                    nullptr, {10, 10}, {entity::Type::kPlayer});
+            });
         return true;
     }
     LOG_WARN("Player couldn't join this lobby");
@@ -64,7 +73,11 @@ void Lobby::start()
 void Lobby::run()
 {
     logger::setThreadLabel(("Lobby " + std::to_string(_roomId)).c_str());
+    lobby::Callback callbackFunction;
     while (_isRunning) {
+        while (_actionQueue.pop(callbackFunction)) {
+            callbackFunction(_engine);
+        }
         _engine.runOnce(0.16);
     }
 }
