@@ -54,4 +54,18 @@ private:
     steady_clock::time_point _nextTick;
 };
 
+struct MyColor
+{
+    unsigned char r;  // Color red value
+    unsigned char g;  // Color green value
+    unsigned char b;  // Color blue value
+    unsigned char a;  // Color alpha value
+
+    template <typename Archive>
+    void serialize(Archive& ar)
+    {
+        ar & r & g & b & a;
+    }
+};
+
 }  // namespace utils
