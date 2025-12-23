@@ -1,5 +1,6 @@
 #include "lobby.hpp"
 
+#include "components/all.hpp"
 #include "components/position.hpp"
 #include "components/type.hpp"
 #include "enums/entity_types.hpp"
@@ -7,7 +8,7 @@
 
 Lobby::Lobby(const lobby::Id id)
     : _roomId(id),
-      _engine(rteng::ComponentsList<ALL_COMPONENTS>{}),
+      _engine(components::GameComponents{}),
       _isRunning(false)
 {
     LOG_INFO("Creating new lobby.");
@@ -33,7 +34,7 @@ bool Lobby::join(const rtnt::core::session::Id sessionId)
         _actionQueue.push(
             [](rteng::GameEngine&
                    engine) {  // Create a new player entity on join (maybe do it otherwise)
-                engine.registerEntity<comp::Position, comp::Type>(
+                engine.registerEntity<components::Position, components::Type>(
                     nullptr, {10, 10}, {entity::Type::kPlayer});
             });
         return true;
