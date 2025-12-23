@@ -28,7 +28,7 @@ public:
     template <typename... Components>
     explicit GameEngine(ComponentsList<Components...>)
     {
-        _ecs = rtecs::ECS::createWithComponents<Components..., comp::Behaviour>();
+        _ecs = rtecs::ECS::createWithComponents<Components..., components::Behaviour>();
     }
 
     /**
@@ -45,14 +45,14 @@ public:
         const rtecs::EntityID entityId = _ecs->registerEntity<std::decay_t<Components>...>(
             std::forward<Components>(components)...);
 
-        if (!mono_behaviour || !_ecs->hasEntityComponent<comp::Behaviour>(entityId)) {
+        if (!mono_behaviour || !_ecs->hasEntityComponent<components::Behaviour>(entityId)) {
             return entityId;
         }
-        auto& behaviourComponents = _ecs->getComponent<comp::Behaviour>();
+        auto& behaviourComponents = _ecs->getComponent<components::Behaviour>();
         auto& behaviourSparseSet =
-            dynamic_cast<rtecs::SparseSet<comp::Behaviour>&>(behaviourComponents);
+            dynamic_cast<rtecs::SparseSet<components::Behaviour>&>(behaviourComponents);
 
-        comp::Behaviour behaviourComp;
+        components::Behaviour behaviourComp;
         behaviourComp.instance = mono_behaviour;
         behaviourComp.started = false;
 
