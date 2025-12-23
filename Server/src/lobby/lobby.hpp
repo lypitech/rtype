@@ -55,7 +55,7 @@ public:
      * This function is thread-safe.
      * @param action A function performing the required action.
      */
-    void pushTask(lobby::Callback action);
+    void pushTask(const lobby::Callback& action);
 
     /**
      * @brief Start this lobby.

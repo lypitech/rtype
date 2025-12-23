@@ -16,7 +16,7 @@ Lobby::Lobby(const lobby::Id id)
 
 lobby::Id Lobby::getRoomId() const { return _roomId; }
 
-void Lobby::pushTask(lobby::Callback action) { _actionQueue.push(std::move(action)); }
+void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action); }
 
 bool Lobby::hasJoined(const rtnt::core::session::Id sessionId) const
 {
