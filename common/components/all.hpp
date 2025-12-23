@@ -1,12 +1,11 @@
 #pragma once
+
+#include "Transform.hpp"
 #include "position.hpp"
 #include "rect.hpp"
-#include "rteng.hpp"
 
 namespace components {
 
-using GameComponents = rteng::ComponentsList<Position, Rectangle
-                                             // Add new components here...
-                                             >;
+using GameComponents = rteng::ComponentsList<Position, Transform, Rectangle>;
 
 }
