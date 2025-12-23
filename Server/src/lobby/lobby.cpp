@@ -22,12 +22,12 @@ lobby::Id Lobby::getRoomId() const { return _roomId; }
 
 void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action); }
 
-bool Lobby::hasJoined(const rtnt::core::session::Id sessionId) const
+bool Lobby::join(const packet::server::SessionPtr& session)
 {
     return _players.contains(sessionId);
 }
 
-bool Lobby::join(const rtnt::core::session::Id sessionId)
+void Lobby::leave(const packet::server::SessionPtr& session)
 {
     if (_players.contains(sessionId)) {
         LOG_WARN("Player already joined this lobby.");
@@ -73,6 +73,17 @@ void Lobby::start()
     _isRunning = true;
     _thread = std::thread(&Lobby::run, this);
     _thread.detach();
+}
+
+std::vector<packet::server::SessionPtr> Lobby::getAllSessions() const
+{
+    std::vector<packet::server::SessionPtr> sessions;
+
+    sessions.reserve(_players.size());
+    for (const auto& session : _players | std::views::keys) {
+        sessions.push_back(session);
+    }
+    return sessions;
 }
 
 void Lobby::run()
