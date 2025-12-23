@@ -14,6 +14,7 @@ App::App(const std::string& host,
                 rteng::GameEngine(components::GameComponents{}),
                 {}})
 {
+    registerAllCallbacks();
     _client.connect(host, port);
     _ioThread = std::thread([this]() {
         logger::setThreadLabel("IoThread");
@@ -31,15 +32,15 @@ void App::registerAllSystems()
 
 void App::registerAllCallbacks()
 {
-    using SessionPtr = const std::shared_ptr<rtnt::core::Session>&;
-
     _client.onConnect([]() { LOG_INFO("Connected."); });
     _client.onMessage(
         [](const rtnt::core::Packet& p) { LOG_DEBUG("Received a message (#{})", p.getId()); });
     _client.onDisconnect([]() { LOG_INFO("Disconnected."); });
 
     _client.getPacketDispatcher().bind<packet::Spawn>(
-        [this](SessionPtr, const packet::Spawn& p) { packet::handler::handleSpawn(p, _toolbox); });
+        [this](const SessionPtr&, const packet::Spawn& p) {
+            packet::handler::handleSpawn(p, _toolbox);
+        });
 }
 
 App::~App() { stop(); }
@@ -60,9 +61,6 @@ void App::run() const
 {
     utils::LoopTimer loopTimer(TPS);
     while (_isContextRunning) {
-        while (_queue.pop(func)) {
-            func(_toolbox.engine);
-        }
         _toolbox.engine.runOnce(0.16);  // Magic number for 60 fps
         loopTimer.waitForNextTick();
     }
