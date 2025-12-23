@@ -13,9 +13,6 @@
 
 namespace rteng {
 
-#define ALL_COMPONENTS \
-    comp::Behaviour, comp::Position, comp::Transform, comp::IO, comp::Sprite, comp::Rectangle
-
 class ComponentFactory
 {
 public:

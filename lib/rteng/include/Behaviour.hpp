@@ -4,7 +4,7 @@
 
 #include "MonoBehaviour.hpp"
 
-namespace comp {
+namespace components {
 
 struct Behaviour
 {
@@ -18,4 +18,4 @@ struct Behaviour
     }
 };
 
-}  // namespace comp
+}  // namespace components

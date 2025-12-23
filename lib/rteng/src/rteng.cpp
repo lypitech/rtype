@@ -8,9 +8,9 @@ namespace rteng {
 void GameEngine::runOnce(const double dt) const
 {
     {
-        auto& behaviourComponents = _ecs->getComponent<comp::Behaviour>();
+        auto& behaviourComponents = _ecs->getComponent<components::Behaviour>();
         auto& behaviourSparseSet =
-            dynamic_cast<rtecs::SparseSet<comp::Behaviour>&>(behaviourComponents);
+            dynamic_cast<rtecs::SparseSet<components::Behaviour>&>(behaviourComponents);
 
         for (auto& [instance, started] : behaviourSparseSet.getAll()) {
             if (!instance) {
