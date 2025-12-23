@@ -61,4 +61,27 @@ private:
     }
 };
 
+using EntityInfos = std::pair<std::vector<uint8_t>, std::vector<uint8_t>>;
+
+template <typename... Components>
+EntityInfos getEntityComponentsInfos(rteng::ComponentsList<Components...>, rtecs::ECS& ecs, rtecs::EntityID id)
+{
+    size_t componentIndex = 0;
+    const rtecs::Entity& entity = ecs.getEntities()[id];
+    rtnt::core::Packet contentStream(0);
+
+    auto packIfPresent = [&]<typename T>(T*) {
+        if (entity[componentIndex]) {
+            auto& sparseSet = dynamic_cast<rtecs::SparseSet<T>&>(ecs.getComponent<T>());
+
+            if (auto val = sparseSet.get(id)) {
+                contentStream << val.value().get();
+            }
+        }
+        componentIndex++;
+    };
+    (packIfPresent(static_cast<Components*>(nullptr)), ...);
+    return {entity.toBytes().first, contentStream.getPayload()};
+}
+
 }  // namespace components
