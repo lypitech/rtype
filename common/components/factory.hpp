@@ -3,15 +3,17 @@
 #include <functional>
 #include <vector>
 
+#include "IO.hpp"
 #include "Transform.hpp"
 #include "position.hpp"
 #include "rect.hpp"
 #include "rteng.hpp"
 #include "rtnt/core/packet.hpp"
+#include "type.hpp"
 
 namespace components {
 
-using GameComponents = rteng::ComponentsList<Position, Transform, Rectangle>;
+using GameComponents = rteng::ComponentsList<Position, Transform, Rectangle, Type, IO>;
 
 class Factory
 {
@@ -64,7 +66,9 @@ private:
 using EntityInfos = std::pair<std::vector<uint8_t>, std::vector<uint8_t>>;
 
 template <typename... Components>
-EntityInfos getEntityComponentsInfos(rteng::ComponentsList<Components...>, rtecs::ECS& ecs, rtecs::EntityID id)
+EntityInfos getEntityComponentsInfos(rteng::ComponentsList<Components...>,
+                                     rtecs::ECS& ecs,
+                                     rtecs::EntityID id)
 {
     size_t componentIndex = 0;
     const rtecs::Entity& entity = ecs.getEntities()[id];
