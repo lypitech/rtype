@@ -33,12 +33,12 @@ App::~App()
 
 void App::start()
 {
+    _server.start();
     _ioThread = std::thread([this]() {
         logger::setThreadLabel("IoThread");
         _context.run();
     });
     _ioThread.detach();
-    _server.start();
     utils::LoopTimer loopTimer(TPS);
 
     while (true) {
