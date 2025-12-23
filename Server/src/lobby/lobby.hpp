@@ -46,10 +46,10 @@ public:
 
     /**
      * @brief Tries to join this lobby.
-     * @param sessionId The id of the session trying to join.
+     * @param session The pointer to the session trying to join.
      * @return A boolean representing the status of the request.
      */
-    bool join(rtnt::core::session::Id sessionId);
+    bool join(const packet::server::SessionPtr& session);
 
     /**
      * @return The id of this lobby.
@@ -58,14 +58,9 @@ public:
 
     /**
      * @brief Removes the @code SessionId@endcode from this lobby.
-     * @param sessionId The id of the session to remove.
+     * @param session The pointer to the session to remove.
      */
-    void leave(rtnt::core::session::Id sessionId);
-    /**
-     * @param sessionId The researched id.
-     * @return Whether this lobby contains this @code sessionId@endcode.
-     */
-    bool hasJoined(rtnt::core::session::Id sessionId) const;
+    void leave(const packet::server::SessionPtr& session);
 
     /**
      * @brief Pushes a task to be made inside the running thread.
@@ -89,9 +84,10 @@ private:
     utils::ConcurrentQueue<lobby::Callback> _actionQueue;
     packet::server::OutGoingQueuePtr& _outGoing;
     rteng::GameEngine _engine;
-    std::unordered_map<rtnt::core::session::Id, rtecs::EntityID> _players;
+    std::unordered_map<packet::server::SessionPtr, rtecs::EntityID> _players;
     std::atomic<bool> _isRunning;
     std::thread _thread;
 
     void run();
+    std::vector<packet::server::SessionPtr> getAllSessions() const;
 };
