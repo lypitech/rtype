@@ -1,7 +1,7 @@
 #include "rteng.hpp"
 
-#include "Behaviour.hpp"
 #include "SparseSet.hpp"
+#include "behaviour.hpp"
 
 namespace rteng {
 
