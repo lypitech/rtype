@@ -49,7 +49,7 @@ public:
      * @param session The pointer to the session trying to join.
      * @return A boolean representing the status of the request.
      */
-    bool join(const packet::server::SessionPtr& session);
+    void join(const packet::server::SessionPtr& session);
 
     /**
      * @return The id of this lobby.
