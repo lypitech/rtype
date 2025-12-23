@@ -5,6 +5,7 @@
 #include "concurrent_queue.hpp"
 #include "rteng.hpp"
 #include "rtnt/core/client.hpp"
+#include "systems/network.hpp"
 
 namespace client {
 
@@ -28,6 +29,9 @@ private:
     asio::io_context _context;
     rtnt::core::Client _client;
     rteng::GameEngine _engine;
+    service::Network _networkService;
+
+    void registerAllSystems();
 };
 
 }  // namespace client

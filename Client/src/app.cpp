@@ -2,6 +2,7 @@
 
 #include "components/all.hpp"
 #include "logger/Thread.h"
+#include "systems/network.hpp"
 
 namespace client {
 
@@ -21,6 +22,11 @@ App::App(const std::string& host,
     });
     _ioThread.detach();
     _isContextRunning = true;
+}
+
+void App::registerAllSystems()
+{
+    _engine.getEcs()->registerSystem(std::make_unique<systems::Network>(_client, _networkService));
 }
 
 App::~App() { stop(); }
