@@ -8,9 +8,10 @@
 #include "rtnt/core/client.hpp"
 #include "systems/network.hpp"
 
-namespace client {
+#define TPS 60
 
 using Callback = std::function<void(rteng::GameEngine&)>;
+namespace client {
 
 struct HandlerToolbox
 {
@@ -27,7 +28,7 @@ public:
 
     ~App();
 
-    void run();
+    void run() const;
     void stop();
 
 private:

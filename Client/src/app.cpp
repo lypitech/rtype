@@ -56,14 +56,15 @@ void App::stop()
     _isContextRunning = false;
 }
 
-void App::run()
+void App::run() const
 {
-    Callback func;
+    utils::LoopTimer loopTimer(TPS);
     while (_isContextRunning) {
         while (_queue.pop(func)) {
             func(_toolbox.engine);
         }
         _toolbox.engine.runOnce(0.16);  // Magic number for 60 fps
+        loopTimer.waitForNextTick();
     }
 }
 
