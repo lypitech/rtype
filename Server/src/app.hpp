@@ -9,12 +9,23 @@
 
 namespace server {
 
+/**
+ * @class App
+ * @brief A server application containing a lobby manager.
+ */
 class App
 {
 public:
+    /**
+     * @brief Creates a server listening to specified port.
+     * @param port The port to listen to.
+     */
     explicit App(unsigned short port);
     ~App();
 
+    /**
+     * @brief Starts the server and updates it periodically.
+     */
     [[noreturn]] void start();
 
 private:
