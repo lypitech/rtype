@@ -4,13 +4,13 @@
 
 #include "components/factory.hpp"
 #include "concurrent_queue.hpp"
+#include "handlers/handlers.hpp"
 #include "rteng.hpp"
 #include "rtnt/core/client.hpp"
 #include "systems/network.hpp"
 
 #define TPS 60
 
-using Callback = std::function<void(rteng::GameEngine&)>;
 namespace client {
 
 struct HandlerToolbox
@@ -32,7 +32,6 @@ public:
     void stop();
 
 private:
-    utils::ConcurrentQueue<Callback> _queue;
     bool _isContextRunning;
     std::thread _ioThread;
     asio::io_context _context;
