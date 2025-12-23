@@ -5,8 +5,6 @@
 
 namespace packet {
 
-using packetId = rtnt::core::packet::Id;
-
 /**
  * @struct packet::UpdateGameState
  *
@@ -15,7 +13,7 @@ using packetId = rtnt::core::packet::Id;
  */
 struct UpdateGameState
 {
-    static constexpr auto kId = static_cast<packetId>(type::Server::kUpdateGameState);
+    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Server::kUpdateGameState);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "UPDATE_GAME_STATE";
 
