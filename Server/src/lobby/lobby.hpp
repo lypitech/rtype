@@ -5,8 +5,6 @@
 #include "rteng.hpp"
 #include "rtnt/core/session.hpp"
 
-#define ALL_COMPONENTS comp::Type, comp::Position
-
 namespace lobby {
 
 using Id = uint32_t;
