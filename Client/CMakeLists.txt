@@ -13,18 +13,21 @@ project(r-type_client
 if (PROJECT_IS_TOP_LEVEL)
     message(WARNING "Building Client standalone, adding Shuvlog, cli_parsing and rtnt manually")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/shuvlog shuvlog)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/cli_parser   cli_parser)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/cli_parser cli_parser)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rtnt rtnt)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rteng rteng)
 endif()
 
 # --- Dependencies ---
 
 find_package(raylib REQUIRED)
+find_package(asio REQUIRED)
 find_package(imgui REQUIRED)
 
 # --- Sources / Headers ---
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/app.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -35,6 +38,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    asio::asio
     rteng
     rtnt
     cli_parser
