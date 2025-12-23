@@ -4,8 +4,6 @@
 
 namespace packet {
 
-using packetId = rtnt::core::packet::Id;
-
 /**
  * @struct packet::UpdatePosition
  *
@@ -14,7 +12,7 @@ using packetId = rtnt::core::packet::Id;
  */
 struct UpdatePosition
 {
-    static constexpr auto kId = static_cast<packetId>(type::Server::kUpdatePosition);
+    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Server::kUpdatePosition);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr rtnt::core::packet::Name kName = "UPDATE_POSITION";
 
