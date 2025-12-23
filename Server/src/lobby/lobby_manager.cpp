@@ -26,32 +26,33 @@ void Manager::stopAll() const
     }
 }
 
-void Manager::pushActionToLobby(rtnt::core::session::Id sessionId,
-                                Callback action)
+void Manager::pushActionToLobby(const packet::server::SessionPtr& session,
+                                const Callback& action)
 {
-    const auto it = _playerLookup.find(sessionId);
+    const auto it = _playerLookup.find(session);
     if (it != _playerLookup.end()) {
         Lobby* lobby = it->second;
-        lobby->pushTask(std::move(action));
+        lobby->pushTask(action);
     } else {
-        LOG_WARN("Session {} is not in any lobby.", sessionId);
+        LOG_WARN("Session {} is not in any lobby.", session->getId());
     }
 }
 
-bool Manager::joinRoom(const rtnt::core::session::Id sessionId,
-                       const lobby::Id roomId) const
+void Manager::joinRoom(const packet::server::SessionPtr& session,
+                       const lobby::Id roomId)
 {
     if (_lobbies.contains(roomId)) {
-        return _lobbies.at(roomId)->join(sessionId);
+        _lobbies.at(roomId)->join(session);
+        _playerLookup[session] = _lobbies.at(roomId).get();
     }
-    return false;
 }
 
-void Manager::leaveRoom(rtnt::core::session::Id sessionId)
+void Manager::leaveRoom(const packet::server::SessionPtr& session)
 {
-    const auto it = _playerLookup.find(sessionId);
+    const auto it = _playerLookup.find(session);
     if (it != _playerLookup.end()) {
-        it->second->leave(sessionId);
+        it->second->leave(session);
+        _playerLookup.erase(it);
     }
 }
 
