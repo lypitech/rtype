@@ -2,7 +2,7 @@
 
 #include "enums/entity_types.hpp"
 
-namespace comp {
+namespace components {
 
 struct Type
 {
@@ -15,4 +15,4 @@ struct Type
     }
 };
 
-}  // namespace comp
+}  // namespace components

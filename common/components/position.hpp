@@ -1,6 +1,6 @@
 #pragma once
 
-namespace comp {
+namespace components {
 
 struct Position
 {
@@ -14,4 +14,4 @@ struct Position
     }
 };
 
-}  // namespace comp
+}  // namespace components
