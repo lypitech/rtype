@@ -1,13 +1,17 @@
 #include "lobby.hpp"
 
-#include "components/all.hpp"
+#include <ranges>
+
+#include "components/factory.hpp"
 #include "components/position.hpp"
 #include "components/type.hpp"
 #include "enums/entity_types.hpp"
 #include "logger/Thread.h"
 
-Lobby::Lobby(const lobby::Id id)
+Lobby::Lobby(const lobby::Id id,
+             packet::server::OutGoingQueuePtr& outGoing)
     : _roomId(id),
+      _outGoing(outGoing),
       _engine(components::GameComponents{}),
       _isRunning(false)
 {
