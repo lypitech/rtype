@@ -1,7 +1,8 @@
 #include "app.hpp"
 
-#include "components/all.hpp"
+#include "handlers/handlers.hpp"
 #include "logger/Thread.h"
+#include "packets/server/spawn.hpp"
 #include "systems/network.hpp"
 
 namespace client {
@@ -9,12 +10,10 @@ namespace client {
 App::App(const std::string& host,
          const short port)
     : _client(_context),
-      _engine(components::GameComponents{})
+      _toolbox({components::Factory(components::GameComponents{}),
+                rteng::GameEngine(components::GameComponents{}),
+                {}})
 {
-    _client.onConnect([]() { LOG_INFO("Connected."); });
-    _client.onMessage(
-        [](const rtnt::core::Packet& p) { LOG_INFO("Received a message (#{})", p.getId()); });
-    _client.onDisconnect([]() { LOG_INFO("Disconnected."); });
     _client.connect(host, port);
     _ioThread = std::thread([this]() {
         logger::setThreadLabel("IoThread");
@@ -26,7 +25,21 @@ App::App(const std::string& host,
 
 void App::registerAllSystems()
 {
-    _engine.getEcs()->registerSystem(std::make_unique<systems::Network>(_client, _networkService));
+    _toolbox.engine.getEcs()->registerSystem(
+        std::make_unique<systems::Network>(_client, _networkService));
+}
+
+void App::registerAllCallbacks()
+{
+    using SessionPtr = const std::shared_ptr<rtnt::core::Session>&;
+
+    _client.onConnect([]() { LOG_INFO("Connected."); });
+    _client.onMessage(
+        [](const rtnt::core::Packet& p) { LOG_DEBUG("Received a message (#{})", p.getId()); });
+    _client.onDisconnect([]() { LOG_INFO("Disconnected."); });
+
+    _client.getPacketDispatcher().bind<packet::Spawn>(
+        [this](SessionPtr, const packet::Spawn& p) { packet::handler::handleSpawn(p, _toolbox); });
 }
 
 App::~App() { stop(); }
@@ -48,9 +61,9 @@ void App::run()
     Callback func;
     while (_isContextRunning) {
         while (_queue.pop(func)) {
-            func(_engine);
+            func(_toolbox.engine);
         }
-        _engine.runOnce(0.16);  // Magic number for 60 fps
+        _toolbox.engine.runOnce(0.16);  // Magic number for 60 fps
     }
 }
 
