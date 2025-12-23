@@ -28,6 +28,7 @@ find_package(imgui REQUIRED)
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/app.cpp
+    src/systems/network.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
