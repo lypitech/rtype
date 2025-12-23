@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace comp {
+namespace components {
 
 struct IO
 {
@@ -42,4 +42,4 @@ struct IO
     }
 };
 
-}  // namespace comp
+}  // namespace components
