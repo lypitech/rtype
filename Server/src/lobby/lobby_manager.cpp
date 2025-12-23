@@ -4,10 +4,15 @@
 
 namespace lobby {
 
+Manager::Manager(packet::server::OutGoingQueuePtr& outGoing)
+    : _outGoing(outGoing)
+{
+}
+
 Id Manager::createLobby()
 {
     static Id nbLobbies = 0;
-    _lobbies.emplace(nbLobbies, std::make_unique<Lobby>(nbLobbies));
+    _lobbies.emplace(nbLobbies, std::make_unique<Lobby>(nbLobbies, _outGoing));
     _lobbies.at(nbLobbies)->start();
     return nbLobbies++;
 }
