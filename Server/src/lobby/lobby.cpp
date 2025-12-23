@@ -38,13 +38,15 @@ void Lobby::join(const packet::server::SessionPtr& session)
 
 void Lobby::leave(const packet::server::SessionPtr& session)
 {
-void Lobby::leave(const rtnt::core::session::Id sessionId)
-{
-    if (_players.contains(sessionId)) {
-        _players.erase(sessionId);
-    } else {
-        LOG_WARN("Player was not in this lobby");
-    }
+    _actionQueue.push([this, session](rteng::GameEngine&) {
+        if (_players.contains(session)) {
+            // TODO: Send a destroy packet to all other sessions;
+            _players.erase(session);
+            LOG_INFO("Player left lobby {}", _roomId);
+        } else {
+            LOG_WARN("Session tried to leave lobby {} but was not in it.", _roomId);
+        }
+    });
 }
 
 void Lobby::stop()
