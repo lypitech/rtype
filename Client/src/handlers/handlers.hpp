@@ -13,6 +13,11 @@ struct HandlerToolbox;
 
 namespace packet::handler {
 
+/**
+ * @brief Spawns an entity and adds it's id to the map.
+ * @param packet A reference to a spawn packet.
+ * @param toolbox A reference to the toolbox stored in the app.
+ */
 void handleSpawn(const Spawn& packet,
                  client::HandlerToolbox& toolbox);
 // void handleUpdatePosition(const SessionPtr&,
