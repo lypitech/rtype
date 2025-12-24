@@ -30,6 +30,11 @@ void App::registerAllSystems()
         std::make_unique<systems::Network>(_client, _networkService));
 }
 
+void App::registerAllComponents()
+{
+    // Empty for now.
+}
+
 void App::registerAllCallbacks()
 {
     _client.onConnect([]() { LOG_INFO("Connected."); });

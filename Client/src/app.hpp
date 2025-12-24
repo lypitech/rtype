@@ -64,6 +64,7 @@ private:
     service::Network _networkService;
 
     void registerAllSystems();
+    void registerAllComponents();
     void registerAllCallbacks();
 };
 
