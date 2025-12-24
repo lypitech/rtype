@@ -15,7 +15,12 @@ using Variant = std::variant<Join, Start, UserInput>;
 
 namespace service {
 
-class Network
+/**
+ * @class service::Network
+ * @brief A queue for outgoing packets.
+ *
+ */
+class Network final
 {
 public:
     template <typename T>
@@ -40,17 +45,22 @@ private:
 
 namespace systems {
 
-class Network : public rtecs::ASystem
+class Network final : public rtecs::ASystem
 {
 public:
+    /**
+     * @brief A network system to send packets within the ecs.
+     * @param client A reference to a @code rtnt::Client@endcode
+     * @param service A reference to the @code service::Network@endcode given to the other systems.
+     */
     explicit Network(rtnt::core::Client& client,
                      service::Network& service);
 
     void apply(rtecs::ECS& ecs) override;
 
 private:
-    rtnt::core::Client& _client;
-    service::Network& _service;
+    rtnt::core::Client& _client;  ///< The client used to send packets.
+    service::Network& _service;   ///< The queue used to store outgoing packets.
 };
 
 }  // namespace systems

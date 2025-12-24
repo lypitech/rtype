@@ -13,22 +13,43 @@
 
 namespace client {
 
+/**
+ * @brief A toolbox for the packet handler functions that contain everything they might need.
+ */
 struct HandlerToolbox
 {
-    components::Factory componentFactory;
-    rteng::GameEngine engine;
-    std::unordered_map<rtecs::EntityID, rtecs::EntityID> serverToClient;
+    components::Factory componentFactory;  ///< A component factory to create an entity.
+    rteng::GameEngine engine;              ///< The game engine instance.
+    std::unordered_map<rtecs::EntityID, rtecs::EntityID>
+        serverToClient;  ///< A map binding the entity id that the server uses and the real one
 };
 
-class App
+/**
+ * @class App
+ * @brief The main client application.
+ */
+class App final
 {
 public:
+    /**
+     * @brief Creates a @code rtnt::Client@endcode connecting to host:port
+     * DNS deduction is not implemented yet.
+     * @param host The host to connect to.
+     * @param port The port to connect to on the server.
+     */
     App(const std::string& host,
         short port);
 
     ~App();
 
+    /**
+     * @brief Run the game including network sync.
+     */
     void run() const;
+
+    /**
+     * @brief Stop the app.
+     */
     void stop();
 
 private:
