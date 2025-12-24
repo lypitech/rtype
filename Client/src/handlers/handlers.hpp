@@ -18,7 +18,7 @@ namespace packet::handler {
  * @param packet A reference to a spawn packet.
  * @param toolbox A reference to the toolbox stored in the app.
  */
-void handleSpawn(const Spawn& packet,
+void handleSpawn(Spawn packet,
                  client::HandlerToolbox& toolbox);
 // void handleUpdatePosition(const SessionPtr&,
 //                           const packet::UpdatePosition& packet);
