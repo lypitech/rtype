@@ -8,7 +8,7 @@ int main(int argc,
          const char** argv)
 {
     Logger::getInstance().addSink<logger::ConsoleSink>();
-    Logger::getInstance().addSink<logger::LogFileSink>("logs/latest.log");
+    // Logger::getInstance().addSink<logger::LogFileSink>("logs/latest.log");
 
     Logger::initialize("R-Type Server", argc, argv, logger::BuildInfo::fromCMake());
     cli_parser::Parser p(argc, argv);
@@ -20,6 +20,6 @@ int main(int argc,
         LOG_INFO("Running server with debug window. (unimplemented)");
     }
 
-    server::App server(p.getValue("-p").as<unsigned short>());
+    server::App server(p.getValue("-p").as<int>());
     server.start();
 }

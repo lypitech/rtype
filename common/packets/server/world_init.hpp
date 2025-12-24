@@ -5,8 +5,6 @@
 
 namespace packet {
 
-using packetId = rtnt::core::packet::Id;
-
 /**
  * @struct packet::WorldInit
  *
@@ -15,7 +13,7 @@ using packetId = rtnt::core::packet::Id;
  */
 struct WorldInit
 {
-    static constexpr auto kId = static_cast<packetId>(type::Server::kWorldInit);
+    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Server::kWorldInit);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "WORLD_INIT";
 

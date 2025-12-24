@@ -1,6 +1,6 @@
 #pragma once
 
-namespace comp {
+namespace components {
 
 struct Transform
 {
@@ -14,4 +14,4 @@ struct Transform
     }
 };
 
-}  // namespace comp
+}  // namespace components

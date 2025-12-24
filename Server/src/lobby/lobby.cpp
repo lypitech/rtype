@@ -1,13 +1,17 @@
 #include "lobby.hpp"
 
-#include "components/all.hpp"
+#include <ranges>
+
+#include "components/factory.hpp"
 #include "components/position.hpp"
 #include "components/type.hpp"
 #include "enums/entity_types.hpp"
 #include "logger/Thread.h"
 
-Lobby::Lobby(const lobby::Id id)
+Lobby::Lobby(const lobby::Id id,
+             packet::server::OutGoingQueuePtr& outGoing)
     : _roomId(id),
+      _outGoing(outGoing),
       _engine(components::GameComponents{}),
       _isRunning(false)
 {
@@ -16,40 +20,33 @@ Lobby::Lobby(const lobby::Id id)
 
 lobby::Id Lobby::getRoomId() const { return _roomId; }
 
-void Lobby::pushTask(lobby::Callback action) { _actionQueue.push(std::move(action)); }
+void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action); }
 
-bool Lobby::hasJoined(const rtnt::core::session::Id sessionId) const
+void Lobby::join(const packet::server::SessionPtr& session)
 {
-    return _players.contains(sessionId);
+    _actionQueue.push([this, session](rteng::GameEngine& engine) {
+        LOG_INFO("Joining lobby.");
+        rtecs::EntityID id = engine.registerEntity<components::Position, components::Type>(
+            nullptr, {10, 10}, {entity::Type::kPlayer});
+        _players[session] = id;
+        const auto& infos = components::getEntityComponentsInfos(
+            components::GameComponents{}, *engine.getEcs(), id);
+        packet::Spawn p = {static_cast<uint32_t>(id), infos.first, infos.second};
+        _outGoing->push({{getAllSessions()}, p});
+    });
 }
 
-bool Lobby::join(const rtnt::core::session::Id sessionId)
+void Lobby::leave(const packet::server::SessionPtr& session)
 {
-    if (_players.contains(sessionId)) {
-        LOG_WARN("Player already joined this lobby.");
-        return false;
-    }
-    _players.try_emplace(sessionId, 0);
-    if (_players.contains(sessionId)) {
-        _actionQueue.push(
-            [](rteng::GameEngine&
-                   engine) {  // Create a new player entity on join (maybe do it otherwise)
-                engine.registerEntity<components::Position, components::Type>(
-                    nullptr, {10, 10}, {entity::Type::kPlayer});
-            });
-        return true;
-    }
-    LOG_WARN("Player couldn't join this lobby");
-    return false;
-}
-
-void Lobby::leave(const rtnt::core::session::Id sessionId)
-{
-    if (_players.contains(sessionId)) {
-        _players.erase(sessionId);
-    } else {
-        LOG_WARN("Player was not in this lobby");
-    }
+    _actionQueue.push([this, session](rteng::GameEngine&) {
+        if (_players.contains(session)) {
+            // TODO: Send a destroy packet to all other sessions;
+            _players.erase(session);
+            LOG_INFO("Player left lobby {}", _roomId);
+        } else {
+            LOG_WARN("Session tried to leave lobby {} but was not in it.", _roomId);
+        }
+    });
 }
 
 void Lobby::stop()
@@ -69,6 +66,17 @@ void Lobby::start()
     _isRunning = true;
     _thread = std::thread(&Lobby::run, this);
     _thread.detach();
+}
+
+std::vector<packet::server::SessionPtr> Lobby::getAllSessions() const
+{
+    std::vector<packet::server::SessionPtr> sessions;
+
+    sessions.reserve(_players.size());
+    for (const auto& session : _players | std::views::keys) {
+        sessions.push_back(session);
+    }
+    return sessions;
 }
 
 void Lobby::run()

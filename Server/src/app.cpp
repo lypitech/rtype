@@ -7,8 +7,10 @@
 namespace server {
 
 App::App(const unsigned short port)
-    : _server(_context,
-              port)
+    : _outGoing(std::make_unique<utils::ConcurrentQueue<packet::server::SendInterface>>()),
+      _server(_context,
+              port),
+      _lobbyManager(_outGoing)
 {
     registerCallbacks();
     _server.onConnect(
@@ -41,7 +43,13 @@ void App::start()
     _ioThread.detach();
     utils::LoopTimer loopTimer(TPS);
 
+    packet::server::SendInterface sendInterface;
     while (true) {
+        while (_outGoing->pop(sendInterface)) {
+            for (const auto& session : sendInterface.first) {
+                std::visit([&](auto&& p) { _server.sendTo(session, p); }, sendInterface.second);
+            }
+        }
         _server.update();
         loopTimer.waitForNextTick();
     }

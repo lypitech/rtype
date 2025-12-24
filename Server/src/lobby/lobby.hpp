@@ -2,8 +2,23 @@
 #include <unordered_map>
 
 #include "concurrent_queue.hpp"
+#include "packets/server/destroy.hpp"
+#include "packets/server/spawn.hpp"
 #include "rteng.hpp"
 #include "rtnt/core/session.hpp"
+#include "utils.hpp"
+
+namespace packet::server {
+
+using Variant = std::variant<Destroy, Spawn /* TODO: Add the remaining packet types */>;
+
+using SessionPtr = std::shared_ptr<rtnt::core::Session>;
+
+using SendInterface = std::pair<std::vector<SessionPtr>, Variant>;
+
+using OutGoingQueuePtr = std::unique_ptr<utils::ConcurrentQueue<SendInterface>>;
+
+}  // namespace packet::server
 
 namespace lobby {
 
@@ -22,17 +37,19 @@ public:
     /**
      * @brief Creates a lobby with the specified @code id@endcode.
      * @param id an uint32(lobby::Id) that represents the id of the lobby.
+     * @param outGoing queue for outgoing packets.
      *
      * Note that the uniqueness of the ID depends on the user providing a distinct value.
      */
-    explicit Lobby(lobby::Id id);
+    explicit Lobby(lobby::Id id,
+                   packet::server::OutGoingQueuePtr& outGoing);
 
     /**
      * @brief Tries to join this lobby.
-     * @param sessionId The id of the session trying to join.
+     * @param session The pointer to the session trying to join.
      * @return A boolean representing the status of the request.
      */
-    bool join(rtnt::core::session::Id sessionId);
+    void join(const packet::server::SessionPtr& session);
 
     /**
      * @return The id of this lobby.
@@ -41,21 +58,16 @@ public:
 
     /**
      * @brief Removes the @code SessionId@endcode from this lobby.
-     * @param sessionId The id of the session to remove.
+     * @param session The pointer to the session to remove.
      */
-    void leave(rtnt::core::session::Id sessionId);
-    /**
-     * @param sessionId The researched id.
-     * @return Whether this lobby contains this @code sessionId@endcode.
-     */
-    bool hasJoined(rtnt::core::session::Id sessionId) const;
+    void leave(const packet::server::SessionPtr& session);
 
     /**
      * @brief Pushes a task to be made inside the running thread.
      * This function is thread-safe.
      * @param action A function performing the required action.
      */
-    void pushTask(lobby::Callback action);
+    void pushTask(const lobby::Callback& action);
 
     /**
      * @brief Start this lobby.
@@ -70,10 +82,12 @@ public:
 private:
     lobby::Id _roomId;
     utils::ConcurrentQueue<lobby::Callback> _actionQueue;
+    packet::server::OutGoingQueuePtr& _outGoing;
     rteng::GameEngine _engine;
-    std::unordered_map<rtnt::core::session::Id, rtecs::EntityID> _players;
+    std::unordered_map<packet::server::SessionPtr, rtecs::EntityID> _players;
     std::atomic<bool> _isRunning;
     std::thread _thread;
 
     void run();
+    std::vector<packet::server::SessionPtr> getAllSessions() const;
 };

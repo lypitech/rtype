@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 #include <thread>
 
 #include "lobby/lobby_manager.hpp"
@@ -29,6 +28,7 @@ public:
     [[noreturn]] void start();
 
 private:
+    packet::server::OutGoingQueuePtr _outGoing{};
     asio::io_context _context;
     rtnt::core::Server _server;
     std::thread _ioThread;
