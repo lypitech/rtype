@@ -37,11 +37,10 @@ void App::registerAllCallbacks()
         [](const rtnt::core::Packet& p) { LOG_DEBUG("Received a message (#{})", p.getId()); });
     _client.onDisconnect([]() { LOG_INFO("Disconnected."); });
 
-    _client.getPacketDispatcher()
-        .bind<packet::Spawn>(  // TODO: Push this function to a ConcurrentQueue;
-            [this](const SessionPtr&, const packet::Spawn& p) {
-                packet::handler::handleSpawn(p, _toolbox);
-            });
+    _client.getPacketDispatcher().bind<packet::Spawn>(
+        [this](const SessionPtr&, const packet::Spawn& p) {
+            _actions.push([p](HandlerToolbox& tb) { packet::handler::handleSpawn(p, tb); });
+        });
 }
 
 App::~App() { stop(); }
@@ -58,10 +57,14 @@ void App::stop()
     _isContextRunning = false;
 }
 
-void App::run() const
+void App::run()
 {
+    Callback action;
     utils::LoopTimer loopTimer(TPS);
     while (_isContextRunning) {
+        while (_actions.pop(action)) {
+            action(_toolbox);
+        }
         _toolbox.engine.runOnce(0.016);  // Magic number for 60 fps
         loopTimer.waitForNextTick();
     }

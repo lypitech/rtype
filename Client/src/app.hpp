@@ -24,6 +24,8 @@ struct HandlerToolbox
         serverToClient;  ///< A map binding the entity id that the server uses and the real one
 };
 
+using Callback = std::function<void(HandlerToolbox&)>;
+
 /**
  * @class App
  * @brief The main client application.
@@ -45,7 +47,7 @@ public:
     /**
      * @brief Run the game including network sync.
      */
-    void run() const;
+    void run();
 
     /**
      * @brief Stop the app.
@@ -54,6 +56,7 @@ public:
 
 private:
     bool _isContextRunning;
+    utils::ConcurrentQueue<Callback> _actions;
     std::thread _ioThread;
     asio::io_context _context;
     rtnt::core::Client _client;
