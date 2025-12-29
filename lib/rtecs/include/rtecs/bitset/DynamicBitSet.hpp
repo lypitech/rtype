@@ -24,7 +24,7 @@ private:
     size_t _nbits = 0;  ///< The index of the last activated bit.
 
     using Operation = std::function<uint64_t(bool a, bool b)>;
-    void applyOperation(const Operation& operation, DynamicBitSet& result, const DynamicBitSet& other) const;
+    void applyOperation(const Operation &operation, DynamicBitSet &result, const DynamicBitSet &other) const;
     void leftShift(size_t nb);
     void rightShift(size_t nb);
 
@@ -102,7 +102,7 @@ public:
      * @return A string representation of the DynamicBitSet.
      */
     [[nodiscard]]
-    std::string toString(const std::string& sep = "\n") const;
+    std::string toString(const std::string &sep = "\n") const;
 
     /**
      * @brief Get the current capacity of the DynamicBitSet.
@@ -186,7 +186,7 @@ public:
      * @param nb The number of bitshift to apply.
      * @return A copy of the DynamicBitSet.
      */
-    DynamicBitSet operator<<(size_t nb)const;
+    DynamicBitSet operator<<(size_t nb) const;
 
     /**
      * @brief Apply a left-bitshift.
@@ -202,7 +202,7 @@ public:
      * @param nb The number of bitshift to apply.
      * @return A copy of the DynamicBitSet.
      */
-    DynamicBitSet operator>>(size_t nb)const;
+    DynamicBitSet operator>>(size_t nb) const;
 
     /**
      * @brief Apply a right-bitshift.
