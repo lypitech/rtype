@@ -1,0 +1,147 @@
+#include "rtecs/bitset/DynamicBitSet.hpp"
+
+#include <gtest/gtest.h>
+
+#include "logger/Logger.h"
+
+using namespace rtecs::bitset;
+
+TEST(DynamicBitSet, left_equal_bitshift)
+{
+    DynamicBitSet set{
+        {
+            std::bitset<64>{ 0b0000000000000000000000000000000000000000000000000000000000000001 },
+        }
+    };
+
+    set <<= 1;
+    ASSERT_STREQ(
+        set.toString().c_str(),
+        "0000000000000000000000000000000000000000000000000000000000000010"
+    );
+};
+
+TEST(DynamicBitSet, left_bitshift)
+{
+    const DynamicBitSet set{
+        {
+            std::bitset<64>{ 0b0000000000000000000000000000000000000000000000000000000000000001 },
+        }
+    };
+
+    const DynamicBitSet newSet = set << 1;
+    EXPECT_STREQ(
+        newSet.toString().c_str(),
+        "0000000000000000000000000000000000000000000000000000000000000010"
+    );
+    EXPECT_STREQ(
+        set.toString().c_str(),
+        "0000000000000000000000000000000000000000000000000000000000000001"
+    );
+};
+
+TEST(DynamicBitSet, advanced_left_equal_bitshift)
+{
+    DynamicBitSet set{
+        {
+            std::bitset<64>{ 0b1000000000000000000000000000000000000000000000000000000000000111 },
+            std::bitset<64>{ 0b1100000000000000000000000000000000000000000000000000000000000001 },
+        }
+    };
+
+    set <<= 1;
+    ASSERT_STREQ(
+        set.toString(" ").c_str(),
+        "0000000000000000000000000000000000000000000000000000000000001111 1000000000000000000000000000000000000000000000000000000000000010"
+    );
+};
+
+TEST(DynamicBitSet, advanced_left_bitshift)
+{
+    const DynamicBitSet set{
+        {
+            std::bitset<64>{ 0b1000000000000000000000000000000000000000000000000000000000000111 },
+            std::bitset<64>{ 0b1100000000000000000000000000000000000000000000000000000000000001 },
+        }
+    };
+
+    const DynamicBitSet newSet = set << 1;
+    EXPECT_STREQ(
+        newSet.toString(" ").c_str(),
+        "0000000000000000000000000000000000000000000000000000000000001111 1000000000000000000000000000000000000000000000000000000000000010"
+    );
+    EXPECT_STREQ(
+        set.toString(" ").c_str(),
+        "1000000000000000000000000000000000000000000000000000000000000111 1100000000000000000000000000000000000000000000000000000000000001"
+    );
+};
+
+TEST(DynamicBitSet, right_equal_bitshift)
+{
+    DynamicBitSet set{
+        {
+            std::bitset<64>{ 0b1000000000000000000000000000000000000000000000000000000000000000 },
+        }
+    };
+
+    set >>= 1;
+    ASSERT_STREQ(
+        set.toString().c_str(),
+        "0100000000000000000000000000000000000000000000000000000000000000"
+    );
+};
+
+TEST(DynamicBitSet, right_bitshift)
+{
+    const DynamicBitSet set{
+        {
+            std::bitset<64>{ 0b1000000000000000000000000000000000000000000000000000000000000000 },
+        }
+    };
+
+    const DynamicBitSet newSet = set >> 1;
+    EXPECT_STREQ(
+        newSet.toString().c_str(),
+        "0100000000000000000000000000000000000000000000000000000000000000"
+    );
+    EXPECT_STREQ(
+        set.toString().c_str(),
+        "1000000000000000000000000000000000000000000000000000000000000000"
+    );
+};
+
+TEST(DynamicBitSet, advanced_right_equal_bitshift)
+{
+    DynamicBitSet set{
+        {
+            std::bitset<64>{ 0b1000000000000000000000000000000000000000000000000000000000000001 },
+            std::bitset<64>{ 0b1100000000000000000000000000000000000000000000000000000000000001 },
+        }
+    };
+
+    set >>= 1;
+    ASSERT_STREQ(
+        set.toString(" ").c_str(),
+        "0100000000000000000000000000000000000000000000000000000000000000 1110000000000000000000000000000000000000000000000000000000000000"
+    );
+};
+
+TEST(DynamicBitSet, advanced_right_bitshift)
+{
+    const DynamicBitSet set{
+        {
+            std::bitset<64>{ 0b1000000000000000000000000000000000000000000000000000000000000111 },
+            std::bitset<64>{ 0b1100000000000000000000000000000000000000000000000000000000000001 },
+        }
+    };
+
+    const DynamicBitSet newSet = set >> 1;
+    EXPECT_STREQ(
+        newSet.toString(" ").c_str(),
+        "0100000000000000000000000000000000000000000000000000000000000011 1110000000000000000000000000000000000000000000000000000000000000"
+    );
+    EXPECT_STREQ(
+        set.toString(" ").c_str(),
+        "1000000000000000000000000000000000000000000000000000000000000111 1100000000000000000000000000000000000000000000000000000000000001"
+    );
+};
