@@ -4,7 +4,7 @@
 
 namespace rtecs::sparse {
 
-class DynamicBitSet; // Forward class definition
+class DynamicBitSet;  // Forward class definition
 
 /**
  * @brief Interface for a sparse-set container used by the ECS.
