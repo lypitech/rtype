@@ -21,7 +21,11 @@ endif()
 
 # --- Sources / Headers ---
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC
+    src/ECS.cpp
+    src/bitset/DynamicBitSet.cpp
+    src/bitset/Bitset.cpp
+)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
