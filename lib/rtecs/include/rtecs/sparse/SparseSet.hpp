@@ -61,6 +61,13 @@ private:
 
 public:
     /**
+     * @brief Construct a new SparseSet.
+     *
+     * @tparam T The type contained in the SparseSet.
+     */
+    explicit SparseSet() = default;
+
+    /**
      * @brief Get the dense list of entities that possess this component.
      * @note Indices match the getAll() vector.
      * @returns A vector of the indice for the corresponding entities.
