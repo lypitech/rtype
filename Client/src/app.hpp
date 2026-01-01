@@ -9,7 +9,7 @@
 #include "rtnt/core/client.hpp"
 #include "systems/network.hpp"
 
-#define TPS 60
+constexpr size_t TPS = 60;
 
 namespace client {
 
