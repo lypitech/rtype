@@ -16,6 +16,7 @@ if (PROJECT_IS_TOP_LEVEL)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/cli_parser cli_parser)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rtnt rtnt)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rteng rteng)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/rtecs rtecs)
 endif()
 
 # --- Dependencies ---
@@ -25,12 +26,8 @@ find_package(asio REQUIRED)
 find_package(imgui REQUIRED)
 
 # --- Sources / Headers ---
-add_executable(${PROJECT_NAME}
-    src/main.cpp
-    src/app.cpp
-    src/handlers/handle_spawn.cpp
-    src/systems/network.cpp
-)
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
