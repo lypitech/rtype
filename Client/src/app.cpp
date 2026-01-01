@@ -24,6 +24,8 @@ App::App(const std::string& host,
     _isContextRunning = true;
 }
 
+App::~App() { stop(); }
+
 void App::registerAllSystems()
 {
     _toolbox.engine.getEcs()->registerSystem(
@@ -48,8 +50,6 @@ void App::registerAllCallbacks()
         });
 }
 
-App::~App() { stop(); }
-
 void App::stop()
 {
     if (!_isContextRunning) {
@@ -70,7 +70,8 @@ void App::run()
         while (_actions.pop(action)) {
             action(_toolbox);
         }
-        _toolbox.engine.runOnce(0.016);  // Magic number for 60 fps
+        constexpr double dt = 1.0 / TPS;
+        _toolbox.engine.runOnce(dt);
         loopTimer.waitForNextTick();
     }
 }
