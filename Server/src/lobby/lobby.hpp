@@ -16,7 +16,7 @@ using SessionPtr = std::shared_ptr<rtnt::core::Session>;
 
 using SendInterface = std::pair<std::vector<SessionPtr>, Variant>;
 
-using OutGoingQueuePtr = std::unique_ptr<utils::ConcurrentQueue<SendInterface>>;
+using OutGoingQueue = utils::ConcurrentQueue<SendInterface>;
 
 }  // namespace packet::server
 
@@ -42,7 +42,7 @@ public:
      * Note that the uniqueness of the ID depends on the user providing a distinct value.
      */
     explicit Lobby(lobby::Id id,
-                   packet::server::OutGoingQueuePtr& outGoing);
+                   packet::server::OutGoingQueue& outGoing);
 
     /**
      * @brief Tries to join this lobby.
@@ -82,7 +82,7 @@ public:
 private:
     lobby::Id _roomId;
     utils::ConcurrentQueue<lobby::Callback> _actionQueue;
-    packet::server::OutGoingQueuePtr& _outGoing;
+    packet::server::OutGoingQueue& _outGoing;
     rteng::GameEngine _engine;
     std::unordered_map<packet::server::SessionPtr, rtecs::EntityID> _players;
     std::atomic<bool> _isRunning;

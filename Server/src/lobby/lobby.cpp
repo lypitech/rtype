@@ -9,7 +9,7 @@
 #include "logger/Thread.h"
 
 Lobby::Lobby(const lobby::Id id,
-             packet::server::OutGoingQueuePtr& outGoing)
+             packet::server::OutGoingQueue& outGoing)
     : _roomId(id),
       _outGoing(outGoing),
       _engine(components::GameComponents{}),
@@ -32,7 +32,7 @@ void Lobby::join(const packet::server::SessionPtr& session)
         const auto& infos = components::getEntityComponentsInfos(
             components::GameComponents{}, *engine.getEcs(), id);
         packet::Spawn p = {static_cast<uint32_t>(id), infos.first, infos.second};
-        _outGoing->push({{getAllSessions()}, p});
+        _outGoing.push({{getAllSessions()}, p});
     });
 }
 
