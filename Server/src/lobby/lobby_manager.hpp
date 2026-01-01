@@ -12,7 +12,7 @@ namespace lobby {
 class Manager
 {
 public:
-    explicit Manager(packet::server::OutGoingQueuePtr& outGoing);
+    explicit Manager(packet::server::OutGoingQueue& outGoing);
     ~Manager();
 
     /**
@@ -51,7 +51,7 @@ public:
 
 private:
     mutable std::mutex _mutex;
-    packet::server::OutGoingQueuePtr& _outGoing;
+    packet::server::OutGoingQueue& _outGoing;
     std::unordered_map<Id, std::unique_ptr<Lobby>> _lobbies;
     std::unordered_map<packet::server::SessionPtr, Lobby*> _playerLookup;
 };

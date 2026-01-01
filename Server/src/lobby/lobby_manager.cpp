@@ -4,7 +4,7 @@
 
 namespace lobby {
 
-Manager::Manager(packet::server::OutGoingQueuePtr& outGoing)
+Manager::Manager(packet::server::OutGoingQueue& outGoing)
     : _outGoing(outGoing)
 {
 }

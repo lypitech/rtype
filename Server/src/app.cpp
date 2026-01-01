@@ -7,8 +7,7 @@
 namespace server {
 
 App::App(const unsigned short port)
-    : _outGoing(std::make_unique<utils::ConcurrentQueue<packet::server::SendInterface>>()),
-      _server(_context,
+    : _server(_context,
               port),
       _lobbyManager(_outGoing)
 {
@@ -45,7 +44,7 @@ void App::start()
 
     packet::server::SendInterface sendInterface;
     while (true) {
-        while (_outGoing->pop(sendInterface)) {
+        while (_outGoing.pop(sendInterface)) {
             for (const auto& session : sendInterface.first) {
                 std::visit([&](auto&& p) { _server.sendTo(session, p); }, sendInterface.second);
             }
