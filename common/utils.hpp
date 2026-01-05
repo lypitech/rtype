@@ -6,7 +6,7 @@
 #include <timeapi.h>
 #pragma comment(lib, "winmm.lib")
 
-void enableHighPrecisionTimer() { timeBeginPeriod(1); }
+inline void enableHighPrecisionTimer() { timeBeginPeriod(1); }
 #endif
 
 #define SPIN_THRESHOLD std::chrono::milliseconds(2)
