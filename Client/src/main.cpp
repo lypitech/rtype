@@ -19,7 +19,8 @@ int main(const int argc,
     if (!p.hasFlag("-p")) {
         LOG_FATAL("No port specified, use \"-p <port>\"");
     }
-    client::App client(p.getValue("-h").as<std::string>(), p.getValue("-p").as<int>());
+    client::App client(
+        p.getValue("-h").as<std::string>(), static_cast<short>(p.getValue("-p").as<int>()));
     client.run();
     return 0;
 }
