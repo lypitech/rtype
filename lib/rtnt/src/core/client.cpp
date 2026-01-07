@@ -60,6 +60,10 @@ void Client::disconnect()
     // stop(); /// fixme: this makes the program crash because of Asio async operations (closing the hardware interface before finishing async work). Maybe move this at another place?
     _serverSession.reset();
     _isConnected = false;
+
+    if (_onDisconnect) {
+        _onDisconnect();
+    }
 }
 
 void Client::update(milliseconds timeout)
@@ -87,9 +91,7 @@ void Client::update(milliseconds timeout)
     if (age > timeout) {
         LOG_FATAL("Server timeout exceeded, disconnecting...");
 
-        if (_onDisconnect) {
-            _onDisconnect();
-        }
+        disconnect();
         // todo: maybe try a reconnect mechanism? like you try to reconnect 3 times and if it still fails, then abort
     }
 
