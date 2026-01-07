@@ -1,8 +1,13 @@
 # --- Sources ---
 set(RTECS_TEST_SOURCES
     Main.cpp
+    tests/ecs/ECS.cpp
+
+    tests/sparse/fixtures/SparseFixture.cpp
+
+    tests/sparse/SparseGroup.cpp
     tests/sparse/SparseSet.cpp
-    tests/sparse/SparseVectorView.cpp
+    tests/sparse/SparseView.cpp
     tests/bitset/DynamicBitSet/basics.cpp
     tests/bitset/DynamicBitSet/bitshift.cpp
     tests/bitset/DynamicBitSet/binary_operations.cpp
