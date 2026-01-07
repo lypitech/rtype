@@ -114,4 +114,29 @@ void Session::update()
 
 void Session::disconnect() { this->_shouldClose = true; }
 
+void Session::updateAcknowledgeInfo(uint32_t sequenceId)
+{
+    LOG_TRACE_R3("Updating acknowledge information");
+
+    if (sequenceId > _remoteAcknowledgeId) {
+        uint32_t shift = sequenceId - _remoteAcknowledgeId;
+
+        if (shift > 32) {
+            _remoteAcknowledgeBitfield = 0;
+        } else {
+            _remoteAcknowledgeBitfield <<= shift;
+            _remoteAcknowledgeBitfield |= 1 << (shift - 1);
+        }
+        _remoteAcknowledgeId = sequenceId;
+    } else if (sequenceId < _remoteAcknowledgeId) {
+        uint32_t diff = _remoteAcknowledgeId - sequenceId;
+
+        if (diff > 0 && diff <= 32) {
+            _remoteAcknowledgeBitfield |= 1 << (diff - 1);
+        }
+    }
+
+    _hasUnsentAck = true;
+}
+
 }  // namespace rtnt::core

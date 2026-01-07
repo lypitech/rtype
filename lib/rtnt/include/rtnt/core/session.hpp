@@ -117,8 +117,11 @@ private:
     uint32_t _localSequenceId = 0;
     uint32_t _remoteSequenceId = 0;
 
+    bool _hasUnsentAck = false;
+    time_point<steady_clock> _lastAckTime;
     time_point<steady_clock> _lastSeen;
     bool _shouldClose = false;
+    void updateAcknowledgeInfo(uint32_t sequenceId);
 };
 
 }  // namespace rtnt::core
