@@ -32,7 +32,8 @@ static constexpr std::string_view UNKNOWN_PACKET_NAME = "__rtnt_UNKNOWN";
  */
 enum class SystemMessageId : uint16_t
 {
-    kConnect = 0x01,
+    kAck = 0x00,
+    kConnect,
     kConnectAck,
     kDisconnect,
     kPing,
