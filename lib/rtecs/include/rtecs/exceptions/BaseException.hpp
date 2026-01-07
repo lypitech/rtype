@@ -9,6 +9,7 @@ class BaseException : public std::exception
 {
 private:
     const std::string &_kMessage;
+
 protected:
     /**
      * Generate a new error from the ECS.
@@ -21,7 +22,7 @@ protected:
      * @return The message of the exception.
      */
     [[nodiscard]]
-    const char* what() const noexcept override;
+    const char *what() const noexcept override;
 };
 
-}
+}  // namespace rtecs::exceptions
