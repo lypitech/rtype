@@ -3,7 +3,7 @@
 #include <ranges>
 
 #include "logger/Logger.h"
-#include "rtnt/common/utils.hpp"
+#include "rtnt/common/constants.hpp"
 
 namespace rtnt::core {
 
@@ -18,9 +18,10 @@ Session::Session(udp::endpoint endpoint,
 {
 }
 
-bool Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData,
-                             Packet& outPacket)
+std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
 {
+    std::vector<Packet> readyPackets;
+
     LOG_TRACE_R3(
         "Handling incoming raw data\n"
         "Size: {} bytes\n"
@@ -31,34 +32,90 @@ bool Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData,
     const packet::parsing::Result headerParsingResult = packet::Header::parse(*rawData);
 
     if (!headerParsingResult) {
-        LOG_TRACE_R3("Error while handling packet: {}",
-                     packet::parsing::to_string(headerParsingResult.error));
-        return false;
+        LOG_ERR("Error while handling packet: {}",
+                packet::parsing::to_string(headerParsingResult.error));
+        return readyPackets;
     }
 
     const packet::Header& header = *headerParsingResult.header;
 
     _lastSeen = steady_clock::now();
 
-    if (header.sequenceId > _remoteSequenceId) {
-        _remoteSequenceId = header.sequenceId;
+    if (!_sentPackets.empty()) {
+        LOG_TRACE_R3("Checking sent packets buffer...");
+        _sentPackets.erase(header.acknowledgeId);
+        for (int i = 0; i < 32; ++i) {
+            if (header.acknowledgeBitfield & (1 << i)) {
+                LOG_TRACE_R3(
+                    "Packet (seqID: {}) acknowledged, removing...", header.acknowledgeId - (i + 1));
+                _sentPackets.erase(header.acknowledgeId - (i + 1));
+            }
+        }
     }
 
-    outPacket = Packet(header.messageId, static_cast<packet::Flag>(header.flags));
+    updateAcknowledgeInfo(header.sequenceId);
 
     size_t payloadSize = rawData->size() - sizeof(packet::Header);
 
-    if (payloadSize == 0) {
-        return true;
+    if (payloadSize == 0 &&
+        header.messageId == static_cast<packet::Id>(packet::SystemMessageId::kAck)) {
+        LOG_TRACE_R3("Received ACK packet, stopping.");
+        return readyPackets;
     }
 
+    Packet incomingPacket(header.messageId, static_cast<packet::Flag>(header.flags));
     ByteBuffer payload;
     payload.assign(rawData->begin() + sizeof(packet::Header), rawData->end());
-    outPacket._internal_setPayload(std::move(payload));
-    return true;
+    incomingPacket._internal_setPayload(std::move(payload));
+
+    bool isOrdered =
+        (incomingPacket.getReliability() & packet::Flag::kOrdered) == packet::Flag::kOrdered;
+
+    LOG_TRACE_R3("Is packet ordered? {}.", isOrdered ? "Yes" : "No");
+
+    if (!isOrdered) {
+        readyPackets.push_back(std::move(incomingPacket));
+        return readyPackets;
+    }
+
+    uint32_t receivedOrderId = header.orderId;
+
+    LOG_TRACE_R3("Received ordered ID: {}", receivedOrderId);
+
+    if (receivedOrderId == _nextExpectedOrderId) {
+        readyPackets.push_back(std::move(incomingPacket));
+        _nextExpectedOrderId++;
+
+        while (_reorderBuffer.contains(_nextExpectedOrderId)) {
+            auto node = _reorderBuffer.extract(_nextExpectedOrderId);
+            readyPackets.push_back(std::move(node.mapped()));
+            _nextExpectedOrderId++;
+        }
+    } else if (receivedOrderId > _nextExpectedOrderId) {
+        LOG_WARN(
+            "Gap: Got order ID {}, expected {}. Buffering.", receivedOrderId, _nextExpectedOrderId);
+        _reorderBuffer[receivedOrderId] = std::move(incomingPacket);
+    }
+
+    return readyPackets;
 }
 
 void Session::send(Packet& packet)
+{
+    uint32_t sequenceId = _localSequenceId++;
+    uint32_t orderId = 0;
+
+    if ((packet.getReliability() & packet::Flag::kOrdered) == packet::Flag::kOrdered) {
+        orderId = _localOrderId++;
+    }
+
+    if (packet.getReliability() != packet::Flag::kUnreliable) {
+        _sentPackets[sequenceId] = SentPacketInfo{packet, steady_clock::now(), sequenceId, orderId};
+    }
+
+    rawSend(packet, sequenceId, orderId);
+}
+
 void Session::rawSend(Packet& packet,
                       uint32_t sequenceId,
                       uint32_t orderId)
@@ -118,7 +175,32 @@ void Session::rawSend(Packet& packet,
 void Session::update()
 {
     LOG_DEBUG("Updating session {}", _id);
-    // todo: apply rudp logic
+
+    auto now = steady_clock::now();
+
+    for (auto it = _sentPackets.begin(); it != _sentPackets.end();) {
+        SentPacketInfo& info = it->second;
+
+        if (now - info.sentTime > packet::RESEND_TIMEOUT) {
+            if (info.retries >= packet::MAX_RESEND_RETRIES) {
+                LOG_FATAL("Connection lost (Packet #{} retries exceeded).", it->first);
+                disconnect();
+                return;
+            }
+
+            rawSend(info.packet, info.sequenceId, info.orderId);
+
+            info.sentTime = now;
+            info.retries++;
+        }
+        ++it;
+    }
+
+    if (_hasUnsentAck && (now - _lastAckTime > packet::ACK_TIMEOUT)) {
+        Packet ack(
+            static_cast<packet::Id>(packet::SystemMessageId::kAck), packet::Flag::kUnreliable);
+        send(ack);
+    }
 }
 
 void Session::disconnect() { this->_shouldClose = true; }
