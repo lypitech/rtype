@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rtecs/bitset/DynamicBitSet.hpp"
+#include "rtecs/types/types.hpp"
 
 namespace rtecs::sparse {
 
@@ -51,10 +51,10 @@ public:
     virtual size_t size() const noexcept = 0;
 
     /**
-    * @brief Get the dense list of entities that possess this component.
-    * @note Indices match the getAll() vector.
-    * @returns A vector of the indice for the corresponding entities.
-    */
+     * @brief Get the dense list of entities that possess this component.
+     * @note Indices match the getAll() vector.
+     * @returns A vector of the indice for the corresponding entities.
+     */
     [[nodiscard]]
     virtual const std::vector<size_t> &getEntities() const noexcept = 0;
 
