@@ -59,12 +59,16 @@ bool Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData,
 }
 
 void Session::send(Packet& packet)
+void Session::rawSend(Packet& packet,
+                      uint32_t sequenceId,
+                      uint32_t orderId)
 {
     packet::Header header{};
 
-    header.sequenceId = _localSequenceId++;
-    header.acknowledgeId = _remoteSequenceId;
-    header.acknowledgeBitfield = 0;  // todo: Implement ack bitfield
+    header.sequenceId = sequenceId;
+    header.orderId = orderId;
+    header.acknowledgeId = _remoteAcknowledgeId;
+    header.acknowledgeBitfield = _remoteAcknowledgeBitfield;  // todo: Implement ack bitfield
     header.messageId = packet.getId();
     header.flags = static_cast<uint8_t>(packet.getReliability());
     header.packetSize = static_cast<uint16_t>(packet.getPayload().size());
@@ -83,6 +87,7 @@ void Session::send(Packet& packet)
     LOG_TRACE_R3(
         "Preparing to send a packet.\n"
         "Sequence ID: {}\n"
+        "Order ID: {}\n"
         "Acknowledge ID: {}\n"
         "Acknowledge bitfield: {}\n"
         "Message ID: {}\n"
@@ -92,6 +97,7 @@ void Session::send(Packet& packet)
         "Raw header (H): {}\n"
         "Raw buffer (N): {}",
         header.sequenceId,
+        header.orderId,
         header.acknowledgeId,
         header.acknowledgeBitfield,
         header.messageId,
@@ -104,6 +110,9 @@ void Session::send(Packet& packet)
     if (_sendToPeerFunction) {
         _sendToPeerFunction(rawBuffer);
     }
+
+    _hasUnsentAck = false;
+    _lastAckTime = steady_clock::now();
 }
 
 void Session::update()

@@ -133,6 +133,10 @@ private:
 
     time_point<steady_clock> _lastSeen;
     bool _shouldClose = false;
+
+    void rawSend(Packet& packet,
+                 uint32_t sequenceId,
+                 uint32_t orderId);
     void updateAcknowledgeInfo(uint32_t sequenceId);
 };
 
