@@ -43,7 +43,7 @@ public:
                      SendToPeerFunction sendToPeerFunction);
 
     /**
-     * @brief   Processes incoming raw data and attempts to construct a valid Packet.
+     * @brief   Processes incoming raw data and returns a list of valid packets.
      *
      * This method performs several checks (in order):
      * - Buffer size check (must be >= header size)
@@ -51,13 +51,9 @@ public:
      * - RUDP Sequence update
      *
      * @param   rawData     The raw buffer received from the Peer
-     * @param   outPacket   The clean packet to fill if parsing is successful
-     * @return  @code true@endcode if the packet is valid and should be handled by the user.
-     * @return  @code false@endcode if the packet is either random internet noise, coming from an outdated Peer,
-     * corrupted or invalid.
+     * @returns Vector of valid packets that should be handled by the user.
      */
-    bool handleIncoming(std::shared_ptr<ByteBuffer> rawData,
-                        Packet& outPacket);
+    std::vector<Packet> handleIncoming(std::shared_ptr<ByteBuffer> rawData);
 
     template <typename T>
     void send(const T& packetData)
