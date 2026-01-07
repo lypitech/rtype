@@ -1,4 +1,4 @@
-#include "rtecs/sparse/SparseSet.hpp"
+#include "../../../include/rtecs/sparse/set/SparseSet.hpp"
 
 #include <gtest/gtest.h>
 
@@ -12,7 +12,7 @@ TEST(SparseSet, create_single_entity_without_auto_initializer)
         int age;
     };
 
-    rtecs::sparse::SparseSet<MyComponent> sparseSet;
+    rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
     sparseSet.put(1, {.name = std::string("Hello world"), .age = 42});
 
     const rtecs::sparse::OptionalRef<MyComponent> first = sparseSet.get(1);
@@ -28,7 +28,7 @@ TEST(SparseSet, create_single_entity_with_auto_initializer)
         int age;
     };
 
-    rtecs::sparse::SparseSet<MyComponent> sparseSet;
+    rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
     sparseSet.put(1);
 
     const rtecs::sparse::OptionalRef<MyComponent> component = sparseSet.get(1);
@@ -44,7 +44,7 @@ TEST(SparseSet, create_entity_with_id_zero)
         int age;
     };
 
-    rtecs::sparse::SparseSet<MyComponent> sparseSet;
+    rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
     sparseSet.put(0, {.name = std::string("Hello world"), .age = 42});
 
     const rtecs::sparse::OptionalRef<MyComponent> component = sparseSet.get(0);
@@ -60,7 +60,7 @@ TEST(SparseSet, create_multiple_ordered_entities)
         std::string name;
         int age;
     };
-    rtecs::sparse::SparseSet<MyComponent> sparseSet;
+    rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
 
     for (int id = 0; id < 10; id++) {
         sparseSet.put(id);
@@ -81,7 +81,7 @@ TEST(SparseSet, create_multiple_entities_with_random_id)
     };
 
     const std::vector<size_t> entities{1, 20, 3400, 4297, 9821, 12023};
-    rtecs::sparse::SparseSet<MyComponent> sparseSet;
+    rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
 
     for (const size_t id : entities) {
         sparseSet.put(id);
@@ -101,7 +101,7 @@ TEST(SparseSet, clear_empty_sparseset)
         int age;
     };
 
-    rtecs::sparse::SparseSet<MyComponent> sparseSet;
+    rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
     sparseSet.clear();
 
     ASSERT_FALSE(sparseSet.has(0));
@@ -115,7 +115,7 @@ TEST(SparseSet, clear_filled_sparseset)
         int age;
     };
 
-    rtecs::sparse::SparseSet<MyComponent> sparseSet;
+    rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
 
     for (int id = 0; id < 10; id++) {
         sparseSet.put(id);
@@ -140,7 +140,7 @@ TEST(SparseSet, remove_entity)
         int age;
     };
 
-    rtecs::sparse::SparseSet<MyComponent> sparseSet;
+    rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
 
     for (int id = 0; id < 10; id++) {
         sparseSet.put(id);
@@ -169,7 +169,7 @@ TEST(SparseSet, remove_undefined_entity)
         int age;
     };
 
-    rtecs::sparse::SparseSet<MyComponent> sparseSet;
+    rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
 
     for (int id = 0; id < 10; id++) {
         sparseSet.put(id);
