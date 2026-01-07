@@ -16,6 +16,15 @@ using Id = uint32_t;
 
 }
 
+struct SentPacketInfo final
+{
+    Packet packet;
+    time_point<steady_clock> sentTime;
+    uint32_t sequenceId = 0;
+    uint32_t orderId = 0;
+    uint8_t retries = 0;
+};
+
 /**
  * @class   Session
  * @brief   Basically a logical connection with a remote peer.
