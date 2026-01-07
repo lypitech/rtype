@@ -87,6 +87,7 @@ struct Header final
         PROTOCOL_ID;  ///< Magic number representing unique ID of the protocol, to avoid internet noise
     uint16_t protocolVersion = PROTOCOL_VER;  ///< Protocol version, to reject mismatch peers
     uint32_t sequenceId = 0;                  ///< The unique, incrementing ID of this packet
+    uint32_t orderId = 0;                     ///< The unique, incrementing order ID of this packet.
     uint32_t acknowledgeId = 0;               ///< Sequence ID of the latest packet received
     uint32_t acknowledgeBitfield =
         0;               ///< Bitmask of the previous 32 received packets relative to acknowledge ID
@@ -106,6 +107,7 @@ struct Header final
         protocolId = endian::swap(protocolId);
         protocolVersion = endian::swap(protocolVersion);
         sequenceId = endian::swap(sequenceId);
+        orderId = endian::swap(orderId);
         acknowledgeId = endian::swap(acknowledgeId);
         acknowledgeBitfield = endian::swap(acknowledgeBitfield);
         messageId = endian::swap(messageId);
