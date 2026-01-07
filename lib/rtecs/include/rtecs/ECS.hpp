@@ -3,13 +3,13 @@
 #include <memory>
 #include <typeindex>
 
-#include "exceptions/UnknowComponentException.hpp"
 #include "exceptions/ComponentAlreadyExists.hpp"
+#include "exceptions/UnknowComponentException.hpp"
 #include "logger/Logger.h"
-#include "sparse/set/SparseSet.hpp"
-#include "sparse/view/SparseView.hpp"
 #include "rtecs/types/types.hpp"
 #include "sparse/group/SparseGroup.hpp"
+#include "sparse/set/SparseSet.hpp"
+#include "sparse/view/SparseView.hpp"
 #include "systems/ASystem.hpp"
 
 namespace rtecs {
@@ -51,16 +51,18 @@ private:
     template <typename T>
     void registerComponent()
     {
-        if ((_componentMaskIndex >> 1).none())
+        if ((_componentMaskIndex >> 1).none()) {
             _componentMaskIndex.increase(1);
+        }
         _componentMaskIndex >>= 1;
 
         bitset::DynamicBitSet mask(_componentMaskIndex);
         types::ComponentID componentId = typeid(T).hash_code();
         auto sparse = std::make_unique<sparse::SparseSet<T>>(componentId);
 
-        if (_components.contains(componentId))
+        if (_components.contains(componentId)) {
             throw exceptions::ComponentAlreadyExists(componentId);
+        }
 
         _componentsMasks.emplace(componentId, mask);
         _components.emplace(componentId, std::move(sparse));
@@ -80,12 +82,14 @@ private:
     {
         const types::ComponentID componentId = typeid(T).hash_code();
 
-        if (!_components.contains(componentId))
+        if (!_components.contains(componentId)) {
             throw exceptions::UnknowComponentException(componentId);
+        }
 
-        auto ptr = dynamic_cast<sparse::SparseSet<T>*>(_components.at(componentId).get());
-        if (!ptr)
+        auto ptr = dynamic_cast<sparse::SparseSet<T> *>(_components.at(componentId).get());
+        if (!ptr) {
             throw exceptions::UnknowComponentException(componentId);
+        }
         ptr->put(entity, instance);
     }
 
@@ -102,8 +106,9 @@ private:
     {
         const types::ComponentID id = typeid(T).hash_code();
 
-        if (!_componentsMasks.contains(id))
+        if (!_componentsMasks.contains(id)) {
             throw exceptions::UnknowComponentException(id);
+        }
         return _componentsMasks.at(id);
     }
 
@@ -118,8 +123,9 @@ private:
     {
         const types::ComponentID id = typeid(T).hash_code();
 
-        if (!_components.contains(id))
+        if (!_components.contains(id)) {
             throw exceptions::UnknowComponentException(id);
+        }
         return _components.at(id);
     }
 
@@ -138,15 +144,15 @@ public:
      * @param instances The copies of the entity's components instances.
      * @return The new entity ID.
      */
-    template<typename ...T>
-    types::EntityID registerEntity(T ...instances)
+    template <typename... T>
+    types::EntityID registerEntity(T... instances)
     {
         bitset::DynamicBitSet mask;
         const types::EntityID entityId = _entitiesID;
 
         mask &= getComponentMask<T...>();
         addEntityComponent<T...>(entityId, instances...);
-        _entities.insert({ entityId, mask });
+        _entities.insert({entityId, mask});
         _entitiesID++;
         return entityId;
     }
@@ -160,14 +166,14 @@ public:
      * @param entity The entity ID.
      * @param instances The copies of the entity's components instances.
      */
-    template <typename ...T>
-    void addEntityComponent(types::EntityID entity, T ...instances)
+    template <typename... T>
+    void addEntityComponent(types::EntityID entity, T... instances)
     {
         (insertComponentInstance(entity, instances), ...);
     }
 
-      /******************/
-     /**  COMPONENTS  **/
+    /******************/
+    /**  COMPONENTS  **/
     /******************/
 
     /**
@@ -176,7 +182,7 @@ public:
      * @throw exceptions::ComponentAlreadyExists If a component already exists.
      * @tparam T The components' type to register.
      */
-    template<typename ...T>
+    template <typename... T>
     void registerComponents()
     {
         (registerComponent<T>(), ...);
@@ -194,8 +200,9 @@ public:
     {
         const types::ComponentID id = typeid(T).hash_code();
 
-        if (!_components.contains(id))
+        if (!_components.contains(id)) {
             throw exceptions::UnknowComponentException(id);
+        }
         return id;
     }
 
@@ -207,20 +214,20 @@ public:
      * @tparam T The components type
      * @return The mask that correspond to the components.
      */
-    template <typename ...T>
+    template <typename... T>
     bitset::DynamicBitSet getMask() const
     {
         return (getComponentMask<T>() | ...);
     }
 
-    template <typename ...T>
+    template <typename... T>
     const sparse::SparseView<T...> &view()
     {
         return sparse::SparseGroup<T...>(getComponent<T>()...);
     }
 
-      /***************/
-     /**  SYSTEMS  **/
+    /***************/
+    /**  SYSTEMS  **/
     /***************/
 
     /**
