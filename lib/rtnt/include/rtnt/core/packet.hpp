@@ -30,6 +30,9 @@ enum class Flag : uint8_t
     kOrdered = 1 << 2,     ///< Guaranteed order. Will be buffered until previous packets arrive.
 };
 
+Flag operator&(Flag lhs,
+               Flag rhs);
+
 struct Header;
 
 namespace parsing {

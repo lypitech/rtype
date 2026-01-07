@@ -2,6 +2,12 @@
 
 namespace rtnt::core::packet {
 
+Flag operator&(Flag lhs,
+               Flag rhs)
+{
+    return static_cast<Flag>(static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs));
+}
+
 using namespace parsing;
 
 Result Header::parse(const ByteBuffer& data)
