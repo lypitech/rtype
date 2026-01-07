@@ -141,6 +141,7 @@ void Session::rawSend(Packet& packet,
     rawBuffer->insert(rawBuffer->end(), headerPtr, headerPtr + sizeof(packet::Header));
     rawBuffer->insert(rawBuffer->end(), payload.begin(), payload.end());
 
+    header.convertEndianness();
     LOG_TRACE_R3(
         "Preparing to send a packet.\n"
         "Sequence ID: {}\n"
@@ -188,6 +189,10 @@ void Session::update()
                 return;
             }
 
+            LOG_TRACE_R2("Resending packet #{} ({}th retry, order ID = {})",
+                         info.sequenceId,
+                         info.retries,
+                         info.orderId);
             rawSend(info.packet, info.sequenceId, info.orderId);
 
             info.sentTime = now;
