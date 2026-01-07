@@ -11,4 +11,4 @@ public:
     explicit UnknowComponentException(types::ComponentID componentID);
 };
 
-}
+}  // namespace rtecs::exceptions

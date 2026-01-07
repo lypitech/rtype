@@ -11,4 +11,4 @@ public:
     explicit EntityNotFoundException(types::EntityID entityID, types::ComponentID componentID);
 };
 
-}
+}  // namespace rtecs::exceptions

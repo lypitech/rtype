@@ -11,4 +11,4 @@ public:
     explicit ComponentAlreadyExists(types::ComponentID componentID);
 };
 
-}
+}  // namespace rtecs::exceptions
