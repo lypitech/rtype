@@ -3,7 +3,8 @@
 #include <limits>
 #include <tuple>
 
-#include "SparseSet.hpp"
+#include "rtecs/sparse/set/SparseSet.hpp"
+#include "rtecs/types/types.hpp"
 
 namespace rtecs::sparse {
 
