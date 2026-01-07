@@ -92,6 +92,8 @@ void Client::update(milliseconds timeout)
         }
         // todo: maybe try a reconnect mechanism? like you try to reconnect 3 times and if it still fails, then abort
     }
+
+    _serverSession->update();
 }
 
 void Client::onReceive(const udp::endpoint& sender,
