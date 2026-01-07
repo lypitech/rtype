@@ -2,6 +2,7 @@
 
 #include <asio/ip/udp.hpp>
 #include <chrono>
+#include <map>
 
 #include "packet.hpp"
 
@@ -113,12 +114,23 @@ private:
     const udp::endpoint _endpoint;
     SendToPeerFunction _sendToPeerFunction;
 
-    // RUDP state
+    // RUDP state //
     uint32_t _localSequenceId = 0;
     uint32_t _remoteSequenceId = 0;
 
+    uint32_t _remoteAcknowledgeId = 0;
+    uint32_t _remoteAcknowledgeBitfield = 0;
+
+    uint32_t _localOrderId = 0;
+    uint32_t _nextExpectedOrderId = 0;
+
+    std::map<uint32_t, Packet> _reorderBuffer;
+    std::map<uint32_t, SentPacketInfo> _sentPackets;
+
     bool _hasUnsentAck = false;
     time_point<steady_clock> _lastAckTime;
+    // ---------- //
+
     time_point<steady_clock> _lastSeen;
     bool _shouldClose = false;
     void updateAcknowledgeInfo(uint32_t sequenceId);
