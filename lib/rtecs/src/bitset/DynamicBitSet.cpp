@@ -110,6 +110,20 @@ std::string DynamicBitSet::toString(const std::string& sep) const
     return stream.str();
 }
 
+size_t DynamicBitSet::increase(const size_t size)
+{
+    for (size_t i = 0; i < size; i++)
+        _bitsets.emplace_back();
+    return capacity();
+}
+
+size_t DynamicBitSet::decrease(const size_t size)
+{
+    for (size_t i = 0; i < size; i++)
+        _bitsets.pop_back();
+    return capacity();
+}
+
 size_t DynamicBitSet::capacity() const { return _bitsets.size() * 64; }
 
 bool DynamicBitSet::any() const
@@ -258,4 +272,10 @@ DynamicBitSet& DynamicBitSet::operator>>=(const size_t nb)
 {
     rightShift(nb);
     return *this;
+}
+
+std::ostream &operator<<(std::ostream &stream, const DynamicBitSet &ref)
+{
+    stream << "[" << ref.toString(" ") << "]";
+    return stream;
 }

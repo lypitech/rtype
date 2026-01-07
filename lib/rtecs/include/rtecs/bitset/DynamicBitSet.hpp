@@ -105,6 +105,27 @@ public:
     std::string toString(const std::string &sep = "\n") const;
 
     /**
+     * @brief Increase the capacity of the DynamicBitSet by `64 * size` bits.
+     *
+     * @note The new bits are added at the end of the DynamicBitSet (to the right).
+     *
+     * @param size The additional size (A size of 1 increase the DynamicBitSet of 64 bits).
+     * @return The new capacity of the DynamicBitSet.
+     */
+    size_t increase(size_t size);
+
+    /**
+     * @brief Decrease the capacity of the DynamicBitSet by `64 * size` bits.
+     *
+     * @warning The bits removed will be lost forever.
+     * @note The old bits are removed from the end of the DynamicBitSet (from the right).
+     *
+     * @param size The removed size (A size of 1 decrease the DynamicBitSet of 64 bits).
+     * @return The new capacity of the DynamicBitSet.
+     */
+    size_t decrease(size_t size);
+
+    /**
      * @brief Get the current capacity of the DynamicBitSet.
      *
      * @return The current capacity of the DynamicBitSet.
@@ -220,5 +241,7 @@ public:
      */
     bool operator==(const DynamicBitSet &other) const;
 };
+
+std::ostream &operator<<(std::ostream &stream, const DynamicBitSet &ref);
 
 }  // namespace rtecs::bitset
