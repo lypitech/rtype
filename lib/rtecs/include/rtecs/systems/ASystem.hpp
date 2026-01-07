@@ -12,8 +12,8 @@ class ASystem
 {
 private:
     const bitset::DynamicBitSet _mask;
-public:
 
+public:
     /**
      * @brief Instantiate a new system.
      *
@@ -38,6 +38,6 @@ public:
     virtual void apply(ECS &ecs) = 0;
 };
 
-}  // namespace rtecs::system
+}  // namespace systems
 
 }  // namespace rtecs
