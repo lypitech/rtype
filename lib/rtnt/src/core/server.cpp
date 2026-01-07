@@ -63,9 +63,13 @@ void Server::onReceive(const udp::endpoint& sender,
         }
     }
 
-    Packet packet(0);
+    auto packetsToProcess = session->handleIncoming(data);
 
-    if (session->handleIncoming(data, packet)) {
+    if (packetsToProcess.empty()) {
+        return;
+    }
+
+    for (Packet& packet : packetsToProcess) {
         _packetDispatcher.dispatch(session, packet);
 
         if (packet.getId() >= 128 && _onMessage) {

@@ -74,7 +74,7 @@ void Client::update(milliseconds timeout)
         if (_onDisconnect) {
             _onDisconnect();
         }
-        stop();  /// todo: can make the program crash.
+        stop();  /// fixme: can make the program crash under certain circumstances.
         _serverSession.reset();
         _isConnected = false;
         return;
@@ -104,9 +104,13 @@ void Client::onReceive(const udp::endpoint& sender,
         return;
     }
 
-    Packet packet(0);
+    auto packetsToProcess = _serverSession->handleIncoming(data);
 
-    if (_serverSession->handleIncoming(data, packet)) {
+    if (packetsToProcess.empty()) {
+        return;
+    }
+
+    for (Packet& packet : packetsToProcess) {
         _packetDispatcher.dispatch(_serverSession, packet);
 
         if (_isConnected && _onMessage) {
