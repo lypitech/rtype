@@ -2,12 +2,13 @@
 
 #include <sys/types.h>
 
+#include <cstddef>
 #include <array>
 #include <memory>
 #include <optional>
 #include <vector>
 
-#include "ISparseSet.hpp"
+#include "ASparseSet.hpp"
 
 namespace rtecs::sparse {
 
@@ -39,7 +40,7 @@ using OptionalCRef = std::optional<std::reference_wrapper<const T>>;
  * array avoids allocating a huge flat sparse array for large entity ids.
  */
 template <typename T>
-class SparseSet final : public ISparseSet
+class SparseSet final : public ASparseSet
 {
 public:
     /**
@@ -56,7 +57,6 @@ private:
     static constexpr OptionalSparseElement kNullSparseElement = std::nullopt;
 
     std::vector<T> _dense;
-    std::vector<size_t> _entities;
     std::vector<Sparse> _sparsePages{};
 
 public:
@@ -65,18 +65,9 @@ public:
      *
      * @tparam T The type contained in the SparseSet.
      */
-    explicit SparseSet() = default;
-
-    /**
-     * @brief Get the dense list of entities that possess this component.
-     * @note Indices match the getAll() vector.
-     * @returns A vector of the indice for the corresponding entities.
-     */
-    [[nodiscard]]
-    const std::vector<size_t> &getEntities() const noexcept
-    {
-        return _entities;
-    }
+    explicit SparseSet(const types::ComponentID id):
+        ASparseSet(id)
+    {};
 
     /**
      * @brief Get a reference of the entity.
@@ -137,6 +128,14 @@ public:
      * Clear the sparse-set.
      */
     void clear() noexcept override;
+
+    /**
+     * @brief Get the number of values stored in the SparseSet.
+     *
+     * @return The number of values stored in the SparseSet.
+     */
+    [[nodiscard]]
+    size_t size() const noexcept override;
 };
 
 // ====================================
@@ -194,6 +193,11 @@ bool SparseSet<T>::has(const size_t id) const noexcept
         return false;
     }
     return _sparsePages[page].at(sparseIndex).has_value();
+}
+
+template <typename T> size_t SparseSet<T>::size() const noexcept
+{
+    return _dense.size();
 }
 
 template <typename T>

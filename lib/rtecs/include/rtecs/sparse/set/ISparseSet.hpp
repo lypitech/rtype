@@ -1,10 +1,8 @@
 #pragma once
 
-#include <cstddef>
+#include "rtecs/bitset/DynamicBitSet.hpp"
 
 namespace rtecs::sparse {
-
-class DynamicBitSet;  // Forward class definition
 
 /**
  * @brief Interface for a sparse-set container used by the ECS.
@@ -43,6 +41,30 @@ public:
      * @brief Clear the sparse-set, removing all stored components.
      */
     virtual void clear() noexcept = 0;
+
+    /**
+     * @brief Get the number of values stored in the SparseSet.
+     *
+     * @return The number of values stored in the SparseSet.
+     */
+    [[nodiscard]]
+    virtual size_t size() const noexcept = 0;
+
+    /**
+    * @brief Get the dense list of entities that possess this component.
+    * @note Indices match the getAll() vector.
+    * @returns A vector of the indice for the corresponding entities.
+    */
+    [[nodiscard]]
+    virtual const std::vector<size_t> &getEntities() const noexcept = 0;
+
+    /**
+     * @brief Get the ID of the SparseSet.
+     *
+     * @return The ID of the SparseSet.
+     */
+    [[nodiscard]]
+    virtual types::ComponentID getId() const = 0;
 };
 
 }  // namespace rtecs::sparse

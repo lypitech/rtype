@@ -8,27 +8,23 @@
 namespace rtecs::sparse {
 
 template <typename Key, typename T>
-class SparseVectorView
+class SparseView
 {
 private:
     std::unordered_map<Key, size_t> _keyToIndex;
     std::vector<T> _values;
     std::vector<Key> _indexToKey;
-    T _defaultValue;
 
 public:
     /**
-     * Instantiate a new SparseVectorView.
-     *
-     * @param defaultValue The default value of the SparseVectorView
+     * Instantiate a new SparseView.
      */
-    explicit SparseVectorView(T defaultValue = {})
-        : _defaultValue(defaultValue) {};
+    explicit SparseView() = default;
 
     /**
-     * Destroy a SparseVectorView.
+     * Destroy a SparseView.
      */
-    ~SparseVectorView() = default;
+    ~SparseView() = default;
 
     /**
      * @brief Insert / Overwrite a value.
@@ -78,30 +74,33 @@ public:
     /**
      * @brief Access to the reference of a value.
      *
-     * @note If the key is not found, then a value corresponding to this key is created.
+     * @throw std::out_of_range If the key is not found.
      *
      * @param key The key of the value to access.
      * @return A reference to the corresponding value.
      */
     T &operator[](Key key)
     {
-        auto [it, inserted] = _keyToIndex.try_emplace(key, _values.size());
-        if (inserted) {
-            _values.emplace_back(_defaultValue);
-        }
-        return _values[it->second];
+        if (!_keyToIndex.contains(key))
+            throw std::out_of_range("The key " + std::to_string(key) + " do not exists in the SparseView.");
+
+        size_t index = _keyToIndex.at(key);
+        return _values[index];
     }
 
     /**
      * @brief Access to the const-reference of a value.
      *
-     * @important If the key is not found, then the behaviour is unknown.
+     * @throw std::out_of_range If the key is not found.
      *
      * @param key The key of the value to access.
      * @return A const-reference to the corresponding value.
      */
     const T &operator[](Key key) const
     {
+        if (!_keyToIndex.contains(key))
+            throw std::out_of_range("The key " + std::to_string(key) + " do not exists in the SparseView.");
+
         size_t index = _keyToIndex.at(key);
         return _values[index];
     }
