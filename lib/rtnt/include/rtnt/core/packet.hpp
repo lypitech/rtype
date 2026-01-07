@@ -326,6 +326,8 @@ bool is(const ByteBuffer& rawData)
 class Packet final
 {
 public:
+    explicit Packet() = default;
+
     /**
      * @brief   Constructs a new Packet
      * @param   id          The user-defined message ID
@@ -343,10 +345,7 @@ public:
 
     /// TMP!!
     explicit Packet(const std::vector<uint8_t>& data)
-        : _messageId(0),
-          _flag(packet::Flag::kUnreliable),
-          _channelId(0),
-          _buffer(data)
+        : _buffer(data)
     {
     }
 
@@ -441,12 +440,12 @@ private:
     friend class Session;
 
     // Metadata
-    uint16_t _messageId;
-    packet::Flag _flag;
-    uint8_t _channelId;
+    uint16_t _messageId = 0x0;
+    packet::Flag _flag = packet::Flag::kUnreliable;
+    uint8_t _channelId = 0;
 
     // Data
-    ByteBuffer _buffer;
+    ByteBuffer _buffer{};
     size_t _readPosition = 0;
 
     void _internal_setPayload(std::vector<uint8_t>&& data)
