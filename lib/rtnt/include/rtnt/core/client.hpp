@@ -51,7 +51,11 @@ public:
     /**
      * @brief   Initiates the connection handshake.
      *
-     * This creates the Session and sends an initial @code __rtnt_internal_CONNECT@endcode packet to the server.
+     * This creates the Session and sends an initial @code __rtnt_internal_CONNECT@endcode packet to
+     * the server.
+     * If the server doesn't respond to the handshake within @code RECONNECTION_TIMEOUT@endcode
+     * milliseconds, a reconnection is tried. After failing @code MAX_RECONNECTION_RETRIES@endcode
+     * times, the client considers that the server can't be connected to.
      * @param   ip      The server IP address.
      * @param   port    The server port.
      */
@@ -78,7 +82,7 @@ public:
     }
 
     /**
-     * @brief   Main maintenance loop. Checks for timeouts.
+     * @brief   Main maintenance loop. Checks for timeouts and lost packets.
      * @param   timeout The duration after which the server is considered unresponsive and so, dead
      * @note    This should be called regularly (e.g., in a main game loop).
      */
@@ -94,7 +98,12 @@ protected:
 private:
     udp::endpoint _serverEndpoint;
     std::shared_ptr<Session> _serverSession;
+
+    // Connection state //
     bool _isConnected = false;
+    uint8_t _reconnectionRetries = 0;
+    time_point<steady_clock> _lastConnectionAttemptTime;
+    // ---------------- //
 
     Dispatcher _packetDispatcher;
 
@@ -123,6 +132,8 @@ private:
         packetToSend << packetData;
         _serverSession->send(packetToSend);
     }
+
+    void _internal_attemptConnection();
 };
 
 }  // namespace rtnt::core

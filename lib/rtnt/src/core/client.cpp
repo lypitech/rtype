@@ -36,16 +36,11 @@ void Client::connect(const std::string& ip,
     LOG_INFO("Connecting to remote server {}:{}...", ip, port);
 
     const asio::ip::address address = asio::ip::make_address(ip);
-
     _serverEndpoint = udp::endpoint(address, port);
-    _serverSession =
-        std::make_shared<Session>(_serverEndpoint, [this](std::shared_ptr<ByteBuffer> rawBytes) {
-            this->sendToTarget(_serverEndpoint, rawBytes);
-        });
-    start();
+    _reconnectionRetries = 0;
 
-    packet::internal::Connect packet;
-    _internal_send(packet);
+    start();
+    _internal_attemptConnection();
 }
 
 void Client::disconnect()
@@ -68,8 +63,36 @@ void Client::disconnect()
 
 void Client::update(milliseconds timeout)
 {
-    if (!_isConnected || !_serverSession) {
-        LOG_WARN("Trying to update while disconnected from server.");
+    if (!_serverSession) {
+        LOG_WARN("Trying to update without initiating connection first.");
+        return;
+    }
+
+    auto now = steady_clock::now();
+
+    if (!_isConnected) {
+        // _serverSession->update();
+
+        bool timedOut = (now - _lastConnectionAttemptTime) > RECONNECTION_TIMEOUT;
+        bool sessionFailed = _serverSession->shouldClose();
+
+        if (timedOut || sessionFailed) {
+            if (_reconnectionRetries <= MAX_RECONNECTION_RETRIES) {
+                _reconnectionRetries++;
+                LOG_WARN("Connection attempt {}/{} timed out. Retrying...",
+                         _reconnectionRetries,
+                         MAX_RECONNECTION_RETRIES);
+
+                _internal_attemptConnection();
+            } else {
+                LOG_FATAL("Could not connect to server after {} attempts. Aborting.",
+                          MAX_RECONNECTION_RETRIES);
+                _serverSession.reset();
+                if (_onDisconnect) {
+                    _onDisconnect();
+                }
+            }
+        }
         return;
     }
 
@@ -84,7 +107,6 @@ void Client::update(milliseconds timeout)
         return;
     }
 
-    auto now = steady_clock::now();
     auto lastSeenTimestamp = _serverSession->getLastSeenTimestamp();
     auto age = duration_cast<milliseconds>(now - lastSeenTimestamp);
 
@@ -128,13 +150,26 @@ void Client::_internal_registerInternalPacketHandlers()
     _packetDispatcher._internal_bind<packet::internal::ConnectAck>(
         [this](const std::shared_ptr<Session>& /*session*/,
                const packet::internal::ConnectAck& packet) {
-            LOG_DEBUG("Received ID: {}", packet.assignedSessionId);
+            LOG_DEBUG("Handshake success. Assigned Session ID: {}", packet.assignedSessionId);
             this->_isConnected = true;
 
             if (_onConnect) {
                 _onConnect();
             }
         });
+}
+
+void Client::_internal_attemptConnection()
+{
+    _serverSession =
+        std::make_shared<Session>(_serverEndpoint, [this](std::shared_ptr<ByteBuffer> rawBytes) {
+            this->sendToTarget(_serverEndpoint, rawBytes);
+        });
+
+    _lastConnectionAttemptTime = steady_clock::now();
+
+    constexpr packet::internal::Connect packet;
+    _internal_send(packet);
 }
 
 }  // namespace rtnt::core

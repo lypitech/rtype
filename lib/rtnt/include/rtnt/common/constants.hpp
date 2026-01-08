@@ -19,6 +19,8 @@ static constexpr uint16_t PROTOCOL_VER = 0x0001;
 
 static constexpr uint8_t MAX_RECONNECTION_RETRIES = 3;
 
+static constexpr auto RECONNECTION_TIMEOUT = std::chrono::milliseconds(2000);
+
 namespace core {
 
 using ByteBuffer = std::vector<uint8_t>;
