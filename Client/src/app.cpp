@@ -1,9 +1,11 @@
 #include "app.hpp"
 
+#include "components/sprite.hpp"
 #include "handlers/handlers.hpp"
 #include "logger/Thread.h"
 #include "packets/server/spawn.hpp"
 #include "systems/network.hpp"
+#include "systems/renderer.hpp"
 
 namespace client {
 
@@ -14,6 +16,8 @@ App::App(const std::string& host,
                 rteng::GameEngine(components::GameComponents{}),
                 {}})
 {
+    registerAllComponents();
+    registerAllSystems();
     registerAllCallbacks();
     _client.connect(host, port);
     _ioThread = std::thread([this]() {
@@ -26,15 +30,16 @@ App::App(const std::string& host,
 
 App::~App() { stop(); }
 
+void App::registerAllComponents()
+{
+    _toolbox.engine.getEcs()->registerComponent<components::Sprite>();
+}
+
 void App::registerAllSystems()
 {
     _toolbox.engine.getEcs()->registerSystem(
         std::make_unique<systems::Network>(_client, _networkService));
-}
-
-void App::registerAllComponents()
-{
-    // Empty for now.
+    _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Renderer>());
 }
 
 void App::registerAllCallbacks()
