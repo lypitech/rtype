@@ -59,6 +59,24 @@ public:
      */
     [[nodiscard]] uint16_t getLocalPort() const { return _socket.local_endpoint().port(); }
 
+#if defined(RTNT_TESTS)
+    [[nodiscard]] uint8_t getSimulatedPacketLossPercentage() const
+    {
+        return _simulatedPacketLossPercentage;
+    }
+
+    void setSimulatedPacketLossPercentage(uint8_t value)
+    {
+        if (value > 100) {
+            LOG_WARN(
+                "Can't set a percentage greater than 100%. (got {}%). Falling back to 100%", value);
+            value = 100;
+        }
+        LOG_TRACE_R1("Setting simulation packet loss to {}%.", value);
+        _simulatedPacketLossPercentage = value;
+    }
+#endif
+
 protected:
     /**
      * @brief   Constructs a Peer in a degraded state. You NEED to call either @code server()@endcode or
@@ -98,6 +116,10 @@ private:
     udp::socket _socket;
     udp::endpoint _tmpEndpoint;
     std::array<char, BUFFER_SIZE> _receptionBuffer{};
+
+#if defined(RTNT_TESTS)
+    std::atomic<uint8_t> _simulatedPacketLossPercentage = 0;
+#endif
 
     void receive();
 };

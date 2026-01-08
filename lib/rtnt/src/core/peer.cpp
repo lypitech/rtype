@@ -1,5 +1,7 @@
 #include "rtnt/core/peer.hpp"
 
+#include <random>
+
 #include "logger/Logger.h"
 
 namespace rtnt::core {
@@ -59,6 +61,20 @@ void Peer::receive()
 void Peer::sendToTarget(const udp::endpoint &target,
                         std::shared_ptr<ByteBuffer> data)
 {
+#if defined(RTNT_TESTS)
+    uint8_t lossPercent = _simulatedPacketLossPercentage.load();
+
+    if (lossPercent > 0) {
+        static std::mt19937 gen(std::random_device{}());
+        std::uniform_int_distribution dist(1, 100);
+
+        if (dist(gen) <= lossPercent) {
+            LOG_WARN("Packet has been dropped for simulation purposes.");
+            return;
+        }
+    }
+#endif
+
     _socket.async_send_to(
         asio::buffer(*data), target, [target, data](std::error_code ec, size_t bytesSent) {
             if (ec) {
