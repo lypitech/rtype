@@ -4,7 +4,7 @@ namespace entity {
 
 enum class Type
 {
-    kPlayer = 1,
+    kPlayer = 0,
     kEnemy,
 };
 
