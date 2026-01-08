@@ -10,16 +10,30 @@
 namespace rtecs::sparse {
 
 /**
- * @brief Create a group of SparseSets.
+ * @brief This class groups all the entities that has all the specified components in a single group.
  *
  * @tparam Ts The components type that will be stored.
  */
 template <typename... Ts>
 class SparseGroup
 {
-private:
-    std::tuple<SparseView<types::EntityID, std::reference_wrapper<Ts>>...> comps;
+public:
+    template <typename T>
+    using View = SparseView<types::EntityID, std::reference_wrapper<T>>;
 
+private:
+    std::tuple<View<Ts>...> _group;
+
+    /**
+     * @brief Add an entity component instance from the set to the view.
+     *
+     * @throw exceptions::EntityNotFoundException If the entity does not exist.
+     *
+     * @tparam T The component type
+     * @param entityId The entity ID
+     * @param view The view
+     * @param set The set
+     */
     template <typename T>
     void addEntity(types::EntityID entityId, SparseView<types::EntityID, std::reference_wrapper<T>>& view,
                    std::unique_ptr<SparseSet<T>>& set)
@@ -39,6 +53,8 @@ public:
      *
      * @note The SparseGroup will dynamically find all entities that are presents in every of the given sets.
      *
+     * @throw exceptions::EntityNotFoundException This error should not be thrown. If this happen, create an issue on the Githuv repository of this project.
+     *
      * @param sets The SparseSets that the SparseGroup will contain.
      */
     explicit SparseGroup(std::unique_ptr<SparseSet<Ts>>&... sets)
@@ -53,18 +69,52 @@ public:
             const bool isValid = (... && sets->has(entityId));
 
             if (isValid) {
-                std::apply([&](auto&... view) { (addEntity<Ts>(entityId, view, sets), ...); }, comps);
+                std::apply([&](auto&... view) { (addEntity<Ts>(entityId, view, sets), ...); }, _group);
             }
         }
     }
 
+    /**
+     * @brief Get the component instance of a specific entity from the group.
+     *
+     * @throw std::out_of_range If the entity does not exist in the group.
+     *
+     * @tparam T The component type
+     * @param entityId The entity ID
+     * @return The component instance of the specified entity
+     */
+    template <typename T>
+    std::reference_wrapper<T> getEntity(types::EntityID entityId)
+    {
+        return get<T>()[entityId];
+    }
+
+    /**
+     * @brief Get all the instances of a specific component type from the group.
+     *
+     * @tparam T The component type
+     * @return A SparseView of the entities
+     */
     template <typename T>
     SparseView<types::EntityID, std::reference_wrapper<T>>& get()
     {
-        return std::get<SparseView<types::EntityID, std::reference_wrapper<T>>>(comps);
+        return std::get<SparseView<types::EntityID, std::reference_wrapper<T>>>(_group);
     }
 
-    bool has(types::EntityID entityId) { return std::get<0>(comps).has(entityId); }
+    /**
+     * @brief Get all the SparseView stored in the group.
+     *
+     * @return All the SparseView stored in the group.
+     */
+    std::tuple<SparseView<types::EntityID, std::reference_wrapper<Ts>>...>& getAll() { return _group; }
+
+    /**
+     * @brief Check if the group has an entity.
+     *
+     * @param entityId The entity ID
+     * @return `true` if the group has the specified entity, `false` otherwise
+     */
+    bool has(types::EntityID entityId) { return std::get<0>(_group).has(entityId); }
 };
 
 }  // namespace rtecs::sparse
