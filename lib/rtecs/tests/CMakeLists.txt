@@ -4,6 +4,7 @@ set(RTECS_TEST_SOURCES
     tests/ecs/ECS.cpp
 
     tests/sparse/fixtures/SparseFixture.cpp
+    tests/sparse/fixtures/SparseGroupFixture.cpp
 
     tests/sparse/SparseGroup.cpp
     tests/sparse/SparseSet.cpp
