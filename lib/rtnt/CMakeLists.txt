@@ -65,6 +65,7 @@ endif()
 
 # --- Tests ---
 if(RTNT_BUILD_TESTS OR PROJECT_IS_TOP_LEVEL)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC RTNT_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
