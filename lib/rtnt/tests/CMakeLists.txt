@@ -10,6 +10,7 @@ set(RTNT_TEST_SOURCES
     tests/complex_packet.cpp
     tests/struct_packet.cpp
     tests/packet_loss.cpp
+    tests/reconnection.cpp
 )
 
 add_executable(rtnt_tests ${RTNT_TEST_SOURCES})
