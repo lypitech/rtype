@@ -26,7 +26,9 @@ struct Example
 TEST_F(NetworkTest,
        packet_loss)
 {
-    const uint32_t kPacketCount = 1000;
+    const uint32_t packetAmount = 181;
+
+    client->setSimulatedPacketLossPercentage(75);
 
     std::mutex dataMutex;
     std::vector<uint32_t> receivedIndices;
@@ -41,7 +43,7 @@ TEST_F(NetworkTest,
     ASSERT_TRUE(waitFor([&]() { return client->isConnected(); }, std::chrono::seconds(10)))
         << "Client failed to connect.";
 
-    for (uint32_t i = 0; i < kPacketCount; ++i) {
+    for (uint32_t i = 0; i < packetAmount; ++i) {
         Example pkt{.x = i};
         LOG_INFO("Sending packet with body: [{}]", i);
         client->send(pkt);
@@ -50,20 +52,20 @@ TEST_F(NetworkTest,
     bool finished = waitFor(
         [&]() {
             std::lock_guard lock(dataMutex);
-            return receivedIndices.size() >= kPacketCount;
+            return receivedIndices.size() >= packetAmount;
         },
         std::chrono::seconds(50));
 
     ASSERT_TRUE(finished) << "Timeout: Only received " << receivedIndices.size() << "/"
-                          << kPacketCount << " packets.";
+                          << packetAmount << " packets.";
 
     std::lock_guard lock(dataMutex);
 
-    ASSERT_EQ(receivedIndices.size(), kPacketCount);
+    ASSERT_EQ(receivedIndices.size(), packetAmount);
 
     LOG_INFO("Final list: {}", receivedIndices);
 
-    for (uint32_t i = 0; i < kPacketCount; ++i) {
+    for (uint32_t i = 0; i < packetAmount; ++i) {
         ASSERT_EQ(receivedIndices[i], i)
             << "Ordering failed! Index " << i << " was not the expected value.";
     }
