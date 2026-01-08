@@ -71,13 +71,11 @@ void Client::update(milliseconds timeout)
     auto now = steady_clock::now();
 
     if (!_isConnected) {
-        // _serverSession->update();
-
         bool timedOut = (now - _lastConnectionAttemptTime) > RECONNECTION_TIMEOUT;
         bool sessionFailed = _serverSession->shouldClose();
 
         if (timedOut || sessionFailed) {
-            if (_reconnectionRetries <= MAX_RECONNECTION_RETRIES) {
+            if (_reconnectionRetries < MAX_RECONNECTION_RETRIES) {
                 _reconnectionRetries++;
                 LOG_WARN("Connection attempt {}/{} timed out. Retrying...",
                          _reconnectionRetries,
