@@ -4,6 +4,7 @@
 
 #include "ECS.hpp"
 #include "SparseSet.hpp"
+#include "components/target_pos.hpp"
 #include "enums/input.hpp"
 #include "packets/client/user_input.hpp"
 #include "raylib.h"

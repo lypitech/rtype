@@ -48,6 +48,7 @@ void App::registerAllSystems()
     _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Renderer>());
     _toolbox.engine.getEcs()->registerSystem(
         std::make_unique<systems::IO>(_toolbox.engine.getEcs(), _networkService));
+    _toolbox.engine.getEcs()->registerSystem(
         std::make_unique<systems::Interpolation>(_toolbox.engine.getEcs()));
 }
 
