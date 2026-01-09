@@ -3,7 +3,6 @@
 #include <functional>
 #include <vector>
 
-#include "IO.hpp"
 #include "Transform.hpp"
 #include "position.hpp"
 #include "rect.hpp"
@@ -13,7 +12,7 @@
 
 namespace components {
 
-using GameComponents = rteng::ComponentsList<Position, Transform, Rectangle, Type, IO>;
+using GameComponents = rteng::ComponentsList<Position, Transform, Rectangle, Type>;
 
 class Factory
 {
