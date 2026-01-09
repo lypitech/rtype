@@ -72,7 +72,7 @@ void Lobby::leave(const packet::server::SessionPtr& session)
 {
     _actionQueue.push([this, session](Lobby&) {
         if (_players.contains(session)) {
-            // TODO: Send a destroy packet to all other sessions;
+            // TODO: destroy the entity and send a destroy packet to all other sessions;
             _players.erase(session);
             LOG_INFO("Player left lobby {}", _roomId);
         } else {
