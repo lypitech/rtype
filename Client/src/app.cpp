@@ -2,10 +2,12 @@
 
 #include "components/me.hpp"
 #include "components/sprite.hpp"
+#include "components/target_pos.hpp"
 #include "handlers/handlers.hpp"
 #include "logger/Thread.h"
 #include "packets/server/spawn.hpp"
 #include "systems/IO.hpp"
+#include "systems/interpolation.hpp"
 #include "systems/network.hpp"
 #include "systems/renderer.hpp"
 
@@ -36,6 +38,7 @@ void App::registerAllComponents()
 {
     _toolbox.engine.getEcs()->registerComponent<components::Sprite>();
     _toolbox.engine.getEcs()->registerComponent<components::Me>();
+    _toolbox.engine.getEcs()->registerComponent<components::TargetPos>();
 }
 
 void App::registerAllSystems()
@@ -45,6 +48,7 @@ void App::registerAllSystems()
     _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Renderer>());
     _toolbox.engine.getEcs()->registerSystem(
         std::make_unique<systems::IO>(_toolbox.engine.getEcs(), _networkService));
+        std::make_unique<systems::Interpolation>(_toolbox.engine.getEcs()));
 }
 
 void App::registerAllCallbacks()
