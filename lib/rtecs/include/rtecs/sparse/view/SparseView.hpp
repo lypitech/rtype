@@ -81,8 +81,9 @@ public:
      */
     T &operator[](Key key)
     {
-        if (!_keyToIndex.contains(key))
+        if (!_keyToIndex.contains(key)) {
             throw std::out_of_range("The key " + std::to_string(key) + " do not exists in the SparseView.");
+        }
 
         size_t index = _keyToIndex.at(key);
         return _values[index];
@@ -98,8 +99,9 @@ public:
      */
     const T &operator[](Key key) const
     {
-        if (!_keyToIndex.contains(key))
+        if (!_keyToIndex.contains(key)) {
             throw std::out_of_range("The key " + std::to_string(key) + " do not exists in the SparseView.");
+        }
 
         size_t index = _keyToIndex.at(key);
         return _values[index];
@@ -118,6 +120,13 @@ public:
      * @return The const-reference of the values vector container.
      */
     const std::vector<T> &getValues() const { return _values; }
+
+    /**
+     * @brief Get a const-reference of the keys.
+     *
+     * @return The const-reference of the keys.
+     */
+    const std::vector<Key> &getKeys() const { return _indexToKey; }
 
     /**
      * @brief Get the index of the value in the vector container.
