@@ -20,6 +20,8 @@ Session::Session(udp::endpoint endpoint,
 
 std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
 {
+    std::lock_guard lock(_mutex);
+
     std::vector<Packet> readyPackets;
 
     LOG_TRACE_R3(
@@ -42,11 +44,11 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
     _lastSeen = steady_clock::now();
 
     if (!_sentPackets.empty()) {
-        LOG_TRACE_R3("Checking sent packets buffer...");
+        LOG_DEBUG("Checking sent packets buffer...");
         _sentPackets.erase(header.acknowledgeId);
         for (int i = 0; i < 32; ++i) {
             if (header.acknowledgeBitfield & (1 << i)) {
-                LOG_TRACE_R3(
+                LOG_DEBUG(
                     "Packet (seqID: {}) acknowledged, removing...", header.acknowledgeId - (i + 1));
                 _sentPackets.erase(header.acknowledgeId - (i + 1));
             }
@@ -71,7 +73,7 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
     bool isOrdered =
         (incomingPacket.getReliability() & packet::Flag::kOrdered) == packet::Flag::kOrdered;
 
-    LOG_TRACE_R3("Is packet ordered? {}.", isOrdered ? "Yes" : "No");
+    LOG_DEBUG("Is packet ordered? {}.", isOrdered ? "Yes" : "No");
 
     if (!isOrdered) {
         readyPackets.push_back(std::move(incomingPacket));
@@ -80,7 +82,7 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
 
     uint32_t receivedOrderId = header.orderId;
 
-    LOG_TRACE_R3("Received ordered ID: {}", receivedOrderId);
+    LOG_DEBUG("Received ordered ID: {}", receivedOrderId);
 
     if (receivedOrderId == _nextExpectedOrderId) {
         readyPackets.push_back(std::move(incomingPacket));
@@ -92,7 +94,7 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
             _nextExpectedOrderId++;
         }
     } else if (receivedOrderId > _nextExpectedOrderId) {
-        LOG_WARN(
+        LOG_TRACE_R2(
             "Gap: Got order ID {}, expected {}. Buffering.", receivedOrderId, _nextExpectedOrderId);
         _reorderBuffer[receivedOrderId] = std::move(incomingPacket);
     }
@@ -102,6 +104,8 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
 
 void Session::send(Packet& packet)
 {
+    std::lock_guard lock(_mutex);
+
     uint32_t sequenceId = _localSequenceId++;
     uint32_t orderId = 0;
 
@@ -125,7 +129,7 @@ void Session::rawSend(Packet& packet,
     header.sequenceId = sequenceId;
     header.orderId = orderId;
     header.acknowledgeId = _remoteAcknowledgeId;
-    header.acknowledgeBitfield = _remoteAcknowledgeBitfield;  // todo: Implement ack bitfield
+    header.acknowledgeBitfield = _remoteAcknowledgeBitfield;
     header.messageId = packet.getId();
     header.flags = static_cast<uint8_t>(packet.getReliability());
     header.packetSize = static_cast<uint16_t>(packet.getPayload().size());
@@ -175,13 +179,18 @@ void Session::rawSend(Packet& packet,
 
 void Session::update()
 {
+    std::lock_guard lock(_mutex);
+
     LOG_DEBUG("Updating session {}", _id);
 
     auto now = steady_clock::now();
 
+    LOG_DEBUG("Buffer state: size {}", _sentPackets.size());
+
     for (auto it = _sentPackets.begin(); it != _sentPackets.end();) {
         SentPacketInfo& info = it->second;
 
+        LOG_DEBUG("Iterating over packet ordID = {}", info.orderId);
         if (now - info.sentTime > packet::RESEND_TIMEOUT) {
             if (info.retries >= packet::MAX_RESEND_RETRIES) {
                 LOG_FATAL("Connection lost (Packet #{} retries exceeded).", it->first);
@@ -189,9 +198,10 @@ void Session::update()
                 return;
             }
 
-            LOG_TRACE_R2("Resending packet #{} ({}th retry, order ID = {})",
-                         info.sequenceId,
+            LOG_TRACE_R2("Resending packet #{} ({}th retry, sequence ID = {} ; order ID = {})",
+                         info.packet._messageId,
                          info.retries,
+                         info.sequenceId,
                          info.orderId);
             rawSend(info.packet, info.sequenceId, info.orderId);
 
@@ -202,17 +212,35 @@ void Session::update()
     }
 
     if (_hasUnsentAck && (now - _lastAckTime > packet::ACK_TIMEOUT)) {
-        Packet ack(
-            static_cast<packet::Id>(packet::SystemMessageId::kAck), packet::Flag::kUnreliable);
-        send(ack);
+        _internal_sendAck();
     }
 }
 
-void Session::disconnect() { this->_shouldClose = true; }
+void Session::disconnect()
+{
+    std::lock_guard lock(_mutex);
+    this->_shouldClose = true;
+}
+
+// void Session::sendAck()
+// {
+//     LOG_TRACE_R3("Sending empty ACK packet");
+//     Packet ack(
+//         static_cast<packet::Id>(packet::SystemMessageId::kAck), packet::Flag::kUnreliable);
+//     send(ack);
+// }
+
+void Session::_internal_sendAck()
+{
+    Packet ack(static_cast<packet::Id>(packet::SystemMessageId::kAck), packet::Flag::kUnreliable);
+    uint32_t sequenceId = _localSequenceId++;
+
+    rawSend(ack, sequenceId, 0);
+}
 
 void Session::updateAcknowledgeInfo(uint32_t sequenceId)
 {
-    LOG_TRACE_R3("Updating acknowledge information");
+    LOG_DEBUG("Updating acknowledge information");
 
     if (sequenceId > _remoteAcknowledgeId) {
         uint32_t shift = sequenceId - _remoteAcknowledgeId;

@@ -3,6 +3,7 @@
 #include "dispatcher.hpp"
 #include "logger/Logger.h"
 #include "peer.hpp"
+#include "rtnt/common/thread_safe_queue.hpp"
 #include "session.hpp"
 
 namespace rtnt::core {
@@ -19,6 +20,8 @@ class Client : public Peer
     using OnConnectFunction = std::function<void()>;
     using OnDisconnectFunction = std::function<void()>;
     using OnMessageFunction = std::function<void(Packet&)>;
+
+    using Task = std::function<void()>;
 
 public:
     explicit Client(asio::io_context& context);
@@ -88,7 +91,11 @@ public:
      */
     void update(milliseconds timeout = seconds(10));
 
-    [[nodiscard]] bool isConnected() const { return _isConnected; }
+    [[nodiscard]] bool isConnected() const
+    {
+        std::lock_guard lock(_mutex);
+        return _isConnected;
+    }
     [[nodiscard]] Dispatcher& getPacketDispatcher() { return this->_packetDispatcher; }
 
 protected:
@@ -98,6 +105,9 @@ protected:
 private:
     udp::endpoint _serverEndpoint;
     std::shared_ptr<Session> _serverSession;
+    mutable std::mutex _mutex;
+
+    ThreadSafeQueue<Task> _eventQueue;
 
     // Connection state //
     bool _isConnected = false;
@@ -126,14 +136,25 @@ private:
     {
         packet::verifyPacketData<T>();
 
-        LOG_DEBUG("Client sending Packet #{} {}...", T::kId, packet::getName<T>());
+        std::shared_ptr<Session> session;
 
-        Packet packetToSend(T::kId, packet::getFlag<T>());
-        packetToSend << packetData;
-        _serverSession->send(packetToSend);
+        {
+            std::lock_guard lock(_mutex);
+            session = _serverSession;
+        }
+
+        if (session) {
+            LOG_DEBUG("Client sending Packet #{} {}...", T::kId, packet::getName<T>());
+
+            Packet packetToSend(T::kId, packet::getFlag<T>());
+            packetToSend << packetData;
+            _serverSession->send(packetToSend);
+        }
     }
 
     void _internal_attemptConnection();
+
+    void _processEvents();
 };
 
 }  // namespace rtnt::core

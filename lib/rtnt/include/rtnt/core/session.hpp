@@ -86,6 +86,8 @@ public:
      */
     void disconnect();
 
+    // void sendAck();
+
     /**
      * @return  Session's unique ID.
      * @note    By default, ID is equal to 0. It is overwritten when handshake with the remote client has been done.
@@ -101,7 +103,11 @@ public:
      * @return The timestamp of the last valid packet received from this session.
      * Used by the Server to timeout inactive clients.
      */
-    [[nodiscard]] time_point<steady_clock> getLastSeenTimestamp() const { return _lastSeen; }
+    [[nodiscard]] time_point<steady_clock> getLastSeenTimestamp() const
+    {
+        std::lock_guard lock(_mutex);
+        return _lastSeen;
+    }
 
     /**
      * @return  Whether the session should be closed or not.
@@ -126,6 +132,7 @@ private:
 
     std::map<uint32_t, Packet> _reorderBuffer;
     std::map<uint32_t, SentPacketInfo> _sentPackets;
+    mutable std::mutex _mutex;
 
     bool _hasUnsentAck = false;
     time_point<steady_clock> _lastAckTime;
@@ -138,6 +145,7 @@ private:
                  uint32_t sequenceId,
                  uint32_t orderId);
     void updateAcknowledgeInfo(uint32_t sequenceId);
+    void _internal_sendAck();
 };
 
 }  // namespace rtnt::core
