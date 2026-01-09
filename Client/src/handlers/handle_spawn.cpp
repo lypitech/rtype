@@ -1,17 +1,25 @@
 #include "app.hpp"
 #include "components/sprite.hpp"
+#include "components/target_pos.hpp"
 #include "handlers.hpp"
 #include "rteng.hpp"
 
-static void addGraphicalComponents(rtecs::EntityID Id,
+static void addGraphicalComponents(rtecs::EntityID id,
                                    client::HandlerToolbox& toolbox)
 {
     auto& sprites = dynamic_cast<rtecs::SparseSet<components::Sprite>&>(
         toolbox.engine.getEcs()->getComponent<components::Sprite>());
     auto& types = dynamic_cast<rtecs::SparseSet<components::Type>&>(
         toolbox.engine.getEcs()->getComponent<components::Type>());
-    if (const rtecs::OptionalRef<components::Type> type = types.get(Id)) {
-        sprites.put(Id, {type.value().get().type});
+    if (const rtecs::OptionalRef<components::Type> type = types.get(id)) {
+        sprites.put(id, {type.value().get().type});
+    }
+    auto& targetPos = dynamic_cast<rtecs::SparseSet<components::TargetPos>&>(
+        toolbox.engine.getEcs()->getComponent<components::TargetPos>());
+    auto& positions = dynamic_cast<rtecs::SparseSet<components::Position>&>(
+        toolbox.engine.getEcs()->getComponent<components::Position>());
+    if (const rtecs::OptionalRef<components::Position> pos = positions.get(id)) {
+        targetPos.put(id, {pos.value().get().x, pos.value().get().y});
     }
 }
 
