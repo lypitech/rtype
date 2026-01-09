@@ -20,6 +20,39 @@ Lobby::Lobby(const lobby::Id id,
 
 lobby::Id Lobby::getRoomId() const { return _roomId; }
 
+const rtecs::OptionalRef<components::Position>& Lobby::getPlayerPosition(
+    const packet::server::SessionPtr& session)
+{
+    if (!_players.contains(session)) {
+        return std::nullopt;
+    }
+    using Pos = components::Position;
+    return dynamic_cast<rtecs::SparseSet<Pos>&>(_engine.getEcs()->getComponent<Pos>())
+        .get(_players.at(session));
+}
+
+const std::optional<rtecs::EntityID>& Lobby::getPlayerId(
+    const packet::server::SessionPtr& session) const
+{
+    if (!_players.contains(session)) {
+        return std::nullopt;
+    }
+    return _players.at(session);
+}
+
+void Lobby::send(const packet::server::SessionPtr& session,
+                 const packet::server::Variant& packet) const
+{
+    _outGoing.push({{session}, packet});
+}
+
+void Lobby::broadcast(const packet::server::Variant& packet) const
+{
+    _outGoing.push({getAllSessions(), packet});
+}
+
+rteng::GameEngine& Lobby::getEngine() { return _engine; }
+
 void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action); }
 
 void Lobby::join(const packet::server::SessionPtr& session)
@@ -29,10 +62,10 @@ void Lobby::join(const packet::server::SessionPtr& session)
         rtecs::EntityID id = engine.registerEntity<components::Position, components::Type>(
             nullptr, {10, 10}, {entity::Type::kPlayer});
         _players[session] = id;
-        const auto& infos = components::getEntityComponentsInfos(
+        const auto& [bitset, content] = components::getEntityComponentsInfos(
             components::GameComponents{}, *engine.getEcs(), id);
-        packet::Spawn p = {static_cast<uint32_t>(id), infos.first, infos.second};
-        _outGoing.push({{getAllSessions()}, p});
+        packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
+        broadcast(p);
     });
 }
 

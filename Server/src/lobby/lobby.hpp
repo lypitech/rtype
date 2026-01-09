@@ -2,9 +2,11 @@
 #include <unordered_map>
 #include <variant>
 
+#include "components/position.hpp"
 #include "concurrent_queue.hpp"
 #include "packets/server/destroy.hpp"
 #include "packets/server/spawn.hpp"
+#include "packets/server/update_position.hpp"
 #include "rteng.hpp"
 #include "rtnt/core/session.hpp"
 #include "utils.hpp"
@@ -79,6 +81,42 @@ public:
      * @brief Stop this lobby.
      */
     void stop();
+
+    /**
+     * @brief Get the player id associated to the session.
+     * @param session The session to retrieve the id from.
+     * @return The entityId of the corresponding entity.
+     */
+    const std::optional<rtecs::EntityID>& getPlayerId(
+        const packet::server::SessionPtr& session) const;
+
+    /**
+     * @brief Get the position of a player through its session pointer.
+     * @param session A pointer to the session to retrieve the position from.
+     * @return An optional reference to the position of the player connected t the session.
+     */
+    const rtecs::OptionalRef<components::Position>& getPlayerPosition(
+        const packet::server::SessionPtr& session);
+
+    /**
+     * @brief Send a packet to a specific session.
+     * @param session The session to send the packet to.
+     * @param packet The packet to send.
+     */
+    void send(const packet::server::SessionPtr& session,
+              const packet::server::Variant& packet) const;
+
+    /**
+     * @brief Send a packet to all player present in the session.
+     * @param packet The packet to send.
+     */
+    void broadcast(const packet::server::Variant& packet) const;
+
+    /**
+     * @brief Getter for the gameEngine.
+     * @return A reference to the used gameEngine.
+     */
+    rteng::GameEngine& getEngine();
 
 private:
     lobby::Id _roomId;
