@@ -65,7 +65,7 @@ void Peer::sendToTarget(const udp::endpoint &target,
     uint8_t lossPercent = _simulatedPacketLossPercentage.load();
 
     if (lossPercent > 0) {
-        static std::mt19937 gen(std::random_device{}());
+        thread_local std::mt19937 gen(std::random_device{}());
         std::uniform_int_distribution dist(1, 100);
 
         if (dist(gen) <= lossPercent) {
