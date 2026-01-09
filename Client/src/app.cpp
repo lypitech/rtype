@@ -57,6 +57,11 @@ void App::registerAllCallbacks()
         [this](const SessionPtr&, const packet::Destroy& p) {
             _actions.push([p](HandlerToolbox& tb) { packet::handler::handleDestroy(p, tb); });
         });
+    _client.getPacketDispatcher().bind<packet::UpdatePosition>(
+        [this](const SessionPtr&, const packet::UpdatePosition& p) {
+            _actions.push(
+                [p](HandlerToolbox& tb) { packet::handler::handleUpdatePosition(p, tb); });
+        });
     _client.getPacketDispatcher().bind<packet::WorldInit>(
         [this](const SessionPtr&, const packet::WorldInit& p) {
             _actions.push([p](HandlerToolbox& tb) { packet::handler::handleWorldInit(p, tb); });

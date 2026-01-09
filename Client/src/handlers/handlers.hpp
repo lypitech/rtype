@@ -16,13 +16,20 @@ namespace packet::handler {
 
 /**
  * @brief Spawns an entity and adds it's id to the map.
- * @param packet A reference to a spawn packet.
+ * @param packet A copy of a spawn packet.
  * @param toolbox A reference to the toolbox stored in the app.
  */
 void handleSpawn(Spawn packet,
                  client::HandlerToolbox& toolbox);
-// void handleUpdatePosition(const SessionPtr&,
-//                           const packet::UpdatePosition& packet);
+
+/**
+ * @brief Updates the position of an entity.
+ * @param packet A copy of a updatePosition packet.
+ * @param toolbox A reference to the toolbox stored in the app.
+ */
+void handleUpdatePosition(UpdatePosition packet,
+                          client::HandlerToolbox& toolbox);
+
 /**
  * @brief Initializes a world based on the packet content.
  * @param packet A copy of a worldInit packet.
