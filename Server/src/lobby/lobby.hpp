@@ -5,6 +5,7 @@
 #include "components/position.hpp"
 #include "concurrent_queue.hpp"
 #include "packets/server/destroy.hpp"
+#include "packets/server/join_ack.hpp"
 #include "packets/server/spawn.hpp"
 #include "packets/server/update_position.hpp"
 #include "rteng.hpp"
@@ -13,8 +14,8 @@
 
 namespace packet::server {
 
-using Variant =
-    std::variant<Destroy, Spawn, UpdatePosition /* TODO: Add the remaining packet types */>;
+using Variant = std::
+    variant<Destroy, Spawn, UpdatePosition, JoinAck /* TODO: Add the remaining packet types */>;
 
 using SessionPtr = std::shared_ptr<rtnt::core::Session>;
 

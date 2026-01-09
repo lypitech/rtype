@@ -65,6 +65,8 @@ void Lobby::join(const packet::server::SessionPtr& session)
             components::GameComponents{}, *_engine.getEcs(), id);
         packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
         broadcast(p);
+        packet::JoinAck j = {static_cast<uint32_t>(id), true};
+        send(session, j);
     });
 }
 
@@ -72,7 +74,7 @@ void Lobby::leave(const packet::server::SessionPtr& session)
 {
     _actionQueue.push([this, session](Lobby&) {
         if (_players.contains(session)) {
-            // TODO: Send a destroy packet to all other sessions;
+            // TODO: destroy the entity and send a destroy packet to all other sessions;
             _players.erase(session);
             LOG_INFO("Player left lobby {}", _roomId);
         } else {
