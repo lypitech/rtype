@@ -44,6 +44,6 @@ void handleWorldInit(WorldInit packet,
  * @param toolbox a reference to the toolbox stored in the app.
  */
 void handleDestroy(Destroy packet,
-                   const client::HandlerToolbox& toolbox);
+                   client::HandlerToolbox& toolbox);
 
 }  // namespace packet::handler

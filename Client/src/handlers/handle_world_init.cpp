@@ -2,11 +2,11 @@
 #include "handlers.hpp"
 #include "rteng.hpp"
 
-namespace rteng::client_side::handlers {
+namespace packet::handler {
 
 using Vec = std::vector<std::vector<uint8_t>>;
 
-void handleWorldInit(packet::WorldInit packet,
+void handleWorldInit(WorldInit packet,
                      client::HandlerToolbox& toolbox)
 {
     LOG_DEBUG("Handling WorldInit.");
@@ -25,4 +25,4 @@ void handleWorldInit(packet::WorldInit packet,
     }
 }
 
-}  // namespace rteng::client_side::handlers
+}  // namespace packet::handler
