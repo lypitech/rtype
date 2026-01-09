@@ -22,7 +22,12 @@ void handleSpawn(Spawn packet,
                  client::HandlerToolbox& toolbox);
 // void handleUpdatePosition(const SessionPtr&,
 //                           const packet::UpdatePosition& packet);
-// void handleWorldInit(const SessionPtr&,
-//                      const packet::WorldInit& packet);
+/**
+ * @brief Initializes a world based on the packet content.
+ * @param packet A copy of a worldInit packet.
+ * @param toolbox A reference to the toolbox stored in the app.
+ */
+void handleWorldInit(WorldInit packet,
+                     client::HandlerToolbox& toolbox);
 
 }  // namespace packet::handler
