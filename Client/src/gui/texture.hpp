@@ -23,7 +23,7 @@ public:
     }
 
     [[nodiscard]] const Texture2D& getTexture() const { return _texture; }
-    [[nodiscard]] const float& getScale() const { return _scale; }
+    [[nodiscard]] double getScale() const { return _scale; }
 
 private:
     Texture2D _texture;
