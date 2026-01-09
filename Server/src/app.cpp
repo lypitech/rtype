@@ -56,7 +56,14 @@ void App::start()
 
 void App::registerCallbacks()
 {
-    // Empty for now but register the packet callbacks here;
+    _server.getPacketDispatcher().bind<packet::UserInput>(
+        [this](const SessionPtr& s, const packet::UserInput& u) {
+            _lobbyManager.pushActionToLobby(
+                s, [s, u](Lobby& lobby) { packet::handler::handleUserInput(s, lobby, u); });
+        });
+    _server.getPacketDispatcher().bind<packet::Join>(
+        [this](
+            const SessionPtr& s, const packet::Join& j) { _lobbyManager.joinRoom(s, j.room_id); });
 }
 
 }  // namespace server

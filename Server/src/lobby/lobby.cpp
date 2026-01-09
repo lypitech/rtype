@@ -29,10 +29,12 @@ void Lobby::join(const packet::server::SessionPtr& session)
         rtecs::EntityID id = engine.registerEntity<components::Position, components::Type>(
             nullptr, {10, 10}, {entity::Type::kPlayer});
         _players[session] = id;
-        const auto& infos = components::getEntityComponentsInfos(
-            components::GameComponents{}, *engine.getEcs(), id);
-        packet::Spawn p = {static_cast<uint32_t>(id), infos.first, infos.second};
-        _outGoing.push({{getAllSessions()}, p});
+        const auto& [bitset, content] = components::getEntityComponentsInfos(
+            components::GameComponents{}, *_engine.getEcs(), id);
+        packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
+        broadcast(p);
+        packet::JoinAck j = {static_cast<uint32_t>(id), true};
+        send(session, j);
     });
 }
 
@@ -40,7 +42,7 @@ void Lobby::leave(const packet::server::SessionPtr& session)
 {
     _actionQueue.push([this, session](rteng::GameEngine&) {
         if (_players.contains(session)) {
-            // TODO: Send a destroy packet to all other sessions;
+            // TODO: destroy the entity and send a destroy packet to all other sessions;
             _players.erase(session);
             LOG_INFO("Player left lobby {}", _roomId);
         } else {
