@@ -36,14 +36,14 @@ private:
      */
     template <typename T>
     void addEntity(types::EntityID entityId, SparseView<types::EntityID, std::reference_wrapper<T>>& view,
-                   std::unique_ptr<SparseSet<T>>& set)
+                   std::reference_wrapper<SparseSet<T>> set)
     {
-        OptionalRef<T> optionalComponent = set->get(entityId);
+        OptionalRef<T> optionalComponent = set.get().get(entityId);
 
         if (optionalComponent.has_value()) {
             view.put(entityId, optionalComponent.value());
         } else {
-            throw exceptions::EntityNotFoundException(entityId, set->getId());
+            throw exceptions::EntityNotFoundException(entityId, set.get().getId());
         }
     }
 
@@ -53,20 +53,22 @@ public:
      *
      * @note The SparseGroup will dynamically find all entities that are presents in every of the given sets.
      *
-     * @throw exceptions::EntityNotFoundException This error should not be thrown. If this happen, create an issue on the Githuv repository of this project.
+     * @throw exceptions::EntityNotFoundException This error should not be thrown. If this happens, create an issue on the Githuv repository of this project.
      *
      * @param sets The SparseSets that the SparseGroup will contain.
      */
-    explicit SparseGroup(std::unique_ptr<SparseSet<Ts>>&... sets)
+    explicit SparseGroup(SparseSet<Ts>&... sets)
     {
-        std::vector<ISparseSet*> mixedSets{sets.get()...};
+        std::vector<std::reference_wrapper<ISparseSet>> mixedSets{sets...};
 
-        const ISparseSet* driver =
-            *std::min_element(mixedSets.begin(), mixedSets.end(),
-                              [](const ISparseSet* a, const ISparseSet* b) { return a->size() < b->size(); });
+        const std::reference_wrapper<ISparseSet> driver = *std::min_element(
+            mixedSets.begin(), mixedSets.end(),
+            [](const std::reference_wrapper<ISparseSet> a, const std::reference_wrapper<ISparseSet> b) {
+                return a.get().size() < b.get().size();
+            });
 
-        for (size_t entityId : driver->getEntities()) {
-            const bool isValid = (... && sets->has(entityId));
+        for (size_t entityId : driver.get().getEntities()) {
+            const bool isValid = (... && sets.has(entityId));
 
             if (isValid) {
                 std::apply([&](auto&... view) { (addEntity<Ts>(entityId, view, sets), ...); }, _group);
@@ -88,6 +90,13 @@ public:
     {
         return get<T>()[entityId];
     }
+
+    /**
+     * @brief Get the entities' ID contained in this group.
+     *
+     * @return The entities' ID contained in this group.
+     */
+    const std::vector<types::EntityID>& getEntities() { return std::get<0>(_group).getKeys(); }
 
     /**
      * @brief Get all the instances of a specific component type from the group.
@@ -115,6 +124,22 @@ public:
      * @return `true` if the group has the specified entity, `false` otherwise
      */
     bool has(types::EntityID entityId) { return std::get<0>(_group).has(entityId); }
+
+    void apply(std::function<void(Ts&...)> callback)
+    {
+        for (auto entity : getEntities()) {
+            std::apply([&](auto&... views) { callback(views[entity].get()...); }, _group);
+        }
+    }
+
+    void _apply(std::function<void(Ts&...)> callback)
+    {
+        // for (auto entity : getEntities()) {
+        //     std::apply([&](auto&... views) {
+        //         callback((views[entity].get())...);
+        //     }, _group);
+        // }
+    }
 };
 
 }  // namespace rtecs::sparse
