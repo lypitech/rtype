@@ -22,7 +22,7 @@ void Peer::stop()
 void Peer::receive()
 {
     if (!_socket.is_open()) {
-        LOG_ERR("Trying to receive with a closed socket.");
+        LOG_WARN("Trying to receive with a closed socket.");
         return;
     }
 
@@ -36,7 +36,7 @@ void Peer::receive()
                 if (ec !=
                     asio::error::
                         operation_aborted) {  // This error is thrown when the socket is intentionally closed
-                    LOG_WARN("Encountered an error while receiving data: {}.", ec.message());
+                    LOG_ERR("Encountered an error while receiving data: {}.", ec.message());
                     receive();
                 }
                 return;
@@ -61,6 +61,9 @@ void Peer::receive()
 void Peer::sendToTarget(const udp::endpoint &target,
                         std::shared_ptr<ByteBuffer> data)
 {
+    LOG_TRACE_R3(
+        "Sending {} bytes to {}:{}.", data->size(), target.address().to_string(), target.port());
+
 #if defined(RTNT_TESTS)
     uint8_t lossPercent = _simulatedPacketLossPercentage.load();
 
@@ -78,7 +81,7 @@ void Peer::sendToTarget(const udp::endpoint &target,
     _socket.async_send_to(
         asio::buffer(*data), target, [target, data](std::error_code ec, size_t bytesSent) {
             if (ec) {
-                LOG_WARN("Encountered an error while sending data: {}.", ec.message());
+                LOG_ERR("Encountered an error while sending data: {}.", ec.message());
                 return;
             }
 
