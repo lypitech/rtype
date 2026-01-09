@@ -1,16 +1,16 @@
-#include "../lobby/lobby.hpp"
 #include "components/position.hpp"
 #include "enums/input.hpp"
 #include "handlers.hpp"
+#include "lobby/lobby.hpp"
 #include "packets/client/user_input.hpp"
 #include "packets/server/update_position.hpp"
 #include "rteng.hpp"
 
-namespace rteng::server_side::handlers {
+namespace packet::handler {
 
 void handleUserInput(const SessionPtr& s,
                      Lobby& lobby,
-                     const packet::UserInput& packet)
+                     const UserInput& packet)
 {
     const rtecs::OptionalRef<components::Position>& position = lobby.getPlayerPosition(s);
 
@@ -39,4 +39,4 @@ void handleUserInput(const SessionPtr& s,
     lobby.broadcast(p);
 }
 
-}  // namespace rteng::server_side::handlers
+}  // namespace packet::handler
