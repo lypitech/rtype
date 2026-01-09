@@ -95,7 +95,7 @@ public:
      * @param session The session to retrieve the id from.
      * @return The entityId of the corresponding entity.
      */
-    std::optional<rtecs::types::EntityID> getPlayerId(
+    const std::optional<rtecs::EntityID>& getPlayerId(
         const packet::server::SessionPtr& session) const;
 
     /**
@@ -103,7 +103,7 @@ public:
      * @param session A pointer to the session to retrieve the position from.
      * @return An optional reference to the position of the player connected t the session.
      */
-    rtecs::types::OptionalRef<components::Position> getPlayerPosition(
+    const rtecs::OptionalRef<components::Position>& getPlayerPosition(
         const packet::server::SessionPtr& session);
 
     /**
