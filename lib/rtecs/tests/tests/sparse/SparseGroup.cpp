@@ -11,7 +11,7 @@ using namespace rtecs;
 
 TEST_F(SparseGroupFixture, create_sparse_group)
 {
-    sparse::SparseGroup group(_hitboxSet, _healthSet);
+    sparse::SparseGroup group(*_hitboxSet, *_healthSet);
 
     EXPECT_FALSE(group.has(0));
     EXPECT_TRUE(group.has(1));
@@ -35,7 +35,7 @@ TEST_F(SparseGroupFixture, create_sparse_group)
 
 TEST_F(SparseGroupFixture, edit_components_from_getEntity)
 {
-    sparse::SparseGroup group(_hitboxSet, _healthSet);
+    sparse::SparseGroup group(*_hitboxSet, *_healthSet);
 
     Health &component = group.getEntity<Health>(1).get();
     component.health += 42;
@@ -47,7 +47,7 @@ TEST_F(SparseGroupFixture, edit_components_from_getEntity)
 
 TEST_F(SparseGroupFixture, edit_components_from_get)
 {
-    sparse::SparseGroup group(_hitboxSet, _healthSet);
+    sparse::SparseGroup group(*_hitboxSet, *_healthSet);
     sparse::SparseGroup<Hitbox, Health>::View view = group.get<Health>();
 
     ASSERT_TRUE(view.has(1));
@@ -62,7 +62,7 @@ TEST_F(SparseGroupFixture, edit_components_from_get)
 
 TEST_F(SparseGroupFixture, edit_components_from_getAll)
 {
-    sparse::SparseGroup group(_hitboxSet, _healthSet);
+    sparse::SparseGroup group(*_hitboxSet, *_healthSet);
     auto &views = group.getAll();
     auto &view = std::get<sparse::SparseGroup<>::View<Health>>(views);
 
