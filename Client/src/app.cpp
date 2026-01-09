@@ -1,5 +1,6 @@
 #include "app.hpp"
 
+#include "components/me.hpp"
 #include "components/sprite.hpp"
 #include "handlers/handlers.hpp"
 #include "logger/Thread.h"
@@ -34,6 +35,7 @@ App::~App() { stop(); }
 void App::registerAllComponents()
 {
     _toolbox.engine.getEcs()->registerComponent<components::Sprite>();
+    _toolbox.engine.getEcs()->registerComponent<components::Me>();
 }
 
 void App::registerAllSystems()
