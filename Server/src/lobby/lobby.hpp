@@ -13,7 +13,8 @@
 
 namespace packet::server {
 
-using Variant = std::variant<Destroy, Spawn /* TODO: Add the remaining packet types */>;
+using Variant =
+    std::variant<Destroy, Spawn, UpdatePosition /* TODO: Add the remaining packet types */>;
 
 using SessionPtr = std::shared_ptr<rtnt::core::Session>;
 
