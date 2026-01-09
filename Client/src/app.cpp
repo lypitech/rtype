@@ -69,6 +69,10 @@ void App::registerAllCallbacks()
         [this](const SessionPtr&, const packet::WorldInit& p) {
             _actions.push([p](HandlerToolbox& tb) { packet::handler::handleWorldInit(p, tb); });
         });
+    _client.getPacketDispatcher().bind<packet::JoinAck>(
+        [this](const SessionPtr&, const packet::JoinAck& p) {
+            _actions.push([p](HandlerToolbox& tb) { packet::handler::handleJoinAck(p, tb); });
+        });
 }
 
 void App::stop()

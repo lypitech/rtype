@@ -2,6 +2,7 @@
 #include <memory>
 
 #include "packets/server/destroy.hpp"
+#include "packets/server/join_ack.hpp"
 #include "packets/server/spawn.hpp"
 #include "packets/server/update_position.hpp"
 #include "packets/server/world_init.hpp"
@@ -44,6 +45,14 @@ void handleWorldInit(WorldInit packet,
  * @param toolbox a reference to the toolbox stored in the app.
  */
 void handleDestroy(Destroy packet,
+                   client::HandlerToolbox& toolbox);
+
+/**
+ * @brief acknowledge the join request fulfillment.
+ * @param packet a copy of a joinAck packet.
+ * @param toolbox a reference to the toolbox stored in the app.
+ */
+void handleJoinAck(JoinAck packet,
                    client::HandlerToolbox& toolbox);
 
 }  // namespace packet::handler
