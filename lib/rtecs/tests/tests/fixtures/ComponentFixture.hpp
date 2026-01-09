@@ -15,6 +15,7 @@ class ComponentFixture : public testing::Test
 protected:
     struct Profile
     {
+        std::string prefix = std::string("");
         std::string name;
         char age;
     };
