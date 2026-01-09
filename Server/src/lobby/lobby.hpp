@@ -24,10 +24,12 @@ using OutGoingQueue = utils::ConcurrentQueue<SendInterface>;
 
 }  // namespace packet::server
 
+class Lobby;
+
 namespace lobby {
 
 using Id = uint32_t;
-using Callback = std::function<void(rteng::GameEngine&)>;
+using Callback = std::function<void(Lobby&)>;
 
 }  // namespace lobby
 

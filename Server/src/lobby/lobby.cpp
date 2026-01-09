@@ -56,13 +56,13 @@ void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action);
 
 void Lobby::join(const packet::server::SessionPtr& session)
 {
-    _actionQueue.push([this, session](rteng::GameEngine& engine) {
+    _actionQueue.push([this, session](Lobby&) {
         LOG_INFO("Joining lobby.");
-        rtecs::EntityID id = engine.registerEntity<components::Position, components::Type>(
+        rtecs::EntityID id = _engine.registerEntity<components::Position, components::Type>(
             nullptr, {10, 10}, {entity::Type::kPlayer});
         _players[session] = id;
         const auto& [bitset, content] = components::getEntityComponentsInfos(
-            components::GameComponents{}, *engine.getEcs(), id);
+            components::GameComponents{}, *_engine.getEcs(), id);
         packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
         broadcast(p);
     });
@@ -70,7 +70,7 @@ void Lobby::join(const packet::server::SessionPtr& session)
 
 void Lobby::leave(const packet::server::SessionPtr& session)
 {
-    _actionQueue.push([this, session](rteng::GameEngine&) {
+    _actionQueue.push([this, session](Lobby&) {
         if (_players.contains(session)) {
             // TODO: Send a destroy packet to all other sessions;
             _players.erase(session);
@@ -117,7 +117,7 @@ void Lobby::run()
     lobby::Callback callbackFunction;
     while (_isRunning) {
         while (_actionQueue.pop(callbackFunction)) {
-            callbackFunction(_engine);
+            callbackFunction(*this);
         }
         _engine.runOnce(0.16);
     }
