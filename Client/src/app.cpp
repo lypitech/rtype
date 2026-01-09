@@ -4,6 +4,7 @@
 #include "handlers/handlers.hpp"
 #include "logger/Thread.h"
 #include "packets/server/spawn.hpp"
+#include "systems/IO.hpp"
 #include "systems/network.hpp"
 #include "systems/renderer.hpp"
 
@@ -40,6 +41,8 @@ void App::registerAllSystems()
     _toolbox.engine.getEcs()->registerSystem(
         std::make_unique<systems::Network>(_client, _networkService));
     _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Renderer>());
+    _toolbox.engine.getEcs()->registerSystem(
+        std::make_unique<systems::IO>(_toolbox.engine.getEcs(), _networkService));
 }
 
 void App::registerAllCallbacks()
