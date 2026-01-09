@@ -8,7 +8,6 @@ namespace packet {
  * @struct packet::UpdateHealth
  *
  * @brief Update the health of an entity.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct UpdateHealth
 {

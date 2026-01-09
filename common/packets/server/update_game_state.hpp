@@ -9,7 +9,6 @@ namespace packet {
  * @struct packet::UpdateGameState
  *
  * @brief Updates the state of the game.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct UpdateGameState
 {

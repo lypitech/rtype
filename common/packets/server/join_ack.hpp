@@ -8,7 +8,6 @@ namespace packet {
  * @struct packet::JoinAck
  *
  * @brief Notify the client about the status of a @code join@endcode request.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct JoinAck
 {

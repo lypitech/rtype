@@ -8,7 +8,6 @@ namespace packet {
  * @struct packet::PlayerJoin
  *
  * @brief Notify a client about a joining player.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct PlayerJoin
 {
