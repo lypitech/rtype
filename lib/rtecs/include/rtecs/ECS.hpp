@@ -126,7 +126,7 @@ private:
         if (!_components.contains(id)) {
             throw exceptions::UnknowComponentException(id);
         }
-        return _components.at(id);
+        return dynamic_cast<sparse::SparseSet<T> &>(*_components.at(id));
     }
 
 public:
@@ -147,10 +147,9 @@ public:
     template <typename... T>
     types::EntityID registerEntity(T... instances)
     {
-        bitset::DynamicBitSet mask;
         const types::EntityID entityId = _entitiesID;
+        bitset::DynamicBitSet mask = (getComponentMask<T>() & ...);
 
-        mask &= getComponentMask<T...>();
         addEntityComponent<T...>(entityId, instances...);
         _entities.insert({entityId, mask});
         _entitiesID++;
@@ -221,7 +220,7 @@ public:
     }
 
     template <typename... T>
-    const sparse::SparseView<T...> &view()
+    sparse::SparseGroup<T...> group()
     {
         return sparse::SparseGroup<T...>(getComponent<T>()...);
     }
