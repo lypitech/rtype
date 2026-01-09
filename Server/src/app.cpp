@@ -3,7 +3,6 @@
 #include "handlers/handlers.hpp"
 #include "logger/Logger.h"
 #include "logger/Thread.h"
-#include "packets/client/user_input.hpp"
 #include "utils.hpp"
 
 namespace server {
@@ -59,7 +58,10 @@ void App::start()
 void App::registerCallbacks()
 {
     _server.getPacketDispatcher().bind<packet::UserInput>(
-        [](SessionPtr s, const packet::UserInput& packet) {});
+        [this](const SessionPtr& s, const packet::UserInput& u) {
+            _lobbyManager.pushActionToLobby(
+                s, [s, u](Lobby& lobby) { packet::handler::handleUserInput(s, lobby, u); });
+        });
     // Empty for now but register the packet callbacks here;
 }
 

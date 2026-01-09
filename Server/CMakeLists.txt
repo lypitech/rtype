@@ -23,6 +23,7 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/lobby/lobby.cpp
     src/lobby/lobby_manager.cpp
+    src/handlers/handle_user_input.cpp
     src/app.cpp
 )
 
