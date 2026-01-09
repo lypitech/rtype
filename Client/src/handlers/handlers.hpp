@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 
+#include "packets/server/destroy.hpp"
 #include "packets/server/spawn.hpp"
 #include "packets/server/update_position.hpp"
 #include "packets/server/world_init.hpp"
@@ -29,5 +30,13 @@ void handleSpawn(Spawn packet,
  */
 void handleWorldInit(WorldInit packet,
                      client::HandlerToolbox& toolbox);
+
+/**
+ * @brief Destroy the entity specified in the packet.
+ * @param packet a copy of a destroy packet.
+ * @param toolbox a reference to the toolbox stored in the app.
+ */
+void handleDestroy(Destroy packet,
+                   const client::HandlerToolbox& toolbox);
 
 }  // namespace packet::handler

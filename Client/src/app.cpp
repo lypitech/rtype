@@ -53,6 +53,10 @@ void App::registerAllCallbacks()
         [this](const SessionPtr&, const packet::Spawn& p) {
             _actions.push([p](HandlerToolbox& tb) { packet::handler::handleSpawn(p, tb); });
         });
+    _client.getPacketDispatcher().bind<packet::Destroy>(
+        [this](const SessionPtr&, const packet::Destroy& p) {
+            _actions.push([p](HandlerToolbox& tb) { packet::handler::handleDestroy(p, tb); });
+        });
     _client.getPacketDispatcher().bind<packet::WorldInit>(
         [this](const SessionPtr&, const packet::WorldInit& p) {
             _actions.push([p](HandlerToolbox& tb) { packet::handler::handleWorldInit(p, tb); });
