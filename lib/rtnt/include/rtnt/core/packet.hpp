@@ -523,7 +523,7 @@ Packet& operator<<(Packet& p,
                    const std::vector<T>& data)
 {
     if (data.size() > (std::numeric_limits<uint16_t>::max)()) {
-        throw std::runtime_error("Vector is too large to serialize (limit 65535)");
+        throw std::runtime_error("Vector is too large to serialize (limit is 65535)");
     }
 
     const auto size = static_cast<uint16_t>(data.size());
@@ -542,6 +542,48 @@ Packet& operator<<(Packet& p,
 template <typename T>
 Packet& operator>>(Packet& p,
                    std::vector<T>& data)
+{
+    uint16_t size = 0;
+    p >> size;
+
+    data.resize(size);
+    for (auto& element : data) {
+        p >> element;
+    }
+    return p;
+}
+
+/**
+ * @brief       Specialization to safely write @code std::deque@endcode.
+ * @warning     T MUST be serializable by rtnt (no complex types).
+ * @tparam      T       Type of data that is contained in the deque
+ * @param       p       Packet to write into
+ * @param       data    Const reference to the deque to write
+ */
+template <typename T>
+Packet& operator<<(Packet& p,
+                   const std::deque<T>& data)
+{
+    if (data.size() > (std::numeric_limits<uint16_t>::max)()) {
+        throw std::runtime_error("Deque is too large to serialize (limit is 65535)");
+    }
+
+    const auto size = static_cast<uint16_t>(data.size());
+    p << size;
+
+    for (const auto& element : data) {
+        p << element;
+    }
+    return p;
+}
+
+/**
+ * @brief   Specialization to safely read @code std::deque@endcode.
+ * Reads a 2-byte length prefix followed by the elements.
+ */
+template <typename T>
+Packet& operator>>(Packet& p,
+                   std::deque<T>& data)
 {
     uint16_t size = 0;
     p >> size;
