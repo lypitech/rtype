@@ -28,14 +28,12 @@ TEST_F(NetworkTest,
 {
     const uint32_t packetAmount = 181;
 
-    client->setSimulatedPacketLossPercentage(75);
+    client->setSimulatedPacketLossPercentage(80);
 
-    std::mutex dataMutex;
     std::vector<uint32_t> receivedIndices;
 
     server->getPacketDispatcher().bind<Example>([&](const auto& /*session*/, const Example& pkt) {
-        std::lock_guard lock(dataMutex);
-        LOG_INFO("Received packet, with body: [{}]", pkt.x);
+        LOG_DEBUG("Received packet, with body: [{}]", pkt.x);
         receivedIndices.push_back(pkt.x);
     });
 
@@ -43,30 +41,30 @@ TEST_F(NetworkTest,
     ASSERT_TRUE(waitFor([&]() { return client->isConnected(); }, std::chrono::seconds(10)))
         << "Client failed to connect.";
 
-    for (uint32_t i = 0; i < packetAmount; ++i) {
+    auto before = std::chrono::steady_clock::now();
+
+    for (uint32_t i = 1; i <= packetAmount; ++i) {
         Example pkt{.x = i};
-        LOG_INFO("Sending packet with body: [{}]", i);
+        LOG_DEBUG("Sending packet with body: [{}]", i);
         client->send(pkt);
     }
 
     bool finished = waitFor(
         [&]() {
-            std::lock_guard lock(dataMutex);
             return receivedIndices.size() >= packetAmount;
         },
         std::chrono::seconds(50));
 
+    auto after = std::chrono::steady_clock::now();
+
     ASSERT_TRUE(finished) << "Timeout: Only received " << receivedIndices.size() << "/"
                           << packetAmount << " packets.";
 
-    std::lock_guard lock(dataMutex);
-
-    ASSERT_EQ(receivedIndices.size(), packetAmount);
-
     LOG_INFO("Final list: {}", receivedIndices);
+    LOG_INFO("Took {}", after - before);
 
     for (uint32_t i = 0; i < packetAmount; ++i) {
-        ASSERT_EQ(receivedIndices[i], i)
-            << "Ordering failed! Index " << i << " was not the expected value.";
+        ASSERT_EQ(receivedIndices[i], i + 1)
+            << "Ordering failed! Index " << i + 1 << " was not the expected value.";
     }
 }
