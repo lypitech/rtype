@@ -1,8 +1,10 @@
 #pragma once
+
 #include <thread>
 
 #include "lobby/lobby_manager.hpp"
 #include "rtnt/core/server.hpp"
+#include "packets/client/join.hpp"
 
 #define TPS 20
 
