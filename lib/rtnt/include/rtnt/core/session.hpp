@@ -121,6 +121,8 @@ private:
     SendToPeerFunction _sendToPeerFunction;
 
     // RUDP state //
+    bool _hasReceivedRemotePacket = false;
+
     uint32_t _localSequenceId = 0;
     uint32_t _remoteSequenceId = 0;
 
@@ -132,6 +134,7 @@ private:
 
     std::map<uint32_t, Packet> _reorderBuffer;
     std::map<uint32_t, SentPacketInfo> _sentPackets;
+    std::deque<uint32_t> _oldPacketHistory;
     mutable std::mutex _mutex;
 
     bool _hasUnsentAck = false;
@@ -146,6 +149,10 @@ private:
                  uint32_t orderId);
     void updateAcknowledgeInfo(uint32_t sequenceId);
     void _internal_sendAck();
+
+    bool isDuplicate(uint32_t sequenceId) const;
+    void checkForOldPackets(std::shared_ptr<ByteBuffer> rawData,
+                            const packet::Header& header);
 };
 
 }  // namespace rtnt::core

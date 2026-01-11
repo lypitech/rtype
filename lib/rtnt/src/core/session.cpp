@@ -4,6 +4,7 @@
 
 #include "logger/Logger.h"
 #include "rtnt/common/constants.hpp"
+#include "rtnt/core/packets/rich_ack.hpp"
 
 namespace rtnt::core {
 
@@ -55,7 +56,21 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
         }
     }
 
+    bool isDuplicate = this->isDuplicate(header.sequenceId);
+
     updateAcknowledgeInfo(header.sequenceId);
+
+    if (isDuplicate) {
+        LOG_WARN("Dropped duplicate packet #{}", header.sequenceId);
+        return readyPackets;
+    }
+
+    if (header.messageId == static_cast<packet::Id>(packet::SystemMessageId::kRichAck)) {
+        LOG_TRACE_R3("Received RICH_ACK packet");
+
+        checkForOldPackets(rawData, header);
+        return readyPackets;
+    }
 
     size_t payloadSize = rawData->size() - sizeof(packet::Header);
 
@@ -161,7 +176,7 @@ void Session::rawSend(Packet& packet,
         header.sequenceId,
         header.orderId,
         header.acknowledgeId,
-        header.acknowledgeBitfield,
+        bitfieldToString(header.acknowledgeBitfield),
         header.messageId,
         header.flags,
         header.packetSize,
@@ -193,7 +208,7 @@ void Session::update()
         LOG_DEBUG("Iterating over packet ordID = {}", info.orderId);
         if (now - info.sentTime > packet::RESEND_TIMEOUT) {
             if (info.retries >= packet::MAX_RESEND_RETRIES) {
-                LOG_FATAL("Connection lost (Packet #{} retries exceeded).", it->first);
+                LOG_FATAL("Connection lost (Packet #{} retries exceeded).", info.packet._messageId);
                 disconnect();
                 return;
             }
@@ -211,7 +226,8 @@ void Session::update()
         ++it;
     }
 
-    if (_hasUnsentAck && (now - _lastAckTime > packet::ACK_TIMEOUT)) {
+    if ((_hasUnsentAck && (now - _lastAckTime > packet::ACK_TIMEOUT)) ||
+        !_oldPacketHistory.empty()) {
         _internal_sendAck();
     }
 }
@@ -222,32 +238,57 @@ void Session::disconnect()
     this->_shouldClose = true;
 }
 
-// void Session::sendAck()
-// {
-//     LOG_TRACE_R3("Sending empty ACK packet");
-//     Packet ack(
-//         static_cast<packet::Id>(packet::SystemMessageId::kAck), packet::Flag::kUnreliable);
-//     send(ack);
-// }
-
 void Session::_internal_sendAck()
 {
-    Packet ack(static_cast<packet::Id>(packet::SystemMessageId::kAck), packet::Flag::kUnreliable);
+    LOG_DEBUG("SENDACK CALLED AHHA");
+    Packet p;
     uint32_t sequenceId = _localSequenceId++;
 
-    rawSend(ack, sequenceId, 0);
+    if (!_oldPacketHistory.empty()) {
+        LOG_DEBUG("History contains things, so we're gonna send RICH_ACK lol");
+        packet::internal::RichAck ack{.oobAcks = _oldPacketHistory};
+
+        p = Packet(static_cast<packet::Id>(packet::SystemMessageId::kRichAck));
+        p << ack;
+    } else {
+        LOG_DEBUG("Ahh it's empty, sending simple ACK...");
+        p = Packet(static_cast<packet::Id>(packet::SystemMessageId::kAck));
+    }
+    LOG_DEBUG("Raw send");
+    rawSend(p, sequenceId, 0);
 }
 
 void Session::updateAcknowledgeInfo(uint32_t sequenceId)
 {
     LOG_DEBUG("Updating acknowledge information");
 
+    if (!_hasReceivedRemotePacket) {
+        _remoteAcknowledgeId = sequenceId;
+        _hasReceivedRemotePacket = true;
+        _hasUnsentAck = true;
+        return;
+    }
+
     if (sequenceId > _remoteAcknowledgeId) {
+        LOG_DEBUG("sequenceId > _remoteAcknowledgeId");
         uint32_t shift = sequenceId - _remoteAcknowledgeId;
 
         if (shift > 32) {
+            for (int i = 0; i < 32; ++i) {
+                if (_remoteAcknowledgeBitfield & (1U << i)) {
+                    _oldPacketHistory.push_back(_remoteAcknowledgeId - (i + 1));
+                }
+            }
+            _oldPacketHistory.push_back(_remoteAcknowledgeId);
+
             _remoteAcknowledgeBitfield = 0;
         } else {
+            for (int i = 32 - shift; i < 32; ++i) {
+                if (_remoteAcknowledgeBitfield & (1U << i)) {
+                    _oldPacketHistory.push_back(_remoteAcknowledgeId - (i + 1));
+                }
+            }
+
             _remoteAcknowledgeBitfield <<= shift;
             _remoteAcknowledgeBitfield |= 1 << (shift - 1);
         }
@@ -255,12 +296,76 @@ void Session::updateAcknowledgeInfo(uint32_t sequenceId)
     } else if (sequenceId < _remoteAcknowledgeId) {
         uint32_t diff = _remoteAcknowledgeId - sequenceId;
 
-        if (diff > 0 && diff <= 32) {
-            _remoteAcknowledgeBitfield |= 1 << (diff - 1);
+        if (diff <= 32) {
+            LOG_DEBUG("Diff is under 32, simple ACK");
+            _remoteAcknowledgeBitfield |= 1U << (diff - 1);
+        } else {
+            LOG_DEBUG("Diff is greater than 32 ({}), pushing to history.", diff);
+            auto it = std::ranges::find(_oldPacketHistory, sequenceId);
+
+            if (it == _oldPacketHistory.end()) {  // if not in the history, then add it
+                LOG_DEBUG("Not in the history, adding it to history.");
+                _oldPacketHistory.push_back(sequenceId);
+                // if (_oldPacketHistory.size() > packet::MAX_PACKET_HISTORY_SIZE) {
+                //     _oldPacketHistory.pop_front();
+                // }
+            }
         }
     }
 
     _hasUnsentAck = true;
+}
+
+bool Session::isDuplicate(uint32_t sequenceId) const
+{
+    if (!_hasReceivedRemotePacket) {
+        return false;
+    }
+
+    if (sequenceId == _remoteAcknowledgeId) {
+        return true;
+    }
+
+    if (sequenceId > _remoteAcknowledgeId) {
+        return false;
+    }
+
+    uint32_t diff = _remoteAcknowledgeId - sequenceId;
+
+    if (diff <= 32) {
+        return (_remoteAcknowledgeBitfield & (1 << (diff - 1))) != 0;
+    }
+
+    const auto it = std::ranges::find(_oldPacketHistory, sequenceId);
+    return (it != _oldPacketHistory.end());
+}
+
+void Session::checkForOldPackets(std::shared_ptr<ByteBuffer> rawData,
+                                 const packet::Header& header)
+{
+    Packet incomingPacket(header.messageId, static_cast<packet::Flag>(header.flags));
+
+    if (rawData->size() > sizeof(packet::Header)) {
+        ByteBuffer payload;
+
+        payload.assign(rawData->begin() + sizeof(packet::Header), rawData->end());
+        incomingPacket._internal_setPayload(std::move(payload));
+
+        try {
+            packet::internal::RichAck richAck;
+            incomingPacket >> richAck;
+
+            if (!_sentPackets.empty()) {
+                for (uint32_t ackedSeqId : richAck.oobAcks) {
+                    if (_sentPackets.erase(ackedSeqId)) {
+                        LOG_TRACE_R2("Packet #{} acknowledged via RICH_ACK.", ackedSeqId);
+                    }
+                }
+            }
+        } catch (const std::exception& e) {
+            LOG_ERR("Failed to deserialize RICH_ACK packet: {}", e.what());
+        }
+    }
 }
 
 }  // namespace rtnt::core
