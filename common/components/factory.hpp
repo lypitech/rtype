@@ -9,10 +9,27 @@
 #include "rteng.hpp"
 #include "rtnt/core/packet.hpp"
 #include "type.hpp"
+#include "health.hpp"
+#include "collision.hpp"
+#include "velocity.hpp"
+#include "damage.hpp"
+#include "invulnerability.hpp"
+#include "owner.hpp"
 
 namespace components {
 
-using GameComponents = rteng::ComponentsList<Position, Transform, Rectangle, Type>;
+using GameComponents = rteng::ComponentsList<
+    Position,
+    Transform,
+    Rectangle,
+    Type,
+    Health,
+    Collision,
+    Velocity,
+    Damage,
+    Invulnerability,
+    Owner
+>;
 
 class Factory
 {
