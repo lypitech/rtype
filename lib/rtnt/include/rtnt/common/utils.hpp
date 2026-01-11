@@ -57,4 +57,6 @@ std::string byteBufferToHexString(core::ByteBuffer::const_iterator begin,
  */
 std::string byteBufferToHexString(const core::ByteBuffer& buffer);
 
+std::string bitfieldToString(uint32_t bitfield);
+
 }  // namespace rtnt
