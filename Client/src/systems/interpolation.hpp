@@ -2,6 +2,8 @@
 
 #include "ASystem.hpp"
 
+#include <memory>
+
 namespace systems {
 
 class Interpolation final : public rtecs::ASystem

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <raylib.h>
+#include <memory>
 
 #include "ASystem.hpp"
 #include "enums/entity_types.hpp"
