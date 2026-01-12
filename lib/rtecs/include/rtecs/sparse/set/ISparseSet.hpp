@@ -30,9 +30,6 @@ public:
     /**
      * @brief Remove the entity associated component from the sparse-set.
      *
-     * Implementations should ensure removing an entity is O(1) where
-     * possible (e.g., swap-remove from dense storage).
-     *
      * @param id The entity to remove from the sparse-set.
      */
     virtual void remove(size_t id) noexcept = 0;
