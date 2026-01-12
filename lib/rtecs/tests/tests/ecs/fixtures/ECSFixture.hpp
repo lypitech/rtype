@@ -2,6 +2,7 @@
 
 #include "../../fixtures/ComponentFixture.hpp"
 #include "rtecs/ECS.hpp"
+#include "rtecs/systems/ASystem.hpp"
 
 namespace rtecs::tests::fixture {
 
@@ -27,32 +28,12 @@ namespace rtecs::tests::fixture {
 class ECSFixture : public ComponentFixture
 {
     /**
-     * @brief This system rename entities' profile on low life (health < 5).
-     */
-    class RenameOnLowLifeSystem final : public systems::ASystem
-    {
-    public:
-        explicit RenameOnLowLifeSystem(const ECS& ecs);
-        void apply(ECS& ecs) override;
-    };
-
-    /**
      * @brief This system reduce entities' health when they collide with another entity.
      */
     class DamageOnCollideSystem final : public systems::ASystem
     {
     public:
-        explicit DamageOnCollideSystem(const ECS& ecs);
-        void apply(ECS& ecs) override;
-    };
-
-    /**
-     * @brief This system logs entities' name when they collide with another entity.
-     */
-    class LogOnCollideSystem final : public systems::ASystem
-    {
-    public:
-        explicit LogOnCollideSystem(const ECS& ecs);
+        explicit DamageOnCollideSystem();
         void apply(ECS& ecs) override;
     };
 
@@ -64,7 +45,7 @@ class ECSFixture : public ComponentFixture
     class MoveToCenterSystem final : public systems::ASystem
     {
     public:
-        explicit MoveToCenterSystem(const ECS& ecs);
+        explicit MoveToCenterSystem();
         void apply(ECS& ecs) override;
     };
 
