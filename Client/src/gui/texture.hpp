@@ -1,16 +1,17 @@
 #pragma once
 #include <raylib.h>
 
-#define PLAYER_TEXTURE_FILEPATH "../../Client/assets/sprites/Player.png"
-
 namespace gui {
+
+static constexpr std::string_view PLAYER_TEXTURE_FILEPATH =
+    "../../Client/assets/sprites/Player.png";
 
 class Texture
 {
 public:
-    explicit Texture(const std::string& filepath,
+    explicit Texture(const char* filepath,
                      const float scale = 1)
-        : _texture(LoadTexture(filepath.c_str())),
+        : _texture(LoadTexture(filepath)),
           _scale(scale)
     {
     }

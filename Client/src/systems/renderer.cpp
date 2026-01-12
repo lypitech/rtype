@@ -9,7 +9,7 @@ void AssetManager::init()
 {
     _textures.reserve(static_cast<size_t>(
         entity::Type::kBullet));  // kBullet is the last element, hence the biggest index.
-    _textures.emplace_back(PLAYER_TEXTURE_FILEPATH, 0.2);
+    _textures.emplace_back(gui::PLAYER_TEXTURE_FILEPATH.data(), 0.2);
 }
 
 const gui::Texture& AssetManager::getTexture(entity::Type id) const
