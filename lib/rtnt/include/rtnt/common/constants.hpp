@@ -36,7 +36,9 @@ static constexpr auto ACK_TIMEOUT = std::chrono::milliseconds(100);
 
 static constexpr auto RESEND_TIMEOUT = std::chrono::milliseconds(200);
 
-static constexpr uint8_t MAX_RESEND_RETRIES = 10;
+static constexpr uint8_t MAX_RESEND_RETRIES = 1 << 7;  // put 1 << 3
+
+static constexpr size_t MAX_PACKET_HISTORY_SIZE = 1 << 7;
 
 /**
  * @brief   Internal packet IDs
