@@ -1,0 +1,9 @@
+#include "rtecs/systems/SystemWrapper.hpp"
+
+rtecs::systems::SystemWrapper::SystemWrapper(std::function<void(ECS&)>& applyFn,
+                                             const std::string& name = "UnknowSystem")
+    : ASystem(name), _applyFn(applyFn)
+{
+}
+
+void rtecs::systems::SystemWrapper::apply(ECS& ecs) { _applyFn(ecs); }
