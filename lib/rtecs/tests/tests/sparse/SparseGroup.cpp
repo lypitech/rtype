@@ -11,7 +11,7 @@ using namespace rtecs;
 
 TEST_F(SparseGroupFixture, create_sparse_group)
 {
-    sparse::SparseGroup group(*_hitboxSet, *_healthSet);
+    sparse::SparseGroup<Hitbox, Health> group(*_hitboxSet, *_healthSet);
 
     EXPECT_FALSE(group.has(0));
     EXPECT_TRUE(group.has(1));
@@ -24,54 +24,64 @@ TEST_F(SparseGroupFixture, create_sparse_group)
     EXPECT_TRUE(hitboxView.has(1));
     EXPECT_FALSE(hitboxView.has(2));
 
-    EXPECT_THROW(hitboxView[42], std::out_of_range);
+    EXPECT_FALSE(hitboxView.at(42).has_value());
 
     EXPECT_FALSE(healthView.has(0));
     EXPECT_TRUE(healthView.has(1));
     EXPECT_FALSE(healthView.has(2));
 
-    EXPECT_THROW(healthView[42], std::out_of_range);
+    EXPECT_FALSE(healthView.at(42).has_value());
 };
 
 TEST_F(SparseGroupFixture, edit_components_from_getEntity)
 {
-    sparse::SparseGroup group(*_hitboxSet, *_healthSet);
+    sparse::SparseGroup<Hitbox, Health> group(*_hitboxSet, *_healthSet);
 
-    Health &component = group.getEntity<Health>(1).get();
+    types::OptionalRef<Health> optionalComponent = group.getEntity<Health>(1);
+    ASSERT_TRUE(optionalComponent.has_value());
+
+    Health &component = optionalComponent.value();
     component.health += 42;
 
-    const sparse::OptionalRef setComponent = _healthSet->get(1);
+    const types::OptionalRef setComponent = _healthSet->get(1);
     ASSERT_TRUE(setComponent.has_value());
     EXPECT_EQ(setComponent.value().get().health, component.health);
 };
 
 TEST_F(SparseGroupFixture, edit_components_from_get)
 {
-    sparse::SparseGroup group(*_hitboxSet, *_healthSet);
+    sparse::SparseGroup<Hitbox, Health> group(*_hitboxSet, *_healthSet);
     sparse::SparseGroup<Hitbox, Health>::View view = group.get<Health>();
 
     ASSERT_TRUE(view.has(1));
 
-    Health &component = view[1];
+    types::OptionalRef<Health> optionalComponent = view.at(1);
+    ASSERT_TRUE(optionalComponent.has_value());
+
+    Health &component = optionalComponent.value().get();
     component.health += 42;
 
-    const sparse::OptionalRef setComponent = _healthSet->get(1);
+    const types::OptionalRef setComponent = _healthSet->get(1);
     ASSERT_TRUE(setComponent.has_value());
     EXPECT_EQ(setComponent.value().get().health, component.health);
 };
 
 TEST_F(SparseGroupFixture, edit_components_from_getAll)
 {
-    sparse::SparseGroup group(*_hitboxSet, *_healthSet);
+    sparse::SparseGroup<Hitbox, Health> group(*_hitboxSet, *_healthSet);
     auto &views = group.getAll();
     auto &view = std::get<sparse::SparseGroup<>::View<Health>>(views);
 
     ASSERT_TRUE(view.has(1));
 
-    Health &groupComponent = view[1];
-    groupComponent.health += 42;
+    types::OptionalRef<Health> optionalHealthComp = view.at(1);
 
-    const sparse::OptionalRef setComponent = _healthSet->get(1);
+    ASSERT_TRUE(optionalHealthComp.has_value());
+
+    Health &healthComp = optionalHealthComp.value().get();
+    healthComp.health += 42;
+
+    const types::OptionalRef setComponent = _healthSet->get(1);
     ASSERT_TRUE(setComponent.has_value());
-    EXPECT_EQ(setComponent.value().get().health, groupComponent.health);
+    EXPECT_EQ(setComponent.value().get().health, healthComp.health);
 };
