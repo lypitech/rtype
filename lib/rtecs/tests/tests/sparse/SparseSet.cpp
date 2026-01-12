@@ -1,4 +1,4 @@
-#include "../../../include/rtecs/sparse/set/SparseSet.hpp"
+#include "rtecs/sparse/set/SparseSet.hpp"
 
 #include <gtest/gtest.h>
 
@@ -15,7 +15,7 @@ TEST(SparseSet, create_single_entity_without_auto_initializer)
     rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
     sparseSet.put(1, {.name = std::string("Hello world"), .age = 42});
 
-    const rtecs::sparse::OptionalRef<MyComponent> first = sparseSet.get(1);
+    const rtecs::types::OptionalRef<MyComponent> first = sparseSet.get(1);
 
     ASSERT_TRUE(first.has_value());
 }
@@ -31,7 +31,7 @@ TEST(SparseSet, create_single_entity_with_auto_initializer)
     rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
     sparseSet.put(1);
 
-    const rtecs::sparse::OptionalRef<MyComponent> component = sparseSet.get(1);
+    const rtecs::types::OptionalRef<MyComponent> component = sparseSet.get(1);
 
     ASSERT_TRUE(component.has_value());
 }
@@ -47,7 +47,7 @@ TEST(SparseSet, create_entity_with_id_zero)
     rtecs::sparse::SparseSet<MyComponent> sparseSet(0);
     sparseSet.put(0, {.name = std::string("Hello world"), .age = 42});
 
-    const rtecs::sparse::OptionalRef<MyComponent> component = sparseSet.get(0);
+    const rtecs::types::OptionalRef<MyComponent> component = sparseSet.get(0);
 
     ASSERT_TRUE(sparseSet.has(0));
     ASSERT_TRUE(component.has_value());
@@ -66,7 +66,7 @@ TEST(SparseSet, create_multiple_ordered_entities)
         sparseSet.put(id);
     }
     for (int id = 0; id < 10; id++) {
-        const rtecs::sparse::OptionalRef<MyComponent> component = sparseSet.get(id);
+        const rtecs::types::OptionalRef<MyComponent> component = sparseSet.get(id);
         ASSERT_TRUE(sparseSet.has(id));
         ASSERT_TRUE(component.has_value());
     }
@@ -87,7 +87,7 @@ TEST(SparseSet, create_multiple_entities_with_random_id)
         sparseSet.put(id);
     }
     for (const auto id : entities) {
-        const rtecs::sparse::OptionalRef<MyComponent> component = sparseSet.get(id);
+        const rtecs::types::OptionalRef<MyComponent> component = sparseSet.get(id);
         ASSERT_TRUE(sparseSet.has(id));
         ASSERT_TRUE(component.has_value());
     }

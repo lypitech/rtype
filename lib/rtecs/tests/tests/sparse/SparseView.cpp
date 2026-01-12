@@ -15,10 +15,15 @@ TEST(SparseView, put_multiple_values)
     view.put(3, 6);
     view.put(4, 8);
 
-    ASSERT_EQ(view[1], 2);
-    ASSERT_EQ(view[2], 4);
-    ASSERT_EQ(view[3], 6);
-    ASSERT_EQ(view[4], 8);
+    ASSERT_TRUE(view.at(1).has_value());
+    EXPECT_EQ(view.at(1).value(), 2);
+    ASSERT_TRUE(view.at(2).has_value());
+    EXPECT_EQ(view.at(2).value(), 4);
+    ASSERT_TRUE(view.at(3).has_value());
+    ASSERT_TRUE(view.at(3).has_value());
+    EXPECT_EQ(view.at(3).value(), 6);
+    ASSERT_TRUE(view.at(4).has_value());
+    EXPECT_EQ(view.at(4).value(), 8);
 }
 
 TEST(SparseView, erase_unknown_value)
@@ -39,10 +44,15 @@ TEST(SparseView, erase_present_value)
     view.put(4, 8);
 
     view.erase(2);
-    ASSERT_EQ(view[1], 2);
-    ASSERT_FALSE(view.has(2));
-    ASSERT_EQ(view[3], 6);
-    ASSERT_EQ(view[4], 8);
+    ASSERT_TRUE(view.at(1).has_value());
+    ASSERT_FALSE(view.at(2).has_value());
+    ASSERT_TRUE(view.at(3).has_value());
+    ASSERT_TRUE(view.at(4).has_value());
+
+    EXPECT_EQ(view.at(1).value(), 2);
+    EXPECT_FALSE(view.has(2));
+    EXPECT_EQ(view.at(3).value(), 6);
+    EXPECT_EQ(view.at(4).value(), 8);
 }
 
 TEST(SparseView, has_value)
@@ -54,17 +64,22 @@ TEST(SparseView, has_value)
     view.put(3, 6);
     view.put(4, 8);
 
-    EXPECT_EQ(view[1], 2);
-    EXPECT_EQ(view[2], 4);
-    EXPECT_EQ(view[3], 6);
-    EXPECT_EQ(view[4], 8);
+    ASSERT_TRUE(view.at(1).has_value());
+    ASSERT_TRUE(view.at(2).has_value());
+    ASSERT_TRUE(view.at(3).has_value());
+    ASSERT_TRUE(view.at(4).has_value());
 
-    ASSERT_TRUE(view.has(1));
-    ASSERT_TRUE(view.has(2));
-    ASSERT_TRUE(view.has(3));
-    ASSERT_TRUE(view.has(4));
-    ASSERT_FALSE(view.has(5));
-    ASSERT_FALSE(view.has(6));
+    EXPECT_EQ(view.at(1).value(), 2);
+    EXPECT_EQ(view.at(2).value(), 4);
+    EXPECT_EQ(view.at(3).value(), 6);
+    EXPECT_EQ(view.at(4).value(), 8);
+
+    EXPECT_TRUE(view.has(1));
+    EXPECT_TRUE(view.has(2));
+    EXPECT_TRUE(view.has(3));
+    EXPECT_TRUE(view.has(4));
+    EXPECT_FALSE(view.has(5));
+    EXPECT_FALSE(view.has(6));
 }
 
 TEST(SparseView, access_present_data)
@@ -74,9 +89,14 @@ TEST(SparseView, access_present_data)
     view.put(1, 2);
     view.put(2, 2);
     view.put(7, 1);
-    ASSERT_EQ(view[1], 2);
-    ASSERT_EQ(view[2], 2);
-    ASSERT_EQ(view[7], 1);
+
+    ASSERT_TRUE(view.at(1).has_value());
+    ASSERT_TRUE(view.at(2).has_value());
+    ASSERT_TRUE(view.at(7).has_value());
+
+    EXPECT_EQ(view.at(1).value(), 2);
+    EXPECT_EQ(view.at(2).value(), 2);
+    EXPECT_EQ(view.at(7).value(), 1);
 }
 
 TEST(SparseView, access_present_data_on_const)
@@ -85,11 +105,12 @@ TEST(SparseView, access_present_data_on_const)
     TestSparseView view;
 
     view.put(42, 84);
-    ASSERT_TRUE(view.has(42));
+    EXPECT_TRUE(view.has(42));
 
     const std::function<void(const TestSparseView &)> accessConst = [](const TestSparseView &constView) {
-        ASSERT_TRUE(constView.has(42));
-        ASSERT_EQ(constView[42], 84);
+        ASSERT_TRUE(constView.at(42).has_value());
+        EXPECT_EQ(constView.at(42).value(), 84);
+        EXPECT_TRUE(constView.has(42));
     };
     accessConst(view);
 }
