@@ -2,8 +2,8 @@
 
 #include <sys/types.h>
 
-#include <cstddef>
 #include <array>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -11,11 +11,6 @@
 #include "ASparseSet.hpp"
 
 namespace rtecs::sparse {
-
-template <typename T>
-using OptionalRef = std::optional<std::reference_wrapper<T>>;
-template <typename T>
-using OptionalCRef = std::optional<std::reference_wrapper<const T>>;
 
 #define PAGE_OF(id, page_size) (id / page_size)
 #define PAGE_INDEX_OF(id, page_size) (id % page_size)
@@ -65,9 +60,8 @@ public:
      *
      * @tparam T The type contained in the SparseSet.
      */
-    explicit SparseSet(const types::ComponentID id):
-        ASparseSet(id)
-    {};
+    explicit SparseSet(const types::ComponentID id)
+        : ASparseSet(id) {};
 
     /**
      * @brief Get a reference of the entity.
@@ -76,7 +70,7 @@ public:
      * @return An optional reference to the component of the entity.
      */
     [[nodiscard]]
-    OptionalRef<T> get(size_t id) noexcept;
+    types::OptionalRef<T> get(size_t id) noexcept;
 
     /**
      * @brief Get a const-reference of the entity.
@@ -85,7 +79,7 @@ public:
      * @return An optional const-reference to the component of the entity.
      */
     [[nodiscard]]
-    OptionalCRef<T> get(size_t id) const noexcept;
+    types::OptionalCRef<T> get(size_t id) const noexcept;
 
     /**
      * @brief Get all the components instances present in this sparse-set.
@@ -142,7 +136,7 @@ public:
 //      SparseSet - Implementation
 // ====================================
 template <typename T>
-OptionalRef<T> SparseSet<T>::get(const size_t id) noexcept
+types::OptionalRef<T> SparseSet<T>::get(const size_t id) noexcept
 {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = PAGE_INDEX_OF(id, kPageSize);
@@ -160,7 +154,7 @@ OptionalRef<T> SparseSet<T>::get(const size_t id) noexcept
 }
 
 template <typename T>
-OptionalCRef<T> SparseSet<T>::get(const size_t id) const noexcept
+types::OptionalCRef<T> SparseSet<T>::get(const size_t id) const noexcept
 {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = PAGE_INDEX_OF(id, kPageSize);
@@ -195,7 +189,8 @@ bool SparseSet<T>::has(const size_t id) const noexcept
     return _sparsePages[page].at(sparseIndex).has_value();
 }
 
-template <typename T> size_t SparseSet<T>::size() const noexcept
+template <typename T>
+size_t SparseSet<T>::size() const noexcept
 {
     return _dense.size();
 }
