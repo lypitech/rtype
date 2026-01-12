@@ -31,6 +31,15 @@ protected:
         int y;
         int width;
         int height;
+
+        /**
+         * @brief Check for a collision between two Hitbox instances.
+         *
+         * @param other The other Hitbox component
+         * @return `true` if a collision is detected, `false` otherwise.
+         */
+        [[nodiscard]]
+        bool collideWith(const Hitbox &other) const;
     };
 };
 
