@@ -23,12 +23,9 @@ endif()
 add_library(${PROJECT_NAME} STATIC
     src/ECS.cpp
 
-    src/exceptions/BaseException.cpp
-    src/exceptions/UnknowComponentException.cpp
-    src/exceptions/ComponentAlreadyExists.cpp
-    src/exceptions/EntityNotFoundException.cpp
-
     src/sparse/set/ASparseSet.cpp
+    src/systems/ASystem.cpp
+    src/systems/SystemWrapper.cpp
 
     src/bitset/DynamicBitSet.cpp
 
