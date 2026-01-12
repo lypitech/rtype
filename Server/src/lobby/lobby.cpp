@@ -2,6 +2,7 @@
 
 #include <ranges>
 
+#include "app.hpp"
 #include "components/factory.hpp"
 #include "components/position.hpp"
 #include "components/type.hpp"
@@ -115,13 +116,30 @@ std::vector<packet::server::SessionPtr> Lobby::getAllSessions() const
 
 void Lobby::run()
 {
+    using namespace std::chrono;
+    double lag = 0;
     logger::setThreadLabel(("Lobby " + std::to_string(_roomId)).c_str());
     lobby::Callback callbackFunction;
+    time_point lastTime = steady_clock::now();
+
     while (_isRunning) {
+        auto currentTime = steady_clock::now();
+        duration<double> elapsed = currentTime - lastTime;
+        lastTime = currentTime;
+
+        lag += elapsed.count();
+
         while (_actionQueue.pop(callbackFunction)) {
             callbackFunction(*this);
         }
-        _engine.runOnce(0.16);
+
+        while (lag >= server::TIME_PER_TICK) {
+            _engine.runOnce(server::TIME_PER_TICK);
+            lag -= server::TIME_PER_TICK;
+        }
+
+        if (lag < server::TIME_PER_TICK) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
     }
 }
-
