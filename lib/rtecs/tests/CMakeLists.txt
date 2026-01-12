@@ -1,6 +1,9 @@
 # --- Sources ---
 set(RTECS_TEST_SOURCES
     Main.cpp
+
+    tests/fixtures/ComponentFixture.cpp
+
     tests/ecs/ECS.cpp
     tests/ecs/fixtures/ECSFixture.cpp
 
@@ -10,9 +13,10 @@ set(RTECS_TEST_SOURCES
     tests/sparse/SparseGroup.cpp
     tests/sparse/SparseSet.cpp
     tests/sparse/SparseView.cpp
+
     tests/bitset/DynamicBitSet/basics.cpp
-    tests/bitset/DynamicBitSet/bitshift.cpp
     tests/bitset/DynamicBitSet/binary_operations.cpp
+    tests/bitset/DynamicBitSet/bitshift.cpp
 )
 
 add_executable(rtecs_tests ${RTECS_TEST_SOURCES})
