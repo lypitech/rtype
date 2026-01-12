@@ -4,8 +4,6 @@
 
 namespace packet {
 
-using packetId = rtnt::core::packet::Id;
-
 /**
  * @struct packet::UpdateEntityState
  *
@@ -14,7 +12,8 @@ using packetId = rtnt::core::packet::Id;
  */
 struct UpdateEntityState
 {
-    static constexpr auto kId = static_cast<packetId>(type::Server::kUpdateEntityState);
+    static constexpr auto kId =
+        static_cast<rtnt::core::packet::Id>(type::Server::kUpdateEntityState);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "UPDATE_ENTITY_STATE";
 

@@ -75,11 +75,10 @@ void Session::send(Packet& packet)
 
     rawBuffer->reserve(sizeof(packet::Header) + payload.size());
 
-    header.toNetwork();
+    header.convertEndianness();
     const auto* headerPtr = reinterpret_cast<const uint8_t*>(&header);
     rawBuffer->insert(rawBuffer->end(), headerPtr, headerPtr + sizeof(packet::Header));
     rawBuffer->insert(rawBuffer->end(), payload.begin(), payload.end());
-    header.toHost();
 
     LOG_TRACE_R3(
         "Preparing to send a packet.\n"

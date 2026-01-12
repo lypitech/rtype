@@ -4,8 +4,6 @@
 
 namespace packet {
 
-using packetId = rtnt::core::packet::Id;
-
 /**
  * @struct packet::Destroy
  *
@@ -14,7 +12,7 @@ using packetId = rtnt::core::packet::Id;
  */
 struct Destroy
 {
-    static constexpr auto kId = static_cast<packetId>(type::Server::kDestroy);
+    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Server::kDestroy);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr rtnt::core::packet::Name kName = "DESTROY";
 

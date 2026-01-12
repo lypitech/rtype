@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "MonoBehaviour.hpp"
+#include "monoBehaviour.hpp"
 
-namespace comp {
+namespace components {
 
 struct Behaviour
 {
@@ -18,4 +18,4 @@ struct Behaviour
     }
 };
 
-}  // namespace comp
+}  // namespace components
