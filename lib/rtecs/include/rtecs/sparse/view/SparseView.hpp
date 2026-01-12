@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "logger/Logger.h"
+#include "rtecs/types/types.hpp"
 
 namespace rtecs::sparse {
 
@@ -74,15 +75,13 @@ public:
     /**
      * @brief Access to the reference of a value.
      *
-     * @throw std::out_of_range If the key is not found.
-     *
      * @param key The key of the value to access.
      * @return A reference to the corresponding value.
      */
-    T &operator[](Key key)
+    types::OptionalRef<T> at(Key key)
     {
         if (!_keyToIndex.contains(key)) {
-            throw std::out_of_range("The key " + std::to_string(key) + " do not exists in the SparseView.");
+            return std::nullopt;
         }
 
         size_t index = _keyToIndex.at(key);
@@ -92,15 +91,13 @@ public:
     /**
      * @brief Access to the const-reference of a value.
      *
-     * @throw std::out_of_range If the key is not found.
-     *
      * @param key The key of the value to access.
      * @return A const-reference to the corresponding value.
      */
-    const T &operator[](Key key) const
+    types::OptionalCRef<T> at(Key key) const
     {
         if (!_keyToIndex.contains(key)) {
-            throw std::out_of_range("The key " + std::to_string(key) + " do not exists in the SparseView.");
+            return std::nullopt;
         }
 
         size_t index = _keyToIndex.at(key);
