@@ -15,7 +15,7 @@ struct Example
 TEST_F(NetworkTest,
        empty_packet)
 {
-    size_t packetSize = 0;
+    size_t packetSize = 1801;
 
     server->onMessage([&](const std::shared_ptr<rtnt::core::Session>&, rtnt::core::Packet& p) {
         if (p.getId() == Example::kId) {

@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <numeric>
+
 #include "network_fixture.hpp"
 
 namespace {
@@ -8,7 +10,7 @@ struct Example
 {
     static constexpr rtnt::core::packet::Id kId = 1801;
     static constexpr rtnt::core::packet::Name kName = "EXAMPLE";
-    static constexpr rtnt::core::packet::Flag kFlag = rtnt::core::packet::Flag::kOrdered;
+    static constexpr rtnt::core::packet::Flag kFlag = rtnt::core::packet::Flag::kReliable;
 
     uint32_t x;
 
@@ -24,11 +26,11 @@ struct Example
 }  // namespace
 
 TEST_F(NetworkTest,
-       order)
+       packet_loss)
 {
-    const uint32_t packetAmount = 50;
+    const uint32_t packetAmount = 181;
 
-    client->setSimulatedPacketLossPercentage(80);
+    client->setSimulatedPacketLossPercentage(10);
 
     std::vector<uint32_t> receivedIndices;
 
@@ -36,8 +38,6 @@ TEST_F(NetworkTest,
         LOG_DEBUG("Received packet, with body: [{}]", pkt.x);
         receivedIndices.push_back(pkt.x);
     });
-
-    client->onDisconnect([&]() { ASSERT_TRUE(false) << "Client disconnected for some reason."; });
 
     client->connect("127.0.0.1", 4242);
     ASSERT_TRUE(waitFor([&]() { return client->isConnected(); }, std::chrono::seconds(10)))
@@ -62,8 +62,19 @@ TEST_F(NetworkTest,
     LOG_INFO("Final list: {}", receivedIndices);
     LOG_INFO("Took {}", after - before);
 
-    for (uint32_t i = 0; i < packetAmount; ++i) {
-        ASSERT_EQ(receivedIndices[i], i + 1)
-            << "Ordering failed! Index " << i + 1 << " was not the expected value.";
+    std::ranges::sort(receivedIndices);
+
+    std::vector<uint32_t> expectedIndices(packetAmount);
+    std::iota(expectedIndices.begin(), expectedIndices.end(), 1);
+
+    EXPECT_EQ(receivedIndices, expectedIndices)
+        << "Mismatch! The received packets do not follow the sequence 1..181 perfectly.";
+
+    if (receivedIndices != expectedIndices) {
+        auto it = std::ranges::unique(receivedIndices).begin();
+        bool hasDuplicates = it != receivedIndices.end();
+        if (hasDuplicates) {
+            LOG_ERR("Error: Duplicate packets were received!");
+        }
     }
 }

@@ -35,7 +35,7 @@ protected:
         server->start();
 
         ioThread = std::thread([this]() {
-            logger::setThreadLabel("IoThread");
+            logger::setThreadLabel("I/O Thread");
             context.run();
         });
     }
@@ -71,7 +71,7 @@ protected:
             if (condition()) {
                 return true;
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(750));
+            std::this_thread::sleep_for(std::chrono::milliseconds(16));
         }
         return false;
     }
