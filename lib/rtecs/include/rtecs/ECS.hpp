@@ -3,14 +3,12 @@
 #include <memory>
 #include <typeindex>
 
-#include "exceptions/ComponentAlreadyExists.hpp"
-#include "exceptions/UnknowComponentException.hpp"
 #include "logger/Logger.h"
 #include "rtecs/types/types.hpp"
 #include "sparse/group/SparseGroup.hpp"
 #include "sparse/set/SparseSet.hpp"
 #include "sparse/view/SparseView.hpp"
-#include "systems/ASystem.hpp"
+#include "systems/ISystem.hpp"
 
 namespace rtecs {
 
@@ -34,19 +32,20 @@ class ECS final
 {
 private:
     std::unordered_map<types::EntityID, types::Entity> _entities;
-    std::vector<std::unique_ptr<systems::ASystem>> _systems;
+    std::vector<std::unique_ptr<systems::ISystem>> _systems;
     size_t _entitiesID = 0;
 
     /// Key: Component hashcode - Value: Pointer to an ISparseSet
     std::unordered_map<types::ComponentID, std::unique_ptr<sparse::ISparseSet>> _components;
     std::unordered_map<types::ComponentID, bitset::DynamicBitSet> _componentsMasks;
     bitset::DynamicBitSet _componentMaskIndex;
+    bitset::DynamicBitSet _emptyComponentMask;
 
 private:
     /**
      * @brief Register a single component.
      *
-     * @throw exceptions::ComponentAlreadyExists If the component already exists.
+     * @warning If the component has already been registered, a warning will be logged but this will not impact the flow of the program.
      */
     template <typename T>
     void registerComponent()
@@ -58,12 +57,13 @@ private:
 
         bitset::DynamicBitSet mask(_componentMaskIndex);
         types::ComponentID componentId = typeid(T).hash_code();
-        auto sparse = std::make_unique<sparse::SparseSet<T>>(componentId);
+        std::unique_ptr<sparse::SparseSet<T>> sparse = std::make_unique<sparse::SparseSet<T>>(componentId);
 
         if (_components.contains(componentId)) {
-            throw exceptions::ComponentAlreadyExists(componentId);
+            LOG_WARN("Cannot register the component with id {}: This component has already been registered.",
+                     componentId);
+            return;
         }
-
         _componentsMasks.emplace(componentId, mask);
         _components.emplace(componentId, std::move(sparse));
     }
@@ -71,35 +71,39 @@ private:
     /**
      * @brief Add a component to an entity
      *
-     * @throw exceptions::UnknowComponentException If the component is not registered.
+     * @warning If the component has not been registered, a warning will be logged but this will not impact the flow of the program.
      *
      * @tparam T The component type.
-     * @param entity The entity.
+     * @param entityId The entity.
      * @param instance The instance of the component that belong to the entity.
      */
     template <typename T>
-    void insertComponentInstance(types::EntityID entity, T instance)
+    void insertComponentInstance(types::EntityID entityId, T instance)
     {
         const types::ComponentID componentId = typeid(T).hash_code();
 
         if (!_components.contains(componentId)) {
-            throw exceptions::UnknowComponentException(componentId);
+            LOG_WARN("Cannot add the component {} to the entity {}: This component is not registered.", componentId,
+                     entityId);
+            return;
         }
 
         auto ptr = dynamic_cast<sparse::SparseSet<T> *>(_components.at(componentId).get());
         if (!ptr) {
-            throw exceptions::UnknowComponentException(componentId);
+            LOG_WARN("Cannot add the component {} to the entity {}: This component is not registered.", componentId,
+                     entityId);
+            return;
         }
-        ptr->put(entity, instance);
+        ptr->put(entityId, instance);
     }
 
     /**
      * @brief Get a component's mask from its type.
      *
-     * @throw exceptions::UnknowComponentException If the component has not been registered.
+     * @warning If the component has not been registered, a warning will be logged and an empty mask will be returned.
      *
      * @tparam T The component type
-     * @return The component's mask from its type.
+     * @return The component's mask if the component has been registered, or an empty mask otherwise.
      */
     template <typename T>
     const bitset::DynamicBitSet &getComponentMask() const
@@ -107,7 +111,8 @@ private:
         const types::ComponentID id = typeid(T).hash_code();
 
         if (!_componentsMasks.contains(id)) {
-            throw exceptions::UnknowComponentException(id);
+            LOG_WARN("Cannot get the component with id {}: This component has not been registered.", id);
+            return _emptyComponentMask;
         }
         return _componentsMasks.at(id);
     }
@@ -115,22 +120,60 @@ private:
     /**
      * @brief Get the component set that contains the instances.
      *
+     * @warning If the component has not been registered, a warning will be logged and a `std::nullopt` will be returned.
+     *
      * @tparam T The component type
-     * @return The component set.
+     * @return An optional reference of the component set.
      */
     template <typename T>
-    sparse::SparseSet<T> &getComponent()
+    types::OptionalRef<sparse::SparseSet<T>> getComponent()
     {
         const types::ComponentID id = typeid(T).hash_code();
 
         if (!_components.contains(id)) {
-            throw exceptions::UnknowComponentException(id);
+            LOG_WARN("The component {} do not exist.", id);
+            return std::nullopt;
         }
         return dynamic_cast<sparse::SparseSet<T> &>(*_components.at(id));
     }
 
+    /**
+     * @brief Update a specific component of an entity.
+     *
+     * @warning If the component has not been registered, a warning will be logged and `false` will be returned.
+     * @warning If the entity do not have this component, a warning will be logged and `false` will be returned.
+     *
+     * @tparam T The component type
+     * @param entityId The entity's id
+     * @param newInstance The new instance of the component
+     * @return `true` if the entity has been updated, `false` otherwise.
+     */
+    template <typename T>
+    bool updateEntityComponent(types::EntityID entityId, T newInstance)
+    {
+        types::OptionalRef<sparse::SparseSet<T>> optSet = getComponent<T>();
+
+        if (!optSet.has_value()) {
+            LOG_WARN(
+                "Cannot update component with id {} of the entity with id {}: This component has not been registered.",
+                getComponentID<T>(), entityId);
+            return false;
+        }
+
+        sparse::SparseSet<T> &set = optSet.value().get();
+
+        if (!optSet.value().get().has(entityId)) {
+            LOG_WARN(
+                "Cannot update component with id {} of the entity with id {}: The entity do not have this component.",
+                set.getId(), entityId);
+            return false;
+        }
+        set.put(entityId, newInstance);
+        return true;
+    }
+
 public:
-    ECS() = default;
+    explicit ECS();
     ~ECS() = default;
 
     /****************/
@@ -140,16 +183,23 @@ public:
     /**
      * @brief Register a new entity with its components.
      *
+     * @warning If none of the components has been registered, a warning will be logged and `types::NullEntityID` will be returned.
+     *
      * @tparam T The components of the entity.
      * @param instances The copies of the entity's components instances.
-     * @return The new entity ID.
+     * @return The new entity ID if at least one of the components has been registered, `types::NullEntityID` otherwise.
      */
     template <typename... T>
     types::EntityID registerEntity(T... instances)
     {
         const types::EntityID entityId = _entitiesID;
-        bitset::DynamicBitSet mask = (getComponentMask<T>() & ...);
+        bitset::DynamicBitSet mask = (getComponentMask<T>() | ...);
 
+        if (mask.none()) {
+            LOG_CRIT("Cannot register entity with unregistered components. Component mask: {}",
+                     mask.toString(" ").data());
+            return types::NullEntityID;
+        }
         addEntityComponent<T...>(entityId, instances...);
         _entities.insert({entityId, mask});
         _entitiesID++;
@@ -159,7 +209,7 @@ public:
     /**
      * @brief Add new components to an entity.
      *
-     * @throw exceptions::UnknowComponentException If a component has not been registered.
+     * @warning If one of the components has not been registered, a warning will be logged but this will not impact the flow of the program.
      *
      * @tparam T The components' type to add to the entity.
      * @param entity The entity ID.
@@ -171,6 +221,38 @@ public:
         (insertComponentInstance(entity, instances), ...);
     }
 
+    /**
+     * @brief Update multiple components instances of an entity.
+     *
+     * @warning If one of the components has not been registered, a warning will be logged and `false` will be returned.
+     * @warning If the entity do not have one of the components, a warning will be logged and `false` will be returned.
+     *
+     * @tparam Ts The components type
+     * @param entityId The entity's id
+     * @param newInstances The new instances of the components.
+     * @return `false` if at least one instance has not been updated, `true` otherwise.
+     */
+    template <typename... Ts>
+    bool updateEntity(const types::EntityID entityId, Ts... newInstances)
+    {
+        return (... && updateEntityComponent<Ts>(entityId, newInstances));
+    }
+
+    /**
+     * @brief Get the mask of an entity.
+     *
+     * @param entityId The entity's ID.
+     * @return The mask of the entity or an empty mask if the entity has not been registered.
+     */
+    const bitset::DynamicBitSet &getEntityMask(types::EntityID entityId) const;
+
+    /**
+     * @brief Remove an entity from the ECS.
+     *
+     * @param entityId The entity's ID
+     */
+    void destroyEntity(types::EntityID entityId) const;
+
     /******************/
     /**  COMPONENTS  **/
     /******************/
@@ -178,7 +260,8 @@ public:
     /**
      * @brief Register new components to the ECS.
      *
-     * @throw exceptions::ComponentAlreadyExists If a component already exists.
+     * @warning If one of the components has already been registered, a warning will be logged but this will not impact the flow of the program.
+     *
      * @tparam T The components' type to register.
      */
     template <typename... T>
@@ -190,7 +273,8 @@ public:
     /**
      * @brief Get the component id.
      *
-     * @throw exceptions::UnknowComponentException If the component has not been registered.
+     * @warning If the component has not been registered, a warning will be logged but the ID of the component will still be returned.
+     *
      * @tparam T The component type.
      * @return The id of the component.
      */
@@ -200,7 +284,8 @@ public:
         const types::ComponentID id = typeid(T).hash_code();
 
         if (!_components.contains(id)) {
-            throw exceptions::UnknowComponentException(id);
+            LOG_WARN("Getting an non-registered component's id ({}): This component has not been registered.", id);
+            return id;
         }
         return id;
     }
@@ -208,7 +293,7 @@ public:
     /**
      * @brief Get the mask corresponding to multiple components.
      *
-     * @throw exceptions::UnknowComponentException If a component does not exist.
+     * @warning Each of the component that have not been registered will not appear in the mask. A warning will be logged for each of those components.
      *
      * @tparam T The components type
      * @return The mask that correspond to the components.
@@ -219,6 +304,12 @@ public:
         return (getComponentMask<T>() | ...);
     }
 
+    /**
+     * @brief Group all entities that have at least all the specified components.
+     *
+     * @tparam T The components to store in the group
+     * @return The corresponding SparseGroup.
+     */
     template <typename... T>
     sparse::SparseGroup<T...> group()
     {
@@ -236,12 +327,22 @@ public:
      *
      * @param system A unique pointer that will be moved to the ECS.
      */
-    void registerSystem(std::unique_ptr<systems::ASystem> &&system);
+    void registerSystem(std::unique_ptr<systems::ISystem> &&system);
+
+    /**
+     * @brief Create a new system class from the SystemWrapper.
+     *
+     * @warning This method creates a system class from the given apply method.
+     *
+     * @param applyFn A function that correspond to the apply method of the System.
+     * @param name The name of the registered system.
+     */
+    void registerSystem(std::function<void(ECS &ecs)> applyFn, const std::string &name);
 
     /**
      * @brief Apply all the systems from the first registered to the last.
      */
-    void applySystems();
+    void applyAllSystems();
 };
 
 }  // namespace rtecs
