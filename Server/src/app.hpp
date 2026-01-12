@@ -3,12 +3,14 @@
 #include <thread>
 
 #include "lobby/lobby_manager.hpp"
+#include "packets/client/join.hpp"
 #include "rtnt/core/server.hpp"
 #include "packets/client/join.hpp"
 
-#define TPS 20
-
 namespace server {
+
+static constexpr short TPS = 20;
+static constexpr double TIME_PER_TICK = 1.0 / TPS;
 
 /**
  * @class App

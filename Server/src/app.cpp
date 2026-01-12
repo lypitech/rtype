@@ -3,6 +3,7 @@
 #include "handlers/handlers.hpp"
 #include "logger/Logger.h"
 #include "logger/Thread.h"
+#include "packets/client/join.hpp"
 #include "utils.hpp"
 
 namespace server {
