@@ -1,43 +1,32 @@
 #pragma once
 
-#include "rtecs/bitset/DynamicBitSet.hpp"
+#include "rtecs/systems/ISystem.hpp"
 
-namespace rtecs {
+namespace rtecs::systems {
 
-class ECS;  // Forward declaration for ECS type
-
-namespace systems {
-
-class ASystem
+/**
+ * @brief A system is a method that will be called at each call of the ECS::applyAllSystems() method.
+ * @note To make this system applied, you have to register it using `ECS::registerSystem()`.
+ */
+class ASystem : public ISystem
 {
 private:
-    const bitset::DynamicBitSet _mask;
+    const std::string& _kName;
 
-public:
+protected:
     /**
      * @brief Instantiate a new system.
      *
-     * @param mask The mask of the components managed by this system.
+     * @param name The name of the system. (Used for debugging)
      */
-    explicit ASystem(const bitset::DynamicBitSet &mask);
-    virtual ~ASystem() = default;
+    explicit ASystem(const std::string& name);
 
+public:
     /**
-     * @brief Get the mask that describe the components managed by this system.
+     * @brief Get the name of the system.
      *
-     * @return The components' mask of the system.
+     * @return The name of the system.
      */
-    [[nodiscard]]
-    const bitset::DynamicBitSet &getMask() const noexcept;
-
-    /**
-     * @brief Apply the system.
-     *
-     * @param ecs The ECS instance from which this system is called.
-     */
-    virtual void apply(ECS &ecs) = 0;
+    const std::string& getName() override;
 };
-
-}  // namespace systems
-
-}  // namespace rtecs
+}  // namespace rtecs::systems
