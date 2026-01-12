@@ -15,7 +15,7 @@ static constexpr uint16_t PROTOCOL_ID = 0x1801;
 /// @warning    Changing this is considered as a breaking change.
 ///
 /// todo: Prone to change
-static constexpr uint16_t PROTOCOL_VER = 0x0001;
+static constexpr uint16_t PROTOCOL_VER = 0x0002;
 
 static constexpr uint8_t MAX_RECONNECTION_RETRIES = 3;
 
