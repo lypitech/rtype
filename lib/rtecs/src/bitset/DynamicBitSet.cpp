@@ -276,7 +276,7 @@ DynamicBitSet& DynamicBitSet::operator>>=(const size_t nb)
     return *this;
 }
 
-std::ostream& operator<<(std::ostream& stream, const DynamicBitSet& ref)
+std::ostream& rtecs::bitset::operator<<(std::ostream& stream, const DynamicBitSet& ref)
 {
     stream << "[" << ref.toString(" ") << "]";
     return stream;
