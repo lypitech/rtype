@@ -45,6 +45,7 @@ static constexpr uint8_t MAX_RESEND_RETRIES = 10;
 enum class SystemMessageId : uint16_t
 {
     kAck = 0x00,
+    kRichAck,
     kConnect,
     kConnectAck,
     kDisconnect,
