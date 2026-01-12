@@ -2,7 +2,6 @@
 
 #include <tuple>
 
-#include "rtecs/exceptions/EntityNotFoundException.hpp"
 #include "rtecs/sparse/set/SparseSet.hpp"
 #include "rtecs/sparse/view/SparseView.hpp"
 #include "rtecs/types/types.hpp"
@@ -27,8 +26,6 @@ private:
     /**
      * @brief Add an entity component instance from the set to the view.
      *
-     * @throw exceptions::EntityNotFoundException If the entity does not exist.
-     *
      * @tparam T The component type
      * @param entityId The entity ID
      * @param view The view
@@ -38,12 +35,30 @@ private:
     void addEntity(types::EntityID entityId, SparseView<types::EntityID, std::reference_wrapper<T>>& view,
                    std::reference_wrapper<SparseSet<T>> set)
     {
-        OptionalRef<T> optionalComponent = set.get().get(entityId);
+        types::OptionalRef<T> optionalComponent = set.get().get(entityId);
 
         if (optionalComponent.has_value()) {
             view.put(entityId, optionalComponent.value());
         } else {
-            throw exceptions::EntityNotFoundException(entityId, set.get().getId());
+            LOG_WARN("Cannot add the entity to the view: The entity with id {} do not have the component with id {}",
+                     entityId, set.get().getId());
+        }
+    }
+
+    /**
+     * @brief A helper static method that is used to apply the callback only on the entities that have the components.
+     *
+     * @warning If an entity is supposed to have all the required components, but do not have one of them, then the callback will not be applied on it.
+     *
+     * @param entityId The entity's ID
+     * @param callback The callback to apply on this entity instances
+     * @param instances The instances of the entity
+     */
+    static void applyHelper(types::EntityID entityId, std::function<void(const types::EntityID&, Ts&...)> callback,
+                            types::OptionalRef<Ts>... instances)
+    {
+        if ((... && instances.has_value())) {
+            callback(entityId, instances.value()...);
         }
     }
 
@@ -53,25 +68,31 @@ public:
      *
      * @note The SparseGroup will dynamically find all entities that are presents in every of the given sets.
      *
-     * @throw exceptions::EntityNotFoundException This error should not be thrown. If this happens, create an issue on the Githuv repository of this project.
-     *
      * @param sets The SparseSets that the SparseGroup will contain.
      */
-    explicit SparseGroup(SparseSet<Ts>&... sets)
+    explicit SparseGroup(types::OptionalRef<SparseSet<Ts>>... sets)
     {
-        std::vector<std::reference_wrapper<ISparseSet>> mixedSets{sets...};
+        std::vector<types::OptionalRef<ISparseSet>> mixedSets{sets...};
 
-        const std::reference_wrapper<ISparseSet> driver = *std::min_element(
-            mixedSets.begin(), mixedSets.end(),
-            [](const std::reference_wrapper<ISparseSet> a, const std::reference_wrapper<ISparseSet> b) {
-                return a.get().size() < b.get().size();
-            });
+        const types::OptionalRef<ISparseSet> driver =
+            *std::min_element(mixedSets.begin(), mixedSets.end(),
+                              [](const types::OptionalCRef<ISparseSet> a, const types::OptionalCRef<ISparseSet> b) {
+                                  if (!a.has_value() || !b.has_value()) {
+                                      LOG_CRIT("A component in a group has not been registered in the ECS.");
+                                  }
+                                  return a.has_value() && b.has_value() && a->get().size() < b->get().size();
+                              });
 
-        for (size_t entityId : driver.get().getEntities()) {
-            const bool isValid = (... && sets.has(entityId));
+        if (!driver.has_value()) {
+            LOG_CRIT("None of the components specified for this group have been registered.");
+            return;
+        }
+
+        for (size_t entityId : driver->get().getEntities()) {
+            const bool isValid = (... && (sets.has_value() && sets->get().has(entityId)));
 
             if (isValid) {
-                std::apply([&](auto&... view) { (addEntity<Ts>(entityId, view, sets), ...); }, _group);
+                std::apply([&](auto&... view) { (addEntity<Ts>(entityId, view, sets.value()), ...); }, _group);
             }
         }
     }
@@ -79,16 +100,16 @@ public:
     /**
      * @brief Get the component instance of a specific entity from the group.
      *
-     * @throw std::out_of_range If the entity does not exist in the group.
+     * @warning If the component do not exist in the SparseGroup, the behaviour is undefined.
      *
      * @tparam T The component type
      * @param entityId The entity ID
      * @return The component instance of the specified entity
      */
     template <typename T>
-    std::reference_wrapper<T> getEntity(types::EntityID entityId)
+    types::OptionalRef<T> getEntity(types::EntityID entityId)
     {
-        return get<T>()[entityId];
+        return get<T>().at(entityId);
     }
 
     /**
@@ -107,6 +128,8 @@ public:
     template <typename T>
     SparseView<types::EntityID, std::reference_wrapper<T>>& get()
     {
+        constexpr bool contains = (std::is_same_v<T, Ts> || ...);
+        static_assert(contains, "Requested component type T is not part of this SparseGroup");
         return std::get<SparseView<types::EntityID, std::reference_wrapper<T>>>(_group);
     }
 
@@ -125,20 +148,16 @@ public:
      */
     bool has(types::EntityID entityId) { return std::get<0>(_group).has(entityId); }
 
-    void apply(std::function<void(Ts&...)> callback)
+    void apply(std::function<void(const types::EntityID&, Ts&...)> callback)
     {
         for (auto entity : getEntities()) {
-            std::apply([&](auto&... views) { callback(views[entity].get()...); }, _group);
+            std::apply(
+                [&](auto&... views) {
+                    applyHelper(entity, callback, views.at(entity)...);
+                    // callback(entity, views.at(entity)...);
+                },
+                _group);
         }
-    }
-
-    void _apply(std::function<void(Ts&...)> callback)
-    {
-        // for (auto entity : getEntities()) {
-        //     std::apply([&](auto&... views) {
-        //         callback((views[entity].get())...);
-        //     }, _group);
-        // }
     }
 };
 
