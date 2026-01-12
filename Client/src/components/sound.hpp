@@ -1,6 +1,7 @@
 #pragma once
 
-struct Sound {
+struct Sound
+{
     int sound_id;
     bool play_once;
 };

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ASystem.hpp"
-
 #include <memory>
+
+#include "ASystem.hpp"
 
 namespace systems {
 

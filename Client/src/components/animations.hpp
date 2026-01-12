@@ -1,6 +1,7 @@
 #pragma once
 
-struct Animation {
+struct Animation
+{
     int frame_count;
     int current_frame;
     float frame_time;
