@@ -59,6 +59,18 @@ void Server::onReceive(const udp::endpoint& sender,
 
         if (it != _sessions.end()) {  // Session found
             session = it->second;
+
+            if (packet::is<packet::internal::Connect>(*data)) {
+                LOG_DEBUG("Received duplicate CONNECT from existing session. Resending ACK.");
+
+                packet::internal::ConnectAck ackPacket;
+                ackPacket.assignedSessionId = session->getId();
+
+                Packet p(packet::internal::ConnectAck::kId, packet::internal::ConnectAck::kFlag);
+                p << ackPacket;
+                session->send(p);
+                return;
+            }
         } else {  // New connection
             if (!packet::is<packet::internal::Connect>(
                     *data)) {  // todo: you can optimize this because another call to Header::parse is made in Session::handleIncoming.

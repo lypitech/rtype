@@ -8,7 +8,7 @@ namespace rtnt::core::packet::internal {
 struct ConnectAck
 {
     static constexpr Id kId = static_cast<uint16_t>(SystemMessageId::kConnectAck);
-    static constexpr Flag kFlag = Flag::kReliable;
+    static constexpr Flag kFlag = Flag::kUnreliable;
     static constexpr Name kName = INTERNAL_PACKET_NAME("CONNECT_ACK");
 
     uint32_t assignedSessionId;

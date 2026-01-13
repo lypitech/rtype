@@ -199,7 +199,7 @@ void Client::_internal_attemptConnection()
     _lastConnectionAttemptTime = steady_clock::now();
 
     constexpr packet::internal::Connect packet;
-    Packet packetToSend(packet::internal::Connect::kId, packet::Flag::kReliable);
+    Packet packetToSend(packet::internal::Connect::kId, packet::internal::Connect::kFlag);
     packetToSend << packet;
     _serverSession->send(packetToSend);
 }

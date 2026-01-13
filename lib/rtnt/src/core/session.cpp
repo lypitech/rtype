@@ -206,8 +206,6 @@ void Session::update()
 
     auto now = steady_clock::now();
 
-    LOG_DEBUG("Buffer state: size {}", _sentPackets.size());
-
     for (auto it = _sentPackets.begin(); it != _sentPackets.end();) {
         SentPacketInfo& info = it->second;
 
