@@ -40,7 +40,8 @@ public:
 
     /**
      * @brief   Shuts down and closes the Peer's socket.
-     * @note    Peer will switch to a degraded state unless @code server()@endcode or @code client()@endcode is called.
+     * @note    Peer will switch to a degraded state unless @code server()@endcode or
+     *          @code client()@endcode is called.
      */
     void stop();
 
@@ -49,7 +50,8 @@ public:
      *
      * @param   target  Target to send the data to
      * @param   data    Data to send (raw bytes)
-     * @note    This is a fire-and-forget operation. No delivery guarantee at this level (managed by RUDP, Session).
+     * @note    This is a fire-and-forget operation. No delivery guarantee at this level (managed by
+     *          RUDP, Session).
      */
     void sendToTarget(const udp::endpoint& target,
                       std::shared_ptr<ByteBuffer> data);

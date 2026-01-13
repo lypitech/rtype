@@ -110,6 +110,11 @@ private:
         session->send(packetToSend);
     }
 
+    /**
+     * @brief   Processes the events that have been received so far.
+     * @note    This function MUST be called from the main thread. Not doing so would result in
+     *          thread issues (data races).
+     */
     void _processEvents();
 };
 

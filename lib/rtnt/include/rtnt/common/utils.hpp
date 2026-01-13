@@ -11,6 +11,12 @@ namespace rtnt {
 
 namespace endian {
 
+/**
+ * @brief   Swaps bytes from/to big/little endian.
+ * @tparam  T       Data type
+ * @param   value   Data to swap
+ * @return  Swapped data
+ */
 template <typename T>
 T swap(T value)
 {
@@ -35,8 +41,8 @@ T swap(T value)
  * @brief   Converts a section of a ByteBuffer to a readable string in a hexadecimal form.
  * Mainly used for logging.
  *
- * @note    Only goes from begin to end. If you want to convert an entire ByteBuffer, call the other
-            overload.
+ * @note    Only goes from @code begin@endcode to @code end@endcode. If you want to convert an
+ *          entire ByteBuffer, call the other overload.
  * @note    This function doesn't affect the buffer.
  *
  * @param   begin   Starting iterator (from)
@@ -57,6 +63,11 @@ std::string byteBufferToHexString(core::ByteBuffer::const_iterator begin,
  */
 std::string byteBufferToHexString(const core::ByteBuffer& buffer);
 
+/**
+ * @brief   Converts a bitfield to a readable string with filled or outlined dots.
+ * @param   bitfield    Bitfield to convert
+ * @return  Converted bitfield
+ */
 std::string bitfieldToString(uint32_t bitfield);
 
 }  // namespace rtnt

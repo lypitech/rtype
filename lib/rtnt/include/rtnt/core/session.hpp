@@ -143,13 +143,95 @@ private:
     time_point<steady_clock> _lastSeen;
     bool _shouldClose = false;
 
+    /**
+     * @brief   Constructs the final wire-format buffer and transmits it to the Peer.
+     *
+     * This is the lowest-level sending function in the session.
+     * It performs the following:
+     * - Header construction: Populates the @code packet::Header@endcode fields.
+     * - ACK Piggybacking: Attaches the current @code _remoteAcknowledgeId@endcode and bitfield to
+     *                     the header, ensuring that every outgoing packet helps acknowledge
+     *                     received data.
+     *                     Sets the @code kHasAck@endcode flag if valid ACK data is present.
+     * - Serialization: Combines the header and the packet payload into a contiguous
+     *                  @code ByteBuffer@endcode, handling network byte order conversion.
+     * - Transmission: Invokes the @code _sendToPeerFunction@endcode to hand the buffer off to the
+     *                 network socket.
+     *
+     * @param   packet      The high-level packet object containing metadata and payload
+     * @param   sequenceId  The assigned Sequence ID for this frame
+     * @param   orderId     The assigned Order ID for this frame (0 if unordered)
+     */
     void rawSend(Packet& packet,
                  packet::SequenceId sequenceId,
                  packet::OrderId orderId);
+
+    /**
+     * @brief   Updates the local RUDP tracking state (which we call the Sliding Window) based on a
+     *          received Sequence ID.
+     *
+     * This function manages the head (@code _remoteAcknowledgeId@endcode) and the tail
+     * (the bitfield) of the reception window.
+     *
+     * It handles three eventualities:
+     * - New head: The received ID is newer than the current head. The bitfield is shifted left.
+     *             Any set bits that "fall off" the left side of the 32-bit window during the shift
+     *             are moved into the @code _oldPacketHistory@endcode to maintain replay protection
+     *             for older packets.
+     * - Inside window: The received ID is older than head but in the 32-cell window.
+     *                  The corresponding bit in the bitfield is set.
+     * - Out of window: The received ID is too old for the bitfield. It is added directly to
+     *                  @code _oldPacketHistory@endcode.
+     *
+     * @param   sequenceId  The Sequence ID of the packet just received
+     */
+    void updateAcknowledgeInfo(packet::SequenceId sequenceId);
+
+    /**
+     * @brief   Constructs and sends an acknowledgement packet (@code ACK@endcode or
+     *          @code RICH_ACK@endcode) to the remote peer.
+     *
+     * This function decides which type of ACK to send based on the current state:
+     * - Standard ACK: If @code _oldPacketHistory@endcode is empty, sends a lightweight header-only
+     *                 packet containing just the highest ID and the 32-bit bitfield.
+     * - Rich ACK: If @code _oldPacketHistory@endcode contains data, sends a @code RICH_ACK@endcode
+     *             packet containing the history in the payload.
+     */
     void _internal_sendAck();
+
+    /**
+     * @brief   Marks the session for closure.
+     *
+     * @note    This function expects the caller to hold @code _mutex@endcode.
+     * @warning This function does not close the session.
+     *          It only marks it, like "this session must be closed as soon as possible".
+     */
     void _internal_disconnect();
 
+    /**
+     * @brief   Checks if a packet has already been received to prevent replay attacks or redundant
+     *          processing.
+     *
+     * 3 verifications are done:
+     * - Is it equal to the last received packet?
+     * - If within the last 32 packets, is the bit set in the bitfield?
+     * - If older than 32 packets, is it present in the @code _oldPacketHistory@endcode buffer?
+     *
+     * @param   sequenceId  The sequence ID to check
+     * @return  @code true@endcode if the packet is a duplicate, @code false@endcode otherwise.
+     */
     bool isDuplicate(packet::SequenceId sequenceId) const;
+
+    /**
+     * @brief   Parses the payload of a @code kRichAck@endcode packet.
+     *
+     * This function deserializes that list from the payload and removes the corresponding packets
+     * from the local @code _sentPackets@endcode buffer.
+     *
+     * @see     rtnt::core::packet::internal::RichAck
+     * @param   rawData The raw buffer containing the packet payload
+     * @param   header  The parsed header of the packet
+     */
     void checkForOldPackets(std::shared_ptr<ByteBuffer> rawData,
                             const packet::Header& header);
 };

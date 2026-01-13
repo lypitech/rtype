@@ -57,7 +57,7 @@ public:
      * This creates the Session and sends an initial @code __rtnt_internal_CONNECT@endcode packet to
      * the server.
      * If the server doesn't respond to the handshake within @code RECONNECTION_TIMEOUT@endcode
-     * milliseconds, a reconnection is tried. After failing @code MAX_RECONNECTION_RETRIES@endcode
+     * milliseconds, a reconnection is tried. After failing @code MAX_RECONNECTION_ATTEMPTS@endcode
      * times, the client considers that the server can't be connected to.
      * @param   ip      The server IP address.
      * @param   port    The server port.
@@ -96,6 +96,7 @@ public:
         std::lock_guard lock(_mutex);
         return _isConnected;
     }
+
     [[nodiscard]] Dispatcher& getPacketDispatcher() { return this->_packetDispatcher; }
 
 protected:
@@ -152,8 +153,19 @@ private:
         }
     }
 
+    /**
+     * @brief   Attempts a connection to the remote server.
+     *
+     * This function resets the server session (any old pending packets will be erased) and sends a
+     * @code __rtnt_internal_CONNECT@endcode packet to the remote server.
+     */
     void _internal_attemptConnection();
 
+    /**
+     * @brief   Processes the events that have been received so far.
+     * @note    This function MUST be called from the main thread. Not doing so would result in
+     *          thread issues (data races).
+     */
     void _processEvents();
 };
 

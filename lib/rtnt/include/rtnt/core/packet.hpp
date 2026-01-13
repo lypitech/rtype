@@ -57,6 +57,7 @@ enum class Error : uint8_t
     kDataTooSmall,      ///< Data is too small to contain a RTNT header.
     kProtocolMismatch,  ///< Protocol ID received does not match local RTNT protocol ID.
     kPayloadSizeMismatch,  ///< Corrupted packet: Payload size does not match the one written in the header.
+    // todo: kInvalidChecksum ///< Corrupted packet: Payload checksum does not match the one written in the header.
 };
 
 /**
@@ -98,6 +99,7 @@ struct Header final
     OrderId orderId = 0;              ///< The unique, incrementing order ID of this packet.
     AcknowledgeId acknowledgeId = 0;  ///< Sequence ID of the latest packet received
     AcknowledgeBitfield acknowledgeBitfield =
+        0;  ///< Bitmask of the previous 32 received packets relative to acknowledge ID
     MessageId messageId = 0x0;  ///< Command type (user-defined)
     uint8_t flags =
         static_cast<uint8_t>(Flag::kUnreliable);  ///< Reliability flags (cf. packet::Flag)
@@ -173,7 +175,7 @@ struct Result final
 /**
  * @struct  packet::Reader
  * @brief   Helper class that behaves like a Packet but reads instead of writing.
- * This allows to use the '&' operator for reading.
+ * This allows using the '&' operator for reading.
  */
 struct Reader final
 {
