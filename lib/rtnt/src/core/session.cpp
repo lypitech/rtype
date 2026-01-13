@@ -44,7 +44,9 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
 
     _lastSeen = steady_clock::now();
 
-    if (!_sentPackets.empty()) {
+    bool hasAck = (header.flags & static_cast<uint8_t>(packet::Flag::kHasAck)) != 0;
+
+    if (hasAck && !_sentPackets.empty()) {
         LOG_DEBUG("Checking sent packets buffer...");
         _sentPackets.erase(header.acknowledgeId);
         for (int i = 0; i < 32; ++i) {
@@ -149,6 +151,10 @@ void Session::rawSend(Packet& packet,
     header.flags = static_cast<uint8_t>(packet.getReliability());
     header.packetSize = static_cast<uint16_t>(packet.getPayload().size());
     header.checksum = 0;  // todo: Implement CRC32 checksum
+
+    if (_hasReceivedRemotePacket) {
+        header.flags |= static_cast<uint8_t>(packet::Flag::kHasAck);
+    }
 
     const auto rawBuffer = std::make_shared<ByteBuffer>();
     const auto& payload = packet.getPayload();

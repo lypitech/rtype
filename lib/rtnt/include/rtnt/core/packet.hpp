@@ -28,6 +28,7 @@ enum class Flag : uint8_t
     kUnreliable = 1 << 0,  ///< Fire and forget. May be lost or arrive out of order.
     kReliable = 1 << 1,    ///< Guaranteed delivery. Will be resent until ACKed.
     kOrdered = 1 << 2,     ///< Guaranteed order. Will be buffered until previous packets arrive.
+    kHasAck = 1 << 3,      ///< Packets with this flag will have a valid ACK ID.
 };
 
 Flag operator&(Flag lhs,
