@@ -9,9 +9,13 @@ class Lobby;
 
 namespace level {
 
+static constexpr float BASE_INCOME = 2.0f;
+static constexpr float INCOME_MULTIPLIER = 2.0f;
+
 class Director
 {
 public:
+    Director() = default;
     void load(const std::string& config);
     void update(float dt,
                 Lobby& lobby);
@@ -19,9 +23,13 @@ public:
 private:
     std::vector<wave::Archetype> _wavePool;
     std::mt19937 _rng;
+    int _credits;
+    float _currentDifficulty;
+    float _gameTime;
+    std::vector<wave::Active> _activeWaves;
 
-    size_t _credits{0};
-    const wave::Archetype& pickRandomWave();
+    void pickRandomWaves();
+    std::vector<const wave::Archetype*> getPickedWaves();
     void parseArchetypes(const nlohmann::json& data);
     void pickNewWaveIfNeeded();
 };

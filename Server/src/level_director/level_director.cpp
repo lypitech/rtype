@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 
 #include "lobby/lobby.hpp"
+
 std::vector<level::Enemy> parseEnemies(const nlohmann::json& data)
 {
     if (!data.contains("enemies") || !data["enemies"].is_array()) {
@@ -54,4 +55,51 @@ void Director::load(const std::string& config)
         LOG_CRIT("[Error] JSON Type mismatch: {}", e.what());
     }
 }
+
+void Director::update(const float dt,
+                      Lobby& lobby)
+{
+    _gameTime += dt;
+
+    const float incomeRate = BASE_INCOME + (_gameTime / 60.0f) * INCOME_MULTIPLIER;
+    _credits += incomeRate * dt;
+
+    pickNewWaveIfNeeded();
+    if (_activeWaves.empty()) {
+        return;
+    }
+    for (int i = _activeWaves.size() - 1; i >= 0; --i) {
+        wave::Active& wave = _activeWaves[i];
+
+        if (wave.isFinished) {
+            _activeWaves.erase(_activeWaves.begin() + i);
+            continue;
+        }
+
+        wave.timer += dt;
+
+        if (wave.timer < wave.archetype->spawnInterval) {
+            continue;
+        }
+
+        wave.timer -= wave.archetype->spawnInterval;
+
+        const auto& group = wave.archetype->enemies[wave.currentGroupIndex];
+
+        std::uniform_real_distribution yDist(5.0f, 95.0f);
+        lobby.spawnEntity<components::Position>({150, yDist(_rng)});
+
+        wave.spawnedInGroup++;
+
+        if (wave.spawnedInGroup >= group.count) {
+            wave.spawnedInGroup = 0;
+            wave.currentGroupIndex++;
+
+            if (wave.currentGroupIndex >= wave.archetype->enemies.size()) {
+                wave.isFinished = true;
+            }
+        }
+    }
+}
+
 }  // namespace level
