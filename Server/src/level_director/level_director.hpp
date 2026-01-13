@@ -22,8 +22,8 @@ public:
 
 private:
     std::vector<wave::Archetype> _wavePool;
-    std::mt19937 _rng;
-    int _credits;
+    std::mt19937 _rng{1234};
+    float _credits;
     float _currentDifficulty;
     float _gameTime;
     std::vector<wave::Active> _activeWaves;
