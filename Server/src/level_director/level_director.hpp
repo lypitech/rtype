@@ -23,6 +23,7 @@ private:
     size_t _credits{0};
     const wave::Archetype& pickRandomWave();
     void parseArchetypes(const nlohmann::json& data);
+    void pickNewWaveIfNeeded();
 };
 
 }  // namespace level

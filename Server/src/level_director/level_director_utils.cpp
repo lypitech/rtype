@@ -52,6 +52,12 @@ void Director::pickRandomWaves()
         _currentWaves.push_back(selected);
         _credits -= selected->difficultyCost;
     }
+void Director::pickNewWaveIfNeeded()
+{
+    if (!_activeWaves.empty()) {
+        return;
+    }
+    pickRandomWaves();
 }
 
 }  // namespace level
