@@ -10,7 +10,7 @@
 namespace rtnt {
 
 /// @warning    Changing this is considered as a breaking change.
-static constexpr uint16_t PROTOCOL_ID = 0x1801;
+static constexpr uint16_t PROTOCOL_ID = 0x2204;
 
 /// @warning    Changing this is considered as a breaking change.
 ///
