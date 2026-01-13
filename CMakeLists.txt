@@ -32,6 +32,7 @@ endif()
 find_package(asio REQUIRED)
 find_package(raylib REQUIRED)
 find_package(imgui REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 if(BUILD_TESTS)
     enable_testing()

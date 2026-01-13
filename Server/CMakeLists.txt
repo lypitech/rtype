@@ -23,6 +23,7 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/lobby/lobby.cpp
     src/lobby/lobby_manager.cpp
+    src/level_director/level_director.cpp
     src/handlers/handle_user_input.cpp
     src/app.cpp
 )
@@ -34,9 +35,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 find_package(asio REQUIRED)
+find_package(nlohmann_json 3.12.0 REQUIRED)
 
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    nlohmann_json::nlohmann_json
     asio::asio
     rtnt
     rteng
