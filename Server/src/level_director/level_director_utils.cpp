@@ -4,45 +4,54 @@
 
 namespace level {
 
-std::vector<wave::Archetype*> Director::pickRandomWaves()
+void Director::pickRandomWaves()
 {
-    std::vector<wave::Archetype*> candidates;
-    size_t sum = 0;
-    const size_t minSpend = _credits / 2;
+    _currentWaves.clear();
+    while (_credits > 0) {
+        std::vector<const wave::Archetype*> candidates;
+        size_t totalWeight = 0;
+        const double minSpend = _credits * 0.5;
 
-    for (const auto& wave : _wavePool) {
-        if (wave.difficultyCost <= _credits && wave.difficultyCost >= minSpend) {
-            candidates.push_back(const_cast<std::vector<wave::Archetype*>::value_type>(&wave));
-            sum += wave.weight;
-        }
-    }
-
-    if (candidates.empty()) {
-        sum = 0;
         for (const auto& wave : _wavePool) {
-            if (wave.difficultyCost <= _credits) {
-                candidates.push_back(const_cast<std::vector<wave::Archetype*>::value_type>(&wave));
-                sum += wave.weight;
+            if (wave.difficultyCost <= _credits && wave.difficultyCost >= minSpend) {
+                candidates.push_back(&wave);
+                totalWeight += wave.weight;
             }
         }
-    }
 
-    if (candidates.empty() || sum == 0) {
-        return {};
-    }
-
-    std::uniform_int_distribution<size_t> dist(1, sum);
-    std::vector<const wave::Archetype*> bought;
-    size_t randomValue = dist(_rng);
-
-    for (const auto* wave : candidates) {
-        if (randomValue <= wave->weight) {
-            bought.push_back(wave);
+        if (candidates.empty()) {
+            totalWeight = 0;
+            for (const auto& wave : _wavePool) {
+                if (wave.difficultyCost <= _credits) {
+                    candidates.push_back(&wave);
+                    totalWeight += wave.weight;
+                }
+            }
         }
-        randomValue -= wave->weight;
-    }
 
-    return {candidates.back()};
+        if (candidates.empty() || totalWeight == 0) {
+            break;
+        }
+
+        std::uniform_int_distribution<size_t> dist(1, totalWeight);
+        size_t randomValue = dist(_rng);
+        const wave::Archetype* selected = nullptr;
+
+        for (const auto* wave : candidates) {
+            if (randomValue <= wave->weight) {
+                selected = wave;
+                break;
+            }
+            randomValue -= wave->weight;
+        }
+
+        if (!selected) {
+            selected = candidates.back();
+        }
+
+        _currentWaves.push_back(selected);
+        _credits -= selected->difficultyCost;
+    }
 }
 
 }  // namespace level
