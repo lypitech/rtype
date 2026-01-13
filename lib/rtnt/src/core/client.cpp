@@ -51,7 +51,7 @@ void Client::disconnect()
 
     if (_isConnected && _serverSession) {
         packet::internal::Disconnect packet{};
-        Packet packetToSend(packet::internal::Disconnect::kId, packet::Flag::kReliable);
+        Packet packetToSend(packet::internal::Disconnect::kId, packet::internal::Disconnect::kFlag);
         packetToSend << packet;
         _serverSession->send(packetToSend);
     }
