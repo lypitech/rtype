@@ -2,6 +2,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "enums/entity_types.hpp"
 #include "lobby/lobby.hpp"
 
 std::vector<level::Enemy> parseEnemies(const nlohmann::json& data)
@@ -12,7 +13,7 @@ std::vector<level::Enemy> parseEnemies(const nlohmann::json& data)
     std::vector<level::Enemy> enemies;
     for (const auto& e : data["enemies"]) {
         level::Enemy enemy;
-        enemy.type = e.at("type");
+        enemy.type = entity::StringToType.at(e.at("type"));
         enemy.patternName = e.at("pattern");
         enemy.count = e.at("count");
         enemies.push_back(enemy);
