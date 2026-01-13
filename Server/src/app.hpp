@@ -5,7 +5,6 @@
 #include "lobby/lobby_manager.hpp"
 #include "packets/client/join.hpp"
 #include "rtnt/core/server.hpp"
-#include "packets/client/join.hpp"
 
 namespace server {
 
