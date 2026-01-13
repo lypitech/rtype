@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME}
     src/lobby/lobby.cpp
     src/lobby/lobby_manager.cpp
     src/level_director/level_director.cpp
+    src/level_director/level_director_utils.cpp
     src/handlers/handle_user_input.cpp
     src/app.cpp
 )

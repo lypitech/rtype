@@ -15,11 +15,13 @@ int main(int argc,
 
     if (!p.hasFlag("-p")) {
         LOG_FATAL("No port specified, use \"-p {port}\".");
+        return 84;
     }
-    if (p.hasFlag("--graphical")) {
-        LOG_INFO("Running server with debug window. (unimplemented)");
+    if (!p.hasFlag("--config")) {
+        LOG_FATAL("No config specified, use \"--config {filepath}\".");
+        return 84;
     }
 
-    server::App server(p.getValue("-p").as<int>());
+    server::App server(p.getValue("-p").as<int>(), p.getValue("--config").as<std::string>());
     server.start();
 }
