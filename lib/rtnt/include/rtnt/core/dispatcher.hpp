@@ -67,7 +67,7 @@ private:
     friend class Server;
     friend class Client;
 
-    std::unordered_map<packet::Id, PacketHandler> _handlers;
+    std::unordered_map<packet::MessageId, PacketHandler> _handlers;
 
     template <typename T>
     void _internal_bind(std::function<void(const std::shared_ptr<Session>&,
@@ -93,7 +93,7 @@ private:
     void registerHandler(std::function<void(const std::shared_ptr<Session>&,
                                             const T&)> callback)
     {
-        packet::Id packetId = T::kId;
+        packet::MessageId packetId = T::kId;
 
         if (_handlers.contains(packetId)) {
             LOG_CRIT("Error binding Packet #{}: ID is already registered.", packetId);

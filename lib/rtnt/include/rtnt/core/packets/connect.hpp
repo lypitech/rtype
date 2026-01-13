@@ -9,7 +9,7 @@ namespace rtnt::core::packet::internal {
 
 struct Connect
 {
-    static constexpr Id kId = static_cast<uint16_t>(SystemMessageId::kConnect);
+    static constexpr MessageId kId = static_cast<uint16_t>(SystemMessageId::kConnect);
     static constexpr Flag kFlag = Flag::kUnreliable;
     static constexpr Name kName = INTERNAL_PACKET_NAME("CONNECT");
 

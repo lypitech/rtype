@@ -21,9 +21,10 @@ struct SentPacketInfo final
 {
     Packet packet;
     time_point<steady_clock> sentTime;
-    uint32_t sequenceId = 0;
-    uint32_t orderId = 0;
-    uint8_t retries = 0;
+    packet::SequenceId sequenceId = 0;
+    packet::OrderId orderId = 0;
+    uint8_t retries =
+        0;  // fixme: Careful because if the maximum limit is greater than this, then on est foutus
 };
 
 /**
@@ -86,8 +87,6 @@ public:
      */
     void disconnect();
 
-    // void sendAck();
-
     /**
      * @return  Session's unique ID.
      * @note    By default, ID is equal to 0. It is overwritten when handshake with the remote client has been done.
@@ -123,18 +122,18 @@ private:
     // RUDP state //
     bool _hasReceivedRemotePacket = false;
 
-    uint32_t _localSequenceId = 0;
-    uint32_t _remoteSequenceId = 0;
+    packet::SequenceId _localSequenceId = 0;
+    packet::SequenceId _remoteSequenceId = 0;
 
-    uint32_t _remoteAcknowledgeId = 0;
-    uint32_t _remoteAcknowledgeBitfield = 0;
+    packet::AcknowledgeId _remoteAcknowledgeId = 0;
+    packet::AcknowledgeBitfield _remoteAcknowledgeBitfield = 0;
 
-    uint32_t _localOrderId = 0;
-    uint32_t _nextExpectedOrderId = 0;
+    packet::OrderId _localOrderId = 0;
+    packet::OrderId _nextExpectedOrderId = 0;
 
-    std::map<uint32_t, Packet> _reorderBuffer;
-    std::map<uint32_t, SentPacketInfo> _sentPackets;
-    std::deque<uint32_t> _oldPacketHistory;
+    std::map<packet::OrderId, Packet> _reorderBuffer;
+    std::map<packet::SequenceId, SentPacketInfo> _sentPackets;
+    std::deque<packet::AcknowledgeId> _oldPacketHistory;
     mutable std::mutex _mutex;
 
     bool _hasUnsentAck = false;
@@ -145,13 +144,12 @@ private:
     bool _shouldClose = false;
 
     void rawSend(Packet& packet,
-                 uint32_t sequenceId,
-                 uint32_t orderId);
-    void updateAcknowledgeInfo(uint32_t sequenceId);
+                 packet::SequenceId sequenceId,
+                 packet::OrderId orderId);
     void _internal_sendAck();
     void _internal_disconnect();
 
-    bool isDuplicate(uint32_t sequenceId) const;
+    bool isDuplicate(packet::SequenceId sequenceId) const;
     void checkForOldPackets(std::shared_ptr<ByteBuffer> rawData,
                             const packet::Header& header);
 };

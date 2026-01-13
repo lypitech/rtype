@@ -16,8 +16,15 @@ class Session;
 
 namespace packet {
 
-using Id = uint16_t;
+using MessageId = uint16_t;
 using Name = std::string_view;
+using ProtocolId = uint16_t;
+using ProtocolVersion = uint16_t;
+using SequenceId = uint32_t;
+using OrderId = uint32_t;
+using AcknowledgeId = uint32_t;
+using AcknowledgeBitfield = uint32_t;
+using Checksum = uint32_t;
 
 /**
  * @enum    packet::Flag
@@ -84,19 +91,18 @@ inline std::string_view to_string(const Error error)
  */
 struct Header final
 {
-    uint16_t protocolId =
+    ProtocolId protocolId =
         PROTOCOL_ID;  ///< Magic number representing unique ID of the protocol, to avoid internet noise
-    uint16_t protocolVersion = PROTOCOL_VER;  ///< Protocol version, to reject mismatch peers
-    uint32_t sequenceId = 0;                  ///< The unique, incrementing ID of this packet
-    uint32_t orderId = 0;                     ///< The unique, incrementing order ID of this packet.
-    uint32_t acknowledgeId = 0;               ///< Sequence ID of the latest packet received
-    uint32_t acknowledgeBitfield =
-        0;               ///< Bitmask of the previous 32 received packets relative to acknowledge ID
-    Id messageId = 0x0;  ///< Command type (user-defined)
+    ProtocolVersion protocolVersion = PROTOCOL_VER;  ///< Protocol version, to reject mismatch peers
+    SequenceId sequenceId = 0;                       ///< The unique, incrementing ID of this packet
+    OrderId orderId = 0;              ///< The unique, incrementing order ID of this packet.
+    AcknowledgeId acknowledgeId = 0;  ///< Sequence ID of the latest packet received
+    AcknowledgeBitfield acknowledgeBitfield =
+    MessageId messageId = 0x0;  ///< Command type (user-defined)
     uint8_t flags =
         static_cast<uint8_t>(Flag::kUnreliable);  ///< Reliability flags (cf. packet::Flag)
     uint16_t packetSize = 0;                      ///< Size of the payload
-    uint32_t checksum = 0;                        ///< CRC32 checksum to avoid corruption
+    Checksum checksum = 0;                        ///< CRC32 checksum to avoid corruption
 
     /**
      * @brief   Converts all fields from either:
@@ -242,7 +248,7 @@ void verifyPacketData()
 
     using IdType = decltype(T::kId);
 
-    static_assert(std::is_same_v<const Id, IdType>,
+    static_assert(std::is_same_v<const MessageId, IdType>,
                   "Packet kId must be a 16-bit unsigned integer (uint16_t).");
 
     if constexpr (!requires { T::kName; }) {
@@ -268,7 +274,7 @@ void verifyUserPacketData()
 {
     verifyPacketData<T>();
 
-    static_assert(static_cast<const Id>(T::kId) >= 128,  // fixme: fix magic number
+    static_assert(static_cast<const MessageId>(T::kId) >= 128,  // fixme: fix magic number
                   "User-defined packet IDs must be >= 128.");
 }
 
@@ -286,7 +292,7 @@ void verifyInternalPacketData()
 {
     verifyPacketData<T>();
 
-    static_assert(static_cast<const Id>(T::kId) < 128,  // fixme: fix magic number
+    static_assert(static_cast<const MessageId>(T::kId) < 128,  // fixme: fix magic number
                   "Internal packet IDs must be < 128.");
 }
 
@@ -340,7 +346,7 @@ public:
      * @param   flag        Reliability mode
      * @param   channelId   Virtual channel ID // todo: implement channel id lol
      */
-    explicit Packet(const packet::Id id,
+    explicit Packet(const packet::MessageId id,
                     const packet::Flag flag = packet::Flag::kUnreliable,
                     const uint8_t channelId = 0)
         : _messageId(id),
@@ -350,7 +356,7 @@ public:
     }
 
     /// TMP!!
-    explicit Packet(const std::vector<uint8_t>& data)
+    explicit Packet(const ByteBuffer& data)
         : _buffer(data)
     {
     }
@@ -437,16 +443,16 @@ public:
         return *this << data;
     }
 
-    [[nodiscard]] uint16_t getId() const { return _messageId; }
+    [[nodiscard]] packet::MessageId getId() const { return _messageId; }
     [[nodiscard]] packet::Flag getReliability() const { return _flag; }
     [[nodiscard]] uint8_t getChannel() const { return _channelId; }
-    [[nodiscard]] const std::vector<uint8_t>& getPayload() const { return _buffer; }
+    [[nodiscard]] const ByteBuffer& getPayload() const { return _buffer; }
 
 private:
     friend class Session;
 
     // Metadata
-    uint16_t _messageId = 0x0;
+    packet::MessageId _messageId = 0x0;
     packet::Flag _flag = packet::Flag::kUnreliable;
     uint8_t _channelId = 0;
 
@@ -454,7 +460,7 @@ private:
     ByteBuffer _buffer{};
     size_t _readPosition = 0;
 
-    void _internal_setPayload(std::vector<uint8_t>&& data)
+    void _internal_setPayload(ByteBuffer&& data)
     {
         _buffer = std::move(data);
         _readPosition = 0;

@@ -6,7 +6,7 @@ namespace {
 
 struct Example
 {
-    static constexpr rtnt::core::packet::Id kId = 1801;
+    static constexpr rtnt::core::packet::MessageId kId = 1801;
     static constexpr rtnt::core::packet::Name kName = "EXAMPLE";
     static constexpr rtnt::core::packet::Flag kFlag = rtnt::core::packet::Flag::kOrdered;
 
