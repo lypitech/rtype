@@ -4,17 +4,14 @@
 
 namespace packet {
 
-using packetId = rtnt::core::packet::Id;
-
 /**
  * @struct packet::UpdateHealth
  *
  * @brief Update the health of an entity.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct UpdateHealth
 {
-    static constexpr auto kId = static_cast<packetId>(type::Server::kUpdateHealth);
+    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Server::kUpdateHealth);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr rtnt::core::packet::Name kName = "UPDATE_HEALTH";
 

@@ -1,27 +1,18 @@
 #pragma once
 
-#include <format>
+#include <cstring>
 #include <limits>
 #include <type_traits>
 #include <vector>
 
-#if defined(_WIN32)
-#include <winsock2.h>
-#elif defined(__linux__)
-#include <arpa/inet.h>
-
-#include <cstring>
-#endif
-
 #include "logger/Logger.h"
 #include "rtnt/common/constants.hpp"
+#include "rtnt/common/utils.hpp"
 
 namespace rtnt::core {
 
 class Packet;  // Forward declaration needed for packet::Reader
 class Session;
-
-using ByteBuffer = std::vector<uint8_t>;
 
 namespace packet {
 
@@ -90,7 +81,7 @@ inline std::string_view to_string(const Error error)
 struct Header final
 {
     uint16_t protocolId =
-        PROTOCOL_ID;  ///< Magic number representig unique ID of the protocol, to avoid internet noise
+        PROTOCOL_ID;  ///< Magic number representing unique ID of the protocol, to avoid internet noise
     uint16_t protocolVersion = PROTOCOL_VER;  ///< Protocol version, to reject mismatch peers
     uint32_t sequenceId = 0;                  ///< The unique, incrementing ID of this packet
     uint32_t acknowledgeId = 0;               ///< Sequence ID of the latest packet received
@@ -103,37 +94,21 @@ struct Header final
     uint32_t checksum = 0;                        ///< CRC32 checksum to avoid corruption
 
     /**
-     * @brief   Converts all fields from Host Byte Order (Little Endian)
-     *          to Network Byte Order (Big Endian) IN PLACE.
+     * @brief   Converts all fields from either:
+     * - Host Byte Order (Little Endian) --> Network Byte Order (Big Endian)
+     * - Network Byte Order (Big Endian) --> Host Byte Order (Little Endian)
      */
-    void toNetwork()
+    void convertEndianness()
     {
-        protocolId = htons(protocolId);
-        protocolVersion = htons(protocolVersion);
-        sequenceId = htonl(sequenceId);
-        acknowledgeId = htonl(acknowledgeId);
-        acknowledgeBitfield = htonl(acknowledgeBitfield);
-        messageId = htons(messageId);
+        protocolId = endian::swap(protocolId);
+        protocolVersion = endian::swap(protocolVersion);
+        sequenceId = endian::swap(sequenceId);
+        acknowledgeId = endian::swap(acknowledgeId);
+        acknowledgeBitfield = endian::swap(acknowledgeBitfield);
+        messageId = endian::swap(messageId);
         // flags is uint8_t, no conversion needed
-        packetSize = htons(packetSize);
-        checksum = htonl(checksum);
-    }
-
-    /**
-     * @brief   Converts all fields from Network Byte Order (Big Endian)
-     *          to Host Byte Order (Little Endian) IN PLACE.
-     */
-    void toHost()
-    {
-        protocolId = ntohs(protocolId);
-        protocolVersion = ntohs(protocolVersion);
-        sequenceId = ntohl(sequenceId);
-        acknowledgeId = ntohl(acknowledgeId);
-        acknowledgeBitfield = ntohl(acknowledgeBitfield);
-        messageId = ntohs(messageId);
-        // flags is uint8_t, no conversion needed
-        packetSize = ntohs(packetSize);
-        checksum = ntohl(checksum);
+        packetSize = endian::swap(packetSize);
+        checksum = endian::swap(checksum);
     }
 
     /**
@@ -387,7 +362,8 @@ public:
                      Packet&>
     operator<<(const T& data)
     {
-        append(&data, sizeof(T));
+        T networkData = endian::swap(data);
+        append(&networkData, sizeof(T));
         return *this;
     }
 
@@ -422,7 +398,10 @@ public:
             throw std::runtime_error("Packet Underflow");
         }
 
-        std::memcpy(&data, _buffer.data() + _readPosition, sizeof(T));
+        T networkData;
+
+        std::memcpy(&networkData, _buffer.data() + _readPosition, sizeof(T));
+        data = endian::swap(networkData);
         _readPosition += sizeof(T);
         return *this;
     }

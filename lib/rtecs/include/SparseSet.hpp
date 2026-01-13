@@ -2,6 +2,7 @@
 
 #include <sys/types.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -200,7 +201,7 @@ bool SparseSet<Component>::has(const size_t id) const noexcept
     if (page >= _sparsePages.size()) {
         return false;
     }
-    return _sparsePages[page][sparseIndex].has_value();
+    return _sparsePages[page].at(sparseIndex).has_value();
 }
 
 template <typename Component>
@@ -238,7 +239,7 @@ void SparseSet<Component>::remove(const size_t id) noexcept
 
     const size_t targetPage = PAGE_OF(id, kPageSize);
     const size_t targetSparseIndex = INDEX_OF(id, kPageSize);
-    OptionalSparseElement optionalTargetIndex = _sparsePages[targetPage][targetSparseIndex];
+    OptionalSparseElement optionalTargetIndex = _sparsePages[targetPage].at(targetSparseIndex);
 
     if (!optionalTargetIndex.has_value()) {
         return;
@@ -256,7 +257,7 @@ void SparseSet<Component>::remove(const size_t id) noexcept
 
     _dense.pop_back();
     _entities.pop_back();
-    _sparsePages[targetPage][targetSparseIndex] = kNullSparseElement;
+    _sparsePages[targetPage].at(targetSparseIndex) = kNullSparseElement;
 }
 
 template <typename Component>

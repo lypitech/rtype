@@ -4,17 +4,14 @@
 
 namespace packet {
 
-using packetId = rtnt::core::packet::Id;
-
 /**
  * @struct packet::Destroy
  *
  * @brief Notify the client of the destruction of an entity.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct Destroy
 {
-    static constexpr auto kId = static_cast<packetId>(type::Server::kDestroy);
+    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Server::kDestroy);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr rtnt::core::packet::Name kName = "DESTROY";
 

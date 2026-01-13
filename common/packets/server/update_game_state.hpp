@@ -5,17 +5,14 @@
 
 namespace packet {
 
-using packetId = rtnt::core::packet::Id;
-
 /**
  * @struct packet::UpdateGameState
  *
  * @brief Updates the state of the game.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct UpdateGameState
 {
-    static constexpr auto kId = static_cast<packetId>(type::Server::kUpdateGameState);
+    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Server::kUpdateGameState);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "UPDATE_GAME_STATE";
 

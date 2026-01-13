@@ -4,17 +4,14 @@
 
 namespace packet {
 
-using packetId = rtnt::core::packet::Id;
-
 /**
  * @struct packet::PlayerJoin
  *
  * @brief Notify a client about a joining player.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct PlayerJoin
 {
-    static constexpr auto kId = static_cast<packetId>(type::Server::kPlayerJoin);
+    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Server::kPlayerJoin);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "PLAYER_JOIN";
 

@@ -1,3 +1,4 @@
+#include "app.hpp"
 #include "cli_parser.hpp"
 #include "logger/Logger.h"
 #include "logger/Sinks/LogFileSink.h"
@@ -7,16 +8,18 @@ int main(int argc,
          const char** argv)
 {
     Logger::getInstance().addSink<logger::ConsoleSink>();
-    Logger::getInstance().addSink<logger::LogFileSink>("logs/latest.log");
+    // Logger::getInstance().addSink<logger::LogFileSink>("logs/latest.log");
 
-    Logger::initialize(
-        "R-Type Server", argc, const_cast<const char**>(argv), logger::BuildInfo::fromCMake());
+    Logger::initialize("R-Type Server", argc, argv, logger::BuildInfo::fromCMake());
     cli_parser::Parser p(argc, argv);
 
-    rteng::GameEngine eng(p.getValue("-p").as<int>());
-    eng.init();
-    eng.run();
-    LOG_INFO("Shutting down server.");
+    if (!p.hasFlag("-p")) {
+        LOG_FATAL("No port specified, use \"-p {port}\".");
+    }
+    if (p.hasFlag("--graphical")) {
+        LOG_INFO("Running server with debug window. (unimplemented)");
+    }
 
-    return 0;
+    server::App server(p.getValue("-p").as<int>());
+    server.start();
 }
