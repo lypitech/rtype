@@ -21,8 +21,10 @@ public:
     /**
      * @brief Creates a server listening to specified port.
      * @param port The port to listen to.
+     * @param config The wave configuration file.
      */
-    explicit App(unsigned short port);
+    explicit App(unsigned short port,
+                 const std::string& config);
     ~App();
 
     /**

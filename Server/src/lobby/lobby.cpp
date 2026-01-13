@@ -96,8 +96,9 @@ void Lobby::stop()
     }
 }
 
-void Lobby::start()
+void Lobby::start(const std::string& config)
 {
+    _levelDirector.load(config);
     _isRunning = true;
     _thread = std::thread(&Lobby::run, this);
     _thread.detach();
@@ -135,6 +136,7 @@ void Lobby::run()
 
         while (lag >= server::TIME_PER_TICK) {
             _engine.runOnce(server::TIME_PER_TICK);
+            _levelDirector.update(server::TIME_PER_TICK, *this);
             lag -= server::TIME_PER_TICK;
         }
 
