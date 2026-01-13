@@ -20,6 +20,8 @@ private:
     std::vector<wave::Archetype> _wavePool;
     std::mt19937 _rng;
 
+    size_t _credits{0};
+    const wave::Archetype& pickRandomWave();
     void parseArchetypes(const nlohmann::json& data);
 };
 
