@@ -17,7 +17,7 @@ static constexpr uint16_t PROTOCOL_ID = 0x1801;
 /// todo: Prone to change
 static constexpr uint16_t PROTOCOL_VER = 0x0002;
 
-static constexpr uint8_t MAX_RECONNECTION_RETRIES = 3;
+static constexpr uint8_t MAX_RECONNECTION_ATTEMPTS = 3;
 
 static constexpr auto RECONNECTION_TIMEOUT = std::chrono::milliseconds(2000);
 

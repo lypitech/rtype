@@ -86,17 +86,17 @@ void Client::update(milliseconds timeout)
             bool sessionFailed = session->shouldClose();
 
             if (timedOut || sessionFailed) {
-                if (_reconnectionRetries < MAX_RECONNECTION_RETRIES) {
+                if (_reconnectionRetries < MAX_RECONNECTION_ATTEMPTS) {
                     _reconnectionRetries++;
                     LOG_WARN("Connection attempt {}/{} timed out ({} delay). Retrying...",
                              _reconnectionRetries,
-                             MAX_RECONNECTION_RETRIES,
+                             MAX_RECONNECTION_ATTEMPTS,
                              RECONNECTION_TIMEOUT);
                     _internal_attemptConnection();
                     return;
                 }
                 LOG_FATAL("Could not connect to server after {} attempts. Aborting.",
-                          MAX_RECONNECTION_RETRIES);
+                          MAX_RECONNECTION_ATTEMPTS);
                 _serverSession.reset();
             }
         }
