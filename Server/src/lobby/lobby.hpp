@@ -3,6 +3,7 @@
 #include <variant>
 
 #include "concurrent_queue.hpp"
+#include "level_director/level_director.hpp"
 #include "packets/server/destroy.hpp"
 #include "packets/server/join_ack.hpp"
 #include "packets/server/spawn.hpp"
@@ -74,8 +75,9 @@ public:
 
     /**
      * @brief Start this lobby.
+     * @param config The wave configuration file.
      */
-    void start();
+    void start(const std::string& config);
 
     /**
      * @brief Stop this lobby.
@@ -90,6 +92,7 @@ private:
     std::unordered_map<packet::server::SessionPtr, rtecs::EntityID> _players;
     std::atomic<bool> _isRunning;
     std::thread _thread;
+    level::Director _levelDirector;
 
     void run();
     std::vector<packet::server::SessionPtr> getAllSessions() const;

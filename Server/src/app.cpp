@@ -6,10 +6,12 @@
 
 namespace server {
 
-App::App(const unsigned short port)
+App::App(const unsigned short port,
+         const std::string& config = "")
     : _server(_context,
               port),
-      _lobbyManager(_outGoing)
+      _lobbyManager(_outGoing,
+                    config)
 {
     registerCallbacks();
     _server.onConnect(

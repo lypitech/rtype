@@ -4,8 +4,10 @@
 
 namespace lobby {
 
-Manager::Manager(packet::server::OutGoingQueue& outGoing)
-    : _outGoing(outGoing)
+Manager::Manager(packet::server::OutGoingQueue& outGoing,
+                 const std::string& config)
+    : _outGoing(outGoing),
+      _config(config)
 {
 }
 
@@ -14,7 +16,7 @@ Id Manager::createLobby()
     std::unique_lock lock(_mutex);
     static Id nbLobbies = 0;
     _lobbies.emplace(nbLobbies, std::make_unique<Lobby>(nbLobbies, _outGoing));
-    _lobbies.at(nbLobbies)->start();
+    _lobbies.at(nbLobbies)->start(_config);
     return nbLobbies++;
 }
 
