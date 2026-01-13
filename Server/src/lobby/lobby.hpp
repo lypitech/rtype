@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <variant>
 
+#include "components/factory.hpp"
 #include "components/position.hpp"
 #include "concurrent_queue.hpp"
 #include "level_director/level_director.hpp"
@@ -116,6 +117,27 @@ public:
      * @param packet The packet to send.
      */
     void broadcast(const packet::server::Variant& packet) const;
+
+    /**
+     * @brief Create an entity and broadcasts it's creation.
+     * @tparam Components The types of the components to add to the entity.
+     * @param components The value of the components.
+     * @param session The session triggering the creation (nullptr if none).
+     */
+    template <typename... Components>
+    void spawnEntity(Components&&... components,
+                     const packet::server::SessionPtr session = nullptr)
+    {
+        const rtecs::EntityID id = _engine.registerEntity<std::decay_t<Components>...>(
+            nullptr, std::forward<Components>(components)...);
+        if (session) {
+            _players[session] = id;
+        }
+        const auto& [bitset, content] = components::getEntityComponentsInfos(
+            components::GameComponents{}, *_engine.getEcs(), id);
+        packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
+        broadcast(p);
+    };
 
     /**
      * @brief Getter for the gameEngine.

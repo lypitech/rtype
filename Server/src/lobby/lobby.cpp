@@ -59,14 +59,9 @@ void Lobby::join(const packet::server::SessionPtr& session)
 {
     _actionQueue.push([this, session](Lobby&) {
         LOG_INFO("Joining lobby.");
-        rtecs::EntityID id = _engine.registerEntity<components::Position, components::Type>(
-            nullptr, {10, 10}, {entity::Type::kPlayer});
-        _players[session] = id;
-        const auto& [bitset, content] = components::getEntityComponentsInfos(
-            components::GameComponents{}, *_engine.getEcs(), id);
-        packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
-        broadcast(p);
-        packet::JoinAck j = {static_cast<uint32_t>(id), true};
+        spawnEntity<components::Position, components::Type>(
+            {10, 10}, {entity::Type::kPlayer}, session);
+        packet::JoinAck j = {static_cast<uint32_t>(_players.at(session)), true};
         send(session, j);
     });
 }
