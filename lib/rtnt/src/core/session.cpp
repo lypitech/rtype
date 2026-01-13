@@ -211,7 +211,7 @@ void Session::update()
 
         LOG_DEBUG("Iterating over packet ordID = {}", info.orderId);
         if (now - info.sentTime > packet::RESEND_TIMEOUT) {
-            if (info.retries >= packet::MAX_RESEND_RETRIES) {
+            if (info.retries >= packet::MAX_RESEND_ATTEMPTS) {
                 LOG_FATAL("Connection lost (Packet #{} retries exceeded).", info.packet._messageId);
                 _internal_disconnect();
                 return;
@@ -220,7 +220,7 @@ void Session::update()
             LOG_TRACE_R2("Resending packet #{} ({}/{} retry, sequence ID = {} ; order ID = {})",
                          info.packet._messageId,
                          info.retries,
-                         packet::MAX_RESEND_RETRIES,
+                         packet::MAX_RESEND_ATTEMPTS,
                          info.sequenceId,
                          info.orderId);
             rawSend(info.packet, info.sequenceId, info.orderId);

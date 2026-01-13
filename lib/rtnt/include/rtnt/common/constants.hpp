@@ -36,7 +36,7 @@ static constexpr auto ACK_TIMEOUT = std::chrono::milliseconds(100);
 
 static constexpr auto RESEND_TIMEOUT = std::chrono::milliseconds(200);
 
-static constexpr uint8_t MAX_RESEND_RETRIES =
+static constexpr uint8_t MAX_RESEND_ATTEMPTS =
 #if defined(RTNT_TESTS)
     1 << 7;
 #else
