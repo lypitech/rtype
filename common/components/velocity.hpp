@@ -2,13 +2,15 @@
 
 namespace components {
 
-struct Velocity {
+struct Velocity
+{
     float vx = 0.0f;
     float vy = 0.0f;
 
     template <typename Archive>
-    void serialize(Archive& ar) {
+    void serialize(Archive& ar)
+    {
         ar & vx & vy;
     }
 };
-}
+}  // namespace components

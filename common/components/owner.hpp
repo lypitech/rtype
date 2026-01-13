@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+
 #include "rtecs/rtecs.hpp"
 
 namespace components {
