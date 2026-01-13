@@ -24,11 +24,11 @@ std::vector<level::Enemy> parseEnemies(const nlohmann::json& data)
 namespace level {
 void Director::parseArchetypes(const nlohmann::json& data)
 {
-    if (!data.contains("wave") || !data["wave"].is_array()) {
+    if (!data.contains("waves") || !data["waves"].is_array()) {
         LOG_CRIT("[ERROR]: Wave object should be an array.");
         return;
     }
-    for (const auto& wave : data["wave"]) {
+    for (const auto& wave : data["waves"]) {
         wave::Archetype archetype;
         archetype.name = wave.at("id");
         archetype.difficultyCost = wave.at("cost");
