@@ -17,14 +17,23 @@ namespace wave {
 
 struct Archetype
 {
-    std::string name;       // "Swarm_A" (Good for debugging logs)
-    size_t difficultyCost;  // The price to "buy" this wave
-    size_t weight;          // Probability chance (Higher = more frequent)
+    std::string name;
+    int difficultyCost;
+    size_t weight;
 
-    float spawnInterval;  // Time to wait between individual enemy spawns
-    float postWaveDelay;  // Time to wait AFTER this wave finishes before the next starts
+    float spawnInterval;
+    float postWaveDelay;
 
     std::vector<Enemy> enemies;
+};
+
+struct Active
+{
+    const Archetype* archetype;
+    float timer = 0.0f;
+    size_t currentGroupIndex = 0;
+    int spawnedInGroup = 0;
+    bool isFinished = false;
 };
 
 }  // namespace wave
