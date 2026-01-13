@@ -4,30 +4,44 @@
 
 namespace level {
 
-const wave::Archetype& Director::pickRandomWave()
+const wave::Archetype* Director::pickRandomWave()
 {
-    std::vector<const wave::Archetype*> affordable;
+    std::vector<const wave::Archetype*> candidates;
     size_t sum = 0;
+    const size_t minSpend = _credits / 2;
 
     for (const auto& wave : _wavePool) {
-        if (_credits >= wave.difficultyCost) {
-            affordable.push_back(&wave);
+        if (wave.difficultyCost <= _credits && wave.difficultyCost >= minSpend) {
+            candidates.push_back(&wave);
             sum += wave.weight;
         }
     }
-    if (sum == 0) {
-        return _wavePool[0];
+
+    if (candidates.empty()) {
+        sum = 0;
+        for (const auto& wave : _wavePool) {
+            if (wave.difficultyCost <= _credits) {
+                candidates.push_back(&wave);
+                sum += wave.weight;
+            }
+        }
     }
+
+    if (candidates.empty() || sum == 0) {
+        return nullptr;
+    }
+
     std::uniform_int_distribution<size_t> dist(1, sum);
     size_t randomValue = dist(_rng);
 
-    for (const auto* wave : affordable) {
+    for (const auto* wave : candidates) {
         if (randomValue <= wave->weight) {
-            return *wave;
+            return wave;
         }
         randomValue -= wave->weight;
     }
-    return *affordable.back();
+
+    return candidates.back();
 }
 
 }  // namespace level
