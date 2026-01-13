@@ -30,15 +30,11 @@ void Director::parseArchetypes(const nlohmann::json& data)
         wave::Archetype archetype;
         archetype.name = wave.at("id");
         archetype.difficultyCost = wave.at("cost");
-        archetype.spawnTime = wave.at("time");
+        archetype.postWaveDelay = wave.at("delay");
         archetype.spawnInterval = wave.at("interval");
         archetype.enemies = parseEnemies(wave);
         _wavePool.push_back(archetype);
     }
-    using arch = const wave::Archetype;
-    std::sort(_wavePool.begin(), _wavePool.end(), [](arch& a, arch& b) {
-        return a.spawnTime < b.spawnTime;
-    });
 }
 
 void Director::load(const std::string& config)
