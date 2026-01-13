@@ -28,16 +28,16 @@ TEST_F(NetworkTest,
 {
     const uint32_t packetAmount = 50;
 
-    client->setSimulatedPacketLossPercentage(80);
-
     std::vector<uint32_t> receivedIndices;
+    bool hasDisconnected = false;
 
     server->getPacketDispatcher().bind<Example>([&](const auto& /*session*/, const Example& pkt) {
         LOG_DEBUG("Received packet, with body: [{}]", pkt.x);
         receivedIndices.push_back(pkt.x);
     });
 
-    client->onDisconnect([&]() { ASSERT_TRUE(false) << "Client disconnected for some reason."; });
+    client->onConnect([&]() { client->setSimulatedPacketLossPercentage(65); });
+    client->onDisconnect([&]() { hasDisconnected = true; });
 
     client->connect("127.0.0.1", 4242);
     ASSERT_TRUE(waitFor([&]() { return client->isConnected(); }, std::chrono::seconds(10)))
@@ -52,9 +52,12 @@ TEST_F(NetworkTest,
     }
 
     bool finished =
-        waitFor([&]() { return receivedIndices.size() >= packetAmount; }, std::chrono::seconds(50));
+        waitFor([&]() { return receivedIndices.size() >= packetAmount || hasDisconnected; },
+                std::chrono::seconds(50));
 
     auto after = std::chrono::steady_clock::now();
+
+    ASSERT_FALSE(hasDisconnected) << "Client disconnected unexpectedly.";
 
     ASSERT_TRUE(finished) << "Timeout: Only received " << receivedIndices.size() << "/"
                           << packetAmount << " packets.";
