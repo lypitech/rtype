@@ -72,14 +72,14 @@ void Peer::sendToTarget(const udp::endpoint &target,
         std::uniform_int_distribution dist(1, 100);
 
         if (dist(gen) <= lossPercent) {
-            LOG_WARN("Packet has been dropped for simulation purposes.");
+            LOG_DEBUG("Packet has been dropped for simulation purposes.");
             return;
         }
     }
 #endif
 
     _socket.async_send_to(
-        asio::buffer(*data), target, [target, data](std::error_code ec, size_t bytesSent) {
+        asio::buffer(*data), target, [target](std::error_code ec, size_t bytesSent) {
             if (ec) {
                 LOG_ERR("Encountered an error while sending data: {}.", ec.message());
                 return;

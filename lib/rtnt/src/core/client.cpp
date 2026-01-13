@@ -88,7 +88,7 @@ void Client::update(milliseconds timeout)
             if (timedOut || sessionFailed) {
                 if (_reconnectionRetries < MAX_RECONNECTION_RETRIES) {
                     _reconnectionRetries++;
-                    LOG_WARN("Connection attempt {}/{} timed out ({}ms delay). Retrying...",
+                    LOG_WARN("Connection attempt {}/{} timed out ({} delay). Retrying...",
                              _reconnectionRetries,
                              MAX_RECONNECTION_RETRIES,
                              RECONNECTION_TIMEOUT);
@@ -180,6 +180,7 @@ void Client::_internal_registerInternalPacketHandlers()
                 }
 
                 LOG_DEBUG("Handshake success. Assigned Session ID: {}", packet.assignedSessionId);
+                LOG_INFO("Successfully connected to server.");
                 this->_isConnected = true;
             }
 
