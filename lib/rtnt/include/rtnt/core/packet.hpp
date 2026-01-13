@@ -16,7 +16,7 @@ class Session;
 
 namespace packet {
 
-using MessageId = uint16_t;
+using Id = uint16_t;
 using Name = std::string_view;
 using ProtocolId = uint16_t;
 using ProtocolVersion = uint16_t;
@@ -99,8 +99,8 @@ struct Header final
     OrderId orderId = 0;              ///< The unique, incrementing order ID of this packet.
     AcknowledgeId acknowledgeId = 0;  ///< Sequence ID of the latest packet received
     AcknowledgeBitfield acknowledgeBitfield =
-        0;  ///< Bitmask of the previous 32 received packets relative to acknowledge ID
-    MessageId messageId = 0x0;  ///< Command type (user-defined)
+        0;               ///< Bitmask of the previous 32 received packets relative to acknowledge ID
+    Id messageId = 0x0;  ///< Command type (user-defined)
     uint8_t flags =
         static_cast<uint8_t>(Flag::kUnreliable);  ///< Reliability flags (cf. packet::Flag)
     uint16_t packetSize = 0;                      ///< Size of the payload
@@ -250,7 +250,7 @@ void verifyPacketData()
 
     using IdType = decltype(T::kId);
 
-    static_assert(std::is_same_v<const MessageId, IdType>,
+    static_assert(std::is_same_v<const Id, IdType>,
                   "Packet kId must be a 16-bit unsigned integer (uint16_t).");
 
     if constexpr (!requires { T::kName; }) {
@@ -276,7 +276,7 @@ void verifyUserPacketData()
 {
     verifyPacketData<T>();
 
-    static_assert(static_cast<const MessageId>(T::kId) >= 128,  // fixme: fix magic number
+    static_assert(static_cast<const Id>(T::kId) >= 128,  // fixme: fix magic number
                   "User-defined packet IDs must be >= 128.");
 }
 
@@ -294,7 +294,7 @@ void verifyInternalPacketData()
 {
     verifyPacketData<T>();
 
-    static_assert(static_cast<const MessageId>(T::kId) < 128,  // fixme: fix magic number
+    static_assert(static_cast<const Id>(T::kId) < 128,  // fixme: fix magic number
                   "Internal packet IDs must be < 128.");
 }
 
@@ -348,7 +348,7 @@ public:
      * @param   flag        Reliability mode
      * @param   channelId   Virtual channel ID // todo: implement channel id lol
      */
-    explicit Packet(const packet::MessageId id,
+    explicit Packet(const packet::Id id,
                     const packet::Flag flag = packet::Flag::kUnreliable,
                     const uint8_t channelId = 0)
         : _messageId(id),
@@ -445,7 +445,7 @@ public:
         return *this << data;
     }
 
-    [[nodiscard]] packet::MessageId getId() const { return _messageId; }
+    [[nodiscard]] packet::Id getId() const { return _messageId; }
     [[nodiscard]] packet::Flag getReliability() const { return _flag; }
     [[nodiscard]] uint8_t getChannel() const { return _channelId; }
     [[nodiscard]] const ByteBuffer& getPayload() const { return _buffer; }
@@ -454,7 +454,7 @@ private:
     friend class Session;
 
     // Metadata
-    packet::MessageId _messageId = 0x0;
+    packet::Id _messageId = 0x0;
     packet::Flag _flag = packet::Flag::kUnreliable;
     uint8_t _channelId = 0;
 

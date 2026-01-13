@@ -67,7 +67,7 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
         return readyPackets;
     }
 
-    if (header.messageId == static_cast<packet::MessageId>(packet::SystemMessageId::kRichAck)) {
+    if (header.messageId == static_cast<packet::Id>(packet::SystemMessageId::kRichAck)) {
         LOG_TRACE_R3("Received RICH_ACK packet");
 
         checkForOldPackets(rawData, header);
@@ -77,7 +77,7 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
     size_t payloadSize = rawData->size() - sizeof(packet::Header);
 
     if (payloadSize == 0 &&
-        header.messageId == static_cast<packet::MessageId>(packet::SystemMessageId::kAck)) {
+        header.messageId == static_cast<packet::Id>(packet::SystemMessageId::kAck)) {
         LOG_TRACE_R3("Received ACK packet, stopping.");
         return readyPackets;
     }
@@ -253,11 +253,11 @@ void Session::_internal_sendAck()
         LOG_DEBUG("History contains things, so we're gonna send RICH_ACK lol");
         packet::internal::RichAck ack{.oobAcks = _oldPacketHistory};
 
-        p = Packet(static_cast<packet::MessageId>(packet::SystemMessageId::kRichAck));
+        p = Packet(static_cast<packet::Id>(packet::SystemMessageId::kRichAck));
         p << ack;
     } else {
         LOG_DEBUG("Ahh it's empty, sending simple ACK...");
-        p = Packet(static_cast<packet::MessageId>(packet::SystemMessageId::kAck));
+        p = Packet(static_cast<packet::Id>(packet::SystemMessageId::kAck));
     }
     LOG_DEBUG("Raw send");
     rawSend(p, sequenceId, 0);

@@ -16,7 +16,7 @@ namespace rtnt::core::packet::internal {
  */
 struct ConnectAck
 {
-    static constexpr MessageId kId = static_cast<uint16_t>(SystemMessageId::kConnectAck);
+    static constexpr Id kId = static_cast<uint16_t>(SystemMessageId::kConnectAck);
     static constexpr Flag kFlag = Flag::kUnreliable;
     static constexpr Name kName = INTERNAL_PACKET_NAME("CONNECT_ACK");
 
