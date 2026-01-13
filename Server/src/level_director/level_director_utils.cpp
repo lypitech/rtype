@@ -6,7 +6,21 @@ namespace level {
 
 void Director::pickRandomWaves()
 {
-    _currentWaves.clear();
+    std::vector<const wave::Archetype*> candidates = getPickedWaves();
+
+    for (const auto& arch : candidates) {
+        wave::Active instance;
+        instance.archetype = arch;
+        std::uniform_real_distribution<float> delay(0.0f, 2.0f);
+        instance.timer = -delay(_rng);
+        _activeWaves.push_back(instance);
+    }
+}
+
+std::vector<const wave::Archetype*> Director::getPickedWaves()
+{
+    std::vector<const wave::Archetype*> waves;
+
     while (_credits > 0) {
         std::vector<const wave::Archetype*> candidates;
         size_t totalWeight = 0;
@@ -49,9 +63,12 @@ void Director::pickRandomWaves()
             selected = candidates.back();
         }
 
-        _currentWaves.push_back(selected);
+        waves.push_back(selected);
         _credits -= selected->difficultyCost;
     }
+    return waves;
+}
+
 void Director::pickNewWaveIfNeeded()
 {
     if (!_activeWaves.empty()) {
