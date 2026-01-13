@@ -149,6 +149,7 @@ private:
                  uint32_t orderId);
     void updateAcknowledgeInfo(uint32_t sequenceId);
     void _internal_sendAck();
+    void _internal_disconnect();
 
     bool isDuplicate(uint32_t sequenceId) const;
     void checkForOldPackets(std::shared_ptr<ByteBuffer> rawData,

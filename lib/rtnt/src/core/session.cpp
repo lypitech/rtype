@@ -213,13 +213,14 @@ void Session::update()
         if (now - info.sentTime > packet::RESEND_TIMEOUT) {
             if (info.retries >= packet::MAX_RESEND_RETRIES) {
                 LOG_FATAL("Connection lost (Packet #{} retries exceeded).", info.packet._messageId);
-                disconnect();
+                _internal_disconnect();
                 return;
             }
 
-            LOG_TRACE_R2("Resending packet #{} ({}th retry, sequence ID = {} ; order ID = {})",
+            LOG_TRACE_R2("Resending packet #{} ({}/{} retry, sequence ID = {} ; order ID = {})",
                          info.packet._messageId,
                          info.retries,
+                         packet::MAX_RESEND_RETRIES,
                          info.sequenceId,
                          info.orderId);
             rawSend(info.packet, info.sequenceId, info.orderId);
@@ -239,7 +240,7 @@ void Session::update()
 void Session::disconnect()
 {
     std::lock_guard lock(_mutex);
-    this->_shouldClose = true;
+    _internal_disconnect();
 }
 
 void Session::_internal_sendAck()
@@ -261,6 +262,8 @@ void Session::_internal_sendAck()
     LOG_DEBUG("Raw send");
     rawSend(p, sequenceId, 0);
 }
+
+void Session::_internal_disconnect() { this->_shouldClose = true; }
 
 void Session::updateAcknowledgeInfo(uint32_t sequenceId)
 {
