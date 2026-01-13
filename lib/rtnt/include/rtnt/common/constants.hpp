@@ -36,8 +36,8 @@ namespace core::packet {
 
 static constexpr std::string_view UNKNOWN_PACKET_NAME = "__rtnt_UNKNOWN";
 
-/// @brief  Amount of time a packet will be considered not acknowledged by the remote peer.
-/// If reached, the packet will automatically be resent.
+/// @brief  Maximum timespan a peer can remain silent. If no packets are being sent, an ACK packet
+///         will automatically be.
 ///
 /// todo: Prone to change
 static constexpr auto ACK_TIMEOUT = std::chrono::milliseconds(100);
