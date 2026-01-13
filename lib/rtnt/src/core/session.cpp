@@ -313,9 +313,9 @@ void Session::updateAcknowledgeInfo(uint32_t sequenceId)
             if (it == _oldPacketHistory.end()) {  // if not in the history, then add it
                 LOG_DEBUG("Not in the history, adding it to history.");
                 _oldPacketHistory.push_back(sequenceId);
-                // if (_oldPacketHistory.size() > packet::MAX_PACKET_HISTORY_SIZE) {
-                //     _oldPacketHistory.pop_front();
-                // }
+                if (_oldPacketHistory.size() > packet::MAX_PACKET_HISTORY_SIZE) {
+                    _oldPacketHistory.pop_front();
+                }
             }
         }
     }
