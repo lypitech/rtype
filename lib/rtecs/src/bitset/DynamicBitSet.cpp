@@ -12,8 +12,10 @@ using namespace rtecs::bitset;
 // =======================
 //         BitRef
 // =======================
-DynamicBitSet::BitRef::BitRef(std::bitset<64>& b, const size_t bitIndex)
-    : _block(b), _bitIndex(bitIndex)
+DynamicBitSet::BitRef::BitRef(std::bitset<64>& b,
+                              const size_t bitIndex)
+    : _block(b),
+      _bitIndex(bitIndex)
 {
 }
 
@@ -26,7 +28,10 @@ DynamicBitSet::BitRef& DynamicBitSet::BitRef::operator=(const bool value)
 }
 
 bool DynamicBitSet::BitRef::operator==(const BitRef& other) const { return _block == other._block; }
-bool DynamicBitSet::BitRef::operator==(const bool value) const { return _block[_bitIndex] == value; }
+bool DynamicBitSet::BitRef::operator==(const bool value) const
+{
+    return _block[_bitIndex] == value;
+}
 
 // =======================
 //      DynamicBitSet
@@ -44,7 +49,9 @@ DynamicBitSet::DynamicBitSet(const std::vector<std::bitset<64>>& bitsets)
 {
 }
 
-void DynamicBitSet::applyOperation(const Operation& operation, DynamicBitSet& result, const DynamicBitSet& other) const
+void DynamicBitSet::applyOperation(const Operation& operation,
+                                   DynamicBitSet& result,
+                                   const DynamicBitSet& other) const
 {
     const size_t currentCapacity = capacity();
     const size_t otherCapacity = other.capacity();
@@ -83,18 +90,16 @@ void DynamicBitSet::rightShift(size_t nb)
     }
 }
 
-std::pair<std::vector<uint64_t>, size_t> DynamicBitSet::serialize() const
+std::vector<uint64_t> DynamicBitSet::serialize() const
 {
     std::vector<uint64_t> indexes;
-    size_t nbBits = 0;
 
     for (size_t i = 0; i < _bitsets.size() * 64; i++) {
         if ((*this)[i]) {
             indexes.push_back(i);
-            nbBits = i + 1;
         }
     }
-    return {indexes, nbBits};
+    return indexes;
 }
 
 std::string DynamicBitSet::toString(const std::string& sep) const
@@ -130,20 +135,23 @@ size_t DynamicBitSet::capacity() const { return _bitsets.size() * 64; }
 
 bool DynamicBitSet::any() const
 {
-    return std::ranges::any_of(_bitsets.begin(), _bitsets.end(),
-                               [](const std::bitset<64> bitset) { return bitset.any(); });
+    return std::ranges::any_of(_bitsets.begin(), _bitsets.end(), [](const std::bitset<64> bitset) {
+        return bitset.any();
+    });
 };
 
 bool DynamicBitSet::all() const
 {
-    return std::ranges::all_of(_bitsets.begin(), _bitsets.end(),
-                               [](const std::bitset<64> bitset) { return bitset.all(); });
+    return std::ranges::all_of(_bitsets.begin(), _bitsets.end(), [](const std::bitset<64> bitset) {
+        return bitset.all();
+    });
 }
 
 bool DynamicBitSet::none() const
 {
-    return std::ranges::all_of(_bitsets.begin(), _bitsets.end(),
-                               [](const std::bitset<64> bitset) { return bitset.none(); });
+    return std::ranges::all_of(_bitsets.begin(), _bitsets.end(), [](const std::bitset<64> bitset) {
+        return bitset.none();
+    });
 };
 
 void DynamicBitSet::clear()
@@ -276,7 +284,8 @@ DynamicBitSet& DynamicBitSet::operator>>=(const size_t nb)
     return *this;
 }
 
-std::ostream& rtecs::bitset::operator<<(std::ostream& stream, const DynamicBitSet& ref)
+std::ostream& rtecs::bitset::operator<<(std::ostream& stream,
+                                        const DynamicBitSet& ref)
 {
     stream << "[" << ref.toString(" ") << "]";
     return stream;
