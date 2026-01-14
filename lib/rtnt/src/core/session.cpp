@@ -60,12 +60,12 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
 
     bool isDuplicate = this->isDuplicate(header.sequenceId);
 
-    updateAcknowledgeInfo(header.sequenceId);
-
     if (isDuplicate) {
         LOG_WARN("Dropped duplicate packet #{}", header.sequenceId);
         return readyPackets;
     }
+
+    updateAcknowledgeInfo(header.sequenceId);
 
     if (header.messageId == static_cast<packet::Id>(packet::SystemMessageId::kRichAck)) {
         LOG_TRACE_R3("Received RICH_ACK packet");
