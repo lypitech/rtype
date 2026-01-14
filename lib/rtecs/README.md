@@ -39,11 +39,7 @@ target_link_libraries(${PROJECT_NAME}
 
 ### Components
 
-#### Definition
-
 A component is a structure that will contain data. Its role is to store data of a single entity.
-
-#### Example
 
 **Component creation**
 
@@ -203,11 +199,7 @@ ecs.applyAllSystems();
 
 ### Entities
 
-#### Definition
-
 An entity is represented by a number to which we will associate multiple components.
-
-#### Example
 
 > [!WARNING]
 > Some methods will log a warning if any problem concerning an invalid entity occurs.
