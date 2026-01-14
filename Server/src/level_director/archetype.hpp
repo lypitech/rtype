@@ -39,7 +39,7 @@ struct Archetype
 struct Active
 {
     const Archetype* archetype;    ///< A pointer to the current active wave archetype.
-    float timer = 0.0f;            ///< The timer since this wave is active.
+    float timer = 0.0f;            ///< The timer since last spawn.
     size_t currentGroupIndex = 0;  ///< The current index of the group of enemy to spawn.
     int spawnedInGroup = 0;        ///< The number of groups spawned for this wave.
     bool isFinished = false;       ///< Whether the wave has spawned all of its enemies.

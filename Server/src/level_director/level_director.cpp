@@ -81,13 +81,14 @@ void Director::update(const float dt,
             continue;
         }
 
-        LOG_TRACE_R2("Spawning wave {}, active for {} seconds.", wave.archetype->name, wave.timer);
         wave.timer += dt;
 
         if (wave.timer < wave.archetype->spawnInterval) {
             continue;
         }
 
+        LOG_TRACE_R2(
+            "Spawning a wave of {}, timer is {} seconds.", wave.archetype->name, wave.timer);
         wave.timer -= wave.archetype->spawnInterval;
 
         const auto& group = wave.archetype->enemies[wave.currentGroupIndex];

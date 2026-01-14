@@ -76,7 +76,9 @@ void Director::pickNewWaveIfNeeded()
         return;
     }
     pickRandomWaves();
-    LOG_TRACE_R2("Picked {} new waves.", _activeWaves.size());
+    if (!_activeWaves.empty()) {
+        LOG_TRACE_R2("Picked {} new waves.", _activeWaves.size());
+    }
 }
 
 }  // namespace level
