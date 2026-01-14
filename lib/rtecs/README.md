@@ -41,6 +41,9 @@ target_link_libraries(${PROJECT_NAME}
 
 A component is a structure that will contain data. Its role is to store data of a single entity.
 
+----
+
+
 **Component creation**
 
 This example shows how to properly define and use a component.
@@ -77,6 +80,9 @@ struct CollideBox2D
 }
 ```
 
+----
+
+
 **Register a component**
 ```c++
 #include "rtecs/ECS.hpp"
@@ -94,6 +100,9 @@ ecs.registerComponents<Transformation2D>();
 ecs.registerComponents<CollideBox2D>();
 ```
 
+----
+
+
 **Get the mask corresponding to multiple components**
 ```c++
 ecs.getComponentMask<Transformation2D, Health>();
@@ -102,6 +111,8 @@ ecs.getComponentMask<Transformation2D, Health>();
 > [!TIP]
 > To send a mask through network, there is a `DynamicBitSet::serialize` method that
 > returns a `std::vector` of all the enabled bits. You can use this method to send the mask through the network.
+
+----
 
 **Group creation and manipulation**
 ```c++
@@ -138,7 +149,9 @@ if (group.has(entityId)) {
 
 ### Systems
 
-**Definitions:** A system is a function that will be called at each call of the `ECS::applyAllSystems()` method. Its role is to manipulate components.
+A system is a function that will be called at each call of the `ECS::applyAllSystems()` method. Its role is to manipulate components.
+
+----
 
 **Implement a system**
 ```c++
@@ -170,6 +183,8 @@ public:
 };
 ```
 
+----
+
 **Register a system**
 ```c++
 #include "rtecs/ECS.hpp"
@@ -189,6 +204,8 @@ auto system = std::make_unique<DamageOnArrowCollision>();
 ecs.registerSystem(std::move(system));
 ```
 
+----
+
 **Apply systems**
 ```c++
 ecs.applyAllSystems();
@@ -203,6 +220,8 @@ An entity is represented by a number to which we will associate multiple compone
 
 > [!WARNING]
 > Some methods will log a warning if any problem concerning an invalid entity occurs.
+
+----
 
 **Register an entity**
 
@@ -223,6 +242,8 @@ rtecs::types::EntityID entityId = ecs.registerEntity<Profile, Health, CollideBox
 );
 ```
 
+----
+
 **Add components to an entity**
 ```c++
 // If you need to add a component later after the entity registration, you can do it easily
@@ -232,11 +253,15 @@ ecs.addEntityComponents<Transformation2D>(
 );
 ```
 
+----
+
 **Update an entity component instance**
 ```c++
 // Update an entity component outside of a system
 ecs.updateEntityComponent<Health>(entityId, { 25 });
 ```
+
+----
 
 **Destroy an entity**
 ```c++
@@ -246,6 +271,8 @@ ecs.destroyEntity(entityId);
 
 > [!IMPORTANT]
 > A destroyed entity can still be present in a SparseGroup, but using it will produce a memory error. This is why you should never store a SparseGroup anywhere.
+
+----
 
 **Get the component mask of an entity**
 ```c++
