@@ -19,6 +19,7 @@ namespace rtnt::core::packet::internal {
 struct Disconnect
 {
     static constexpr Id kId = static_cast<uint16_t>(SystemMessageId::kDisconnect);
+    static constexpr ChannelId kChannel = INTERNAL_CHANNEL_ID;
     static constexpr Flag kFlag = Flag::kUnreliable;
     static constexpr Name kName = INTERNAL_PACKET_NAME("DISCONNECT");
 
