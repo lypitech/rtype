@@ -280,6 +280,15 @@ void verifyPacketData()
             T::kId,
             UNKNOWN_PACKET_NAME);
     }
+
+    if constexpr (static_cast<const Id>(T::kId) >= 128) {
+        static_assert(getChannelId<T>() > INTERNAL_CHANNEL_ID,
+                      "User-defined packets channel ID must be greater than 0 "
+                      "(INTERNAL_CHANNEL_ID), as it is the channel reserved for internal packets.");
+    } else {
+        static_assert(getChannelId<T>() == INTERNAL_CHANNEL_ID,
+                      "Internal packets channel ID must be set to 0 (INTERNAL_CHANNEL_ID).");
+    }
 }
 
 /**
