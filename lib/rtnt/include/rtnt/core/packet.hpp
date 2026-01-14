@@ -104,7 +104,7 @@ struct Header final
     uint8_t flags =
         static_cast<uint8_t>(Flag::kUnreliable);  ///< Reliability flags (cf. packet::Flag)
     uint16_t packetSize = 0;                      ///< Size of the payload
-    Checksum checksum = 0;                        ///< CRC32 checksum to avoid corruption
+    // Checksum checksum = 0; ///< CRC32 checksum to avoid corruption. Not implemented yet, will be in a further version of rtnt.
 
     /**
      * @brief   Converts all fields from either:
@@ -122,11 +122,11 @@ struct Header final
         messageId = endian::swap(messageId);
         // flags is uint8_t, no conversion needed
         packetSize = endian::swap(packetSize);
-        checksum = endian::swap(checksum);
+        // checksum = endian::swap(checksum); // Not implemented yet, will be in a further version of rtnt.
     }
 
     /**
-     * @brief   Tries to parse a
+     * @brief   Tries to parse a raw ByteBuffer to extract a rtnt header.
      * @param   data    Raw buffer data
      * @return  A @code parsing::Result@endcode instance with details in it.
      *          If an error occurred during parsing, @code parsing::Result::header@endcode will be set to

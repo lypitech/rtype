@@ -150,7 +150,7 @@ void Session::rawSend(Packet& packet,
     header.messageId = packet.getId();
     header.flags = static_cast<uint8_t>(packet.getReliability());
     header.packetSize = static_cast<uint16_t>(packet.getPayload().size());
-    header.checksum = 0;  // todo: Implement CRC32 checksum
+    // header.checksum = 0;  // todo: Implement CRC32 checksum
 
     if (_hasReceivedRemotePacket) {
         header.flags |= static_cast<uint8_t>(packet::Flag::kHasAck);
@@ -176,7 +176,7 @@ void Session::rawSend(Packet& packet,
         "Message ID: {}\n"
         "Flags: {}\n"
         "Payload Size: {}\n"
-        "Checksum: {}\n"
+        // "Checksum: {}\n"
         "Raw header (H): {}\n"
         "Raw buffer (N): {}",
         header.sequenceId,
@@ -186,7 +186,7 @@ void Session::rawSend(Packet& packet,
         header.messageId,
         header.flags,
         header.packetSize,
-        header.checksum,
+        // header.checksum,
         byteBufferToHexString(rawBuffer->begin(), rawBuffer->begin() + sizeof(packet::Header)),
         byteBufferToHexString(rawBuffer->begin() + sizeof(packet::Header), rawBuffer->end()));
 
