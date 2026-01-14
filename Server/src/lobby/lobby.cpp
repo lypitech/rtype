@@ -63,6 +63,7 @@ void Lobby::join(const packet::server::SessionPtr& session)
             {10, 10}, {entity::Type::kPlayer}, session);
         packet::JoinAck j = {static_cast<uint32_t>(_players.at(session)), true};
         send(session, j);
+        // TODO: Send a WorldInit packet if not the first entity.
     });
 }
 
@@ -131,6 +132,7 @@ void Lobby::run()
 
         while (lag >= server::TIME_PER_TICK) {
             _engine.runOnce(server::TIME_PER_TICK);
+            // TODO: Update only if the game is started.
             _levelDirector.update(server::TIME_PER_TICK, *this);
             lag -= server::TIME_PER_TICK;
         }
