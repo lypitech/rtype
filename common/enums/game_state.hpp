@@ -1,17 +1,13 @@
 #pragma once
 
-namespace game {
+#include <cstdint>
 
-/**
- * @class State
- *
- * @brief The possible states of a game.
- */
-enum class State
-{
-    kGameOver = 0x01,  ///< The game is lost.
-    kGameStart,        ///< Start the game.
-    kGameEnd,          ///< The game is won.
-};
+namespace game::state {
 
-}  // namespace game
+static constexpr uint8_t GameMenu = 1;     ///< The game is in the menu
+static constexpr uint8_t GameLobby = 2;    ///< The game is waiting for players to join
+static constexpr uint8_t GameRunning = 3;  ///< The game is running
+static constexpr uint8_t GameEnd = 4;      ///< The game is won
+static constexpr uint8_t GameOver = 5;     ///< The game is lost
+
+}  // namespace game::state
