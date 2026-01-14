@@ -18,6 +18,13 @@ namespace packet {
 
 using Id = uint16_t;
 using Name = std::string_view;
+using ProtocolId = uint16_t;
+using ProtocolVersion = uint16_t;
+using SequenceId = uint32_t;
+using OrderId = uint32_t;
+using AcknowledgeId = uint32_t;
+using AcknowledgeBitfield = uint32_t;
+using Checksum = uint32_t;
 
 /**
  * @enum    packet::Flag
@@ -28,7 +35,11 @@ enum class Flag : uint8_t
     kUnreliable = 1 << 0,  ///< Fire and forget. May be lost or arrive out of order.
     kReliable = 1 << 1,    ///< Guaranteed delivery. Will be resent until ACKed.
     kOrdered = 1 << 2,     ///< Guaranteed order. Will be buffered until previous packets arrive.
+    kHasAck = 1 << 3,      ///< Packets with this flag will have a valid ACK ID.
 };
+
+Flag operator&(Flag lhs,
+               Flag rhs);
 
 struct Header;
 
@@ -46,6 +57,7 @@ enum class Error : uint8_t
     kDataTooSmall,      ///< Data is too small to contain a RTNT header.
     kProtocolMismatch,  ///< Protocol ID received does not match local RTNT protocol ID.
     kPayloadSizeMismatch,  ///< Corrupted packet: Payload size does not match the one written in the header.
+    // todo: kInvalidChecksum ///< Corrupted packet: Payload checksum does not match the one written in the header.
 };
 
 /**
@@ -80,18 +92,19 @@ inline std::string_view to_string(const Error error)
  */
 struct Header final
 {
-    uint16_t protocolId =
+    ProtocolId protocolId =
         PROTOCOL_ID;  ///< Magic number representing unique ID of the protocol, to avoid internet noise
-    uint16_t protocolVersion = PROTOCOL_VER;  ///< Protocol version, to reject mismatch peers
-    uint32_t sequenceId = 0;                  ///< The unique, incrementing ID of this packet
-    uint32_t acknowledgeId = 0;               ///< Sequence ID of the latest packet received
-    uint32_t acknowledgeBitfield =
+    ProtocolVersion protocolVersion = PROTOCOL_VER;  ///< Protocol version, to reject mismatch peers
+    SequenceId sequenceId = 0;                       ///< The unique, incrementing ID of this packet
+    OrderId orderId = 0;              ///< The unique, incrementing order ID of this packet.
+    AcknowledgeId acknowledgeId = 0;  ///< Sequence ID of the latest packet received
+    AcknowledgeBitfield acknowledgeBitfield =
         0;               ///< Bitmask of the previous 32 received packets relative to acknowledge ID
     Id messageId = 0x0;  ///< Command type (user-defined)
     uint8_t flags =
         static_cast<uint8_t>(Flag::kUnreliable);  ///< Reliability flags (cf. packet::Flag)
     uint16_t packetSize = 0;                      ///< Size of the payload
-    uint32_t checksum = 0;                        ///< CRC32 checksum to avoid corruption
+    // Checksum checksum = 0; ///< CRC32 checksum to avoid corruption. Not implemented yet, will be in a further version of rtnt.
 
     /**
      * @brief   Converts all fields from either:
@@ -103,16 +116,17 @@ struct Header final
         protocolId = endian::swap(protocolId);
         protocolVersion = endian::swap(protocolVersion);
         sequenceId = endian::swap(sequenceId);
+        orderId = endian::swap(orderId);
         acknowledgeId = endian::swap(acknowledgeId);
         acknowledgeBitfield = endian::swap(acknowledgeBitfield);
         messageId = endian::swap(messageId);
         // flags is uint8_t, no conversion needed
         packetSize = endian::swap(packetSize);
-        checksum = endian::swap(checksum);
+        // checksum = endian::swap(checksum); // Not implemented yet, will be in a further version of rtnt.
     }
 
     /**
-     * @brief   Tries to parse a
+     * @brief   Tries to parse a raw ByteBuffer to extract a rtnt header.
      * @param   data    Raw buffer data
      * @return  A @code parsing::Result@endcode instance with details in it.
      *          If an error occurred during parsing, @code parsing::Result::header@endcode will be set to
@@ -161,7 +175,7 @@ struct Result final
 /**
  * @struct  packet::Reader
  * @brief   Helper class that behaves like a Packet but reads instead of writing.
- * This allows to use the '&' operator for reading.
+ * This allows using the '&' operator for reading.
  */
 struct Reader final
 {
@@ -326,6 +340,8 @@ bool is(const ByteBuffer& rawData)
 class Packet final
 {
 public:
+    explicit Packet() = default;
+
     /**
      * @brief   Constructs a new Packet
      * @param   id          The user-defined message ID
@@ -342,11 +358,8 @@ public:
     }
 
     /// TMP!!
-    explicit Packet(const std::vector<uint8_t>& data)
-        : _messageId(0),
-          _flag(packet::Flag::kUnreliable),
-          _channelId(0),
-          _buffer(data)
+    explicit Packet(const ByteBuffer& data)
+        : _buffer(data)
     {
     }
 
@@ -432,24 +445,24 @@ public:
         return *this << data;
     }
 
-    [[nodiscard]] uint16_t getId() const { return _messageId; }
+    [[nodiscard]] packet::Id getId() const { return _messageId; }
     [[nodiscard]] packet::Flag getReliability() const { return _flag; }
     [[nodiscard]] uint8_t getChannel() const { return _channelId; }
-    [[nodiscard]] const std::vector<uint8_t>& getPayload() const { return _buffer; }
+    [[nodiscard]] const ByteBuffer& getPayload() const { return _buffer; }
 
 private:
     friend class Session;
 
     // Metadata
-    uint16_t _messageId;
-    packet::Flag _flag;
-    uint8_t _channelId;
+    packet::Id _messageId = 0x0;
+    packet::Flag _flag = packet::Flag::kUnreliable;
+    uint8_t _channelId = 0;
 
     // Data
-    ByteBuffer _buffer;
+    ByteBuffer _buffer{};
     size_t _readPosition = 0;
 
-    void _internal_setPayload(std::vector<uint8_t>&& data)
+    void _internal_setPayload(ByteBuffer&& data)
     {
         _buffer = std::move(data);
         _readPosition = 0;
@@ -519,7 +532,7 @@ Packet& operator<<(Packet& p,
                    const std::vector<T>& data)
 {
     if (data.size() > (std::numeric_limits<uint16_t>::max)()) {
-        throw std::runtime_error("Vector is too large to serialize (limit 65535)");
+        throw std::runtime_error("Vector is too large to serialize (limit is 65535)");
     }
 
     const auto size = static_cast<uint16_t>(data.size());
@@ -538,6 +551,48 @@ Packet& operator<<(Packet& p,
 template <typename T>
 Packet& operator>>(Packet& p,
                    std::vector<T>& data)
+{
+    uint16_t size = 0;
+    p >> size;
+
+    data.resize(size);
+    for (auto& element : data) {
+        p >> element;
+    }
+    return p;
+}
+
+/**
+ * @brief       Specialization to safely write @code std::deque@endcode.
+ * @warning     T MUST be serializable by rtnt (no complex types).
+ * @tparam      T       Type of data that is contained in the deque
+ * @param       p       Packet to write into
+ * @param       data    Const reference to the deque to write
+ */
+template <typename T>
+Packet& operator<<(Packet& p,
+                   const std::deque<T>& data)
+{
+    if (data.size() > (std::numeric_limits<uint16_t>::max)()) {
+        throw std::runtime_error("Deque is too large to serialize (limit is 65535)");
+    }
+
+    const auto size = static_cast<uint16_t>(data.size());
+    p << size;
+
+    for (const auto& element : data) {
+        p << element;
+    }
+    return p;
+}
+
+/**
+ * @brief   Specialization to safely read @code std::deque@endcode.
+ * Reads a 2-byte length prefix followed by the elements.
+ */
+template <typename T>
+Packet& operator>>(Packet& p,
+                   std::deque<T>& data)
 {
     uint16_t size = 0;
     p >> size;

@@ -23,6 +23,8 @@ class Server : public Peer
     using OnDisconnectFunction = std::function<void(std::shared_ptr<Session>)>;
     using OnMessageFunction = std::function<void(std::shared_ptr<Session>, Packet&)>;
 
+    using Task = std::function<void()>;
+
 public:
     explicit Server(asio::io_context& context,
                     unsigned short port);
@@ -70,6 +72,8 @@ public:
     void broadcast(const T& packetData)
     {
         packet::verifyUserPacketData<T>();
+
+        std::lock_guard lock(_sessionsMutex);
         for (auto& session : _sessions | std::views::values) {
             _internal_sendTo(session, packetData);
         }
@@ -83,6 +87,9 @@ protected:
 
 private:
     std::map<udp::endpoint, std::shared_ptr<Session>> _sessions;
+    mutable std::mutex _sessionsMutex;
+
+    ThreadSafeQueue<Task> _eventQueue;
 
     Dispatcher _packetDispatcher;
 
@@ -102,6 +109,13 @@ private:
         packetToSend << packetData;
         session->send(packetToSend);
     }
+
+    /**
+     * @brief   Processes the events that have been received so far.
+     * @note    This function MUST be called from the main thread. Not doing so would result in
+     *          thread issues (data races).
+     */
+    void _processEvents();
 };
 
 }  // namespace rtnt::core

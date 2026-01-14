@@ -9,9 +9,7 @@ It features a high-level packet system, automatic endianness handling, and a cal
 developers to focus on game logic rather than raw socket management.
 
 > [!NOTE]
-> This library is currently in version **1.1.1**. Things are prone to change!  
-> Full [RUDP](https://en.wikipedia.org/wiki/Reliable_User_Datagram_Protocol) support will be introduced in version
-> **1.2.0**.  
+> This library is currently in version **1.2.1**. Things are prone to change!  
 > Security layer (packet encryption and certificates) will be introduced in version **2.0.0**.  
 > You can read the changelogs in the folder `changelogs`.
 
@@ -365,9 +363,9 @@ Every packet is prefixed with a fixed-size header to ensure integrity and identi
 |     0x02     |  2 (`u16`)   |   `protocolVersion`   | Protocol version.                                                                                                                                             |
 |     0x04     |  4 (`u32`)   |     `sequenceId`      | Incremental ID for packet ordering/loss detection.                                                                                                            |
 |     0x08     |  4 (`u32`)   |    `acknowledgeId`    | The last `sequenceId` received from the Peer (either Server or Client depending on the context).                                                              |
-|     0x0C     |  4 (`u32`)   | `acknowledgeBitfield` | Bitmask representing the previous 32 packets received **(not implemented yet)**.                                                                              |
+|     0x0C     |  4 (`u32`)   | `acknowledgeBitfield` | Bitmask representing the previous 32 packets received.                                                                                                        |
 |     0x10     |  2 (`u16`)   |      `messageId`      | User-defined ID.                                                                                                                                              |
-|     0x12     |   1 (`u8`)   |        `flags`        | Reliability flags (Unreliable, Reliable, Ordered) **(not implemented yet)**.                                                                                  |
+|     0x12     |   1 (`u8`)   |        `flags`        | Reliability flags (Unreliable, Reliable, Ordered).                                                                                                            |
 |     0x13     |  2 (`u16`)   |     `payloadSize`     | Size of the user data following the header.                                                                                                                   |
 |     0x15     |  4 (`u32`)   |      `checksum`       | [CRC32](https://en.wikipedia.org/wiki/Cyclic_redundancy_check) checksum to validate payload integrity and detect packet corruption **(not implemented yet)**. |
 
@@ -379,12 +377,6 @@ When receiving a packet, multiple checks are performed:
 - **Protocol ID:** If received protocol ID doesn't match the local protocol ID, packet is dropped.
 - **Payload size:** If given protocol size doesn't match the size of the payload received, packet is dropped, considered
   as corrupted.
-
-> [!IMPORTANT]
-> As you can see, some fields are not implemented yet, because the RUDP logic is not done yet.  
-> See you in v1.2.0!  
-> That being said, these fields are still transmitted through the network (with empty values), they just have no use for
-> now.
 
 ### Server <-> Client Handshake
 

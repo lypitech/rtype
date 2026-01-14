@@ -14,22 +14,34 @@ Server::Server(asio::io_context& context,
 
 void Server::update(milliseconds timeout)
 {
-    const auto now = steady_clock::now();
+    _processEvents();
 
-    LOG_TRACE_R3("Updating server state. Time is {}", now.time_since_epoch().count());
-    for (auto it = _sessions.begin(); it != _sessions.end();) {
-        auto& session = it->second;
-        auto lastSeen = session->getLastSeenTimestamp();
-        auto age = duration_cast<milliseconds>(now - lastSeen);
+    std::vector<std::shared_ptr<Session>> disconnectedSessions;
 
-        if (age > timeout || session->shouldClose()) {
-            if (_onDisconnect) {
-                _onDisconnect(session);
+    {
+        std::lock_guard lock(_sessionsMutex);
+
+        const auto now = steady_clock::now();
+
+        LOG_TRACE_R3("Updating server state. Time is {}", now.time_since_epoch().count());
+        for (auto it = _sessions.begin(); it != _sessions.end();) {
+            auto& session = it->second;
+            auto lastSeen = session->getLastSeenTimestamp();
+            auto age = duration_cast<milliseconds>(now - lastSeen);
+
+            if (age > timeout || session->shouldClose()) {
+                disconnectedSessions.push_back(session);
+                it = _sessions.erase(it);
+            } else {
+                session->update();
+                ++it;
             }
-            it = _sessions.erase(it);
-        } else {
-            session->update();
-            ++it;
+        }
+    }
+
+    for (const auto& session : disconnectedSessions) {
+        if (_onDisconnect) {
+            _onDisconnect(session);
         }
     }
 }
@@ -38,39 +50,74 @@ void Server::onReceive(const udp::endpoint& sender,
                        std::shared_ptr<ByteBuffer> data)
 {
     std::shared_ptr<Session> session;
+    bool isNewConnection = false;
 
-    auto it = _sessions.find(sender);
+    {
+        std::lock_guard lock(_sessionsMutex);
 
-    if (it != _sessions.end()) {  // Session found
-        session = it->second;
-    } else {  // New connection
-        if (!packet::is<packet::internal::Connect>(
-                *data)) {  // todo: you can optimize this because another call to Header::parse is made in Session::handleIncoming.
-            LOG_TRACE_R3("Not CONNECT packet, ignoring...");
-            return;
-        }
+        auto it = _sessions.find(sender);
 
-        LOG_TRACE_R3("Is CONNECT packet, creating session.");
+        if (it != _sessions.end()) {  // Session found
+            session = it->second;
 
-        session =
-            std::make_shared<Session>(sender, [this, sender](std::shared_ptr<ByteBuffer> rawBytes) {
-                this->sendToTarget(sender, rawBytes);
-            });
-        _sessions[sender] = session;
+            if (packet::is<packet::internal::Connect>(*data)) {
+                LOG_DEBUG("Received duplicate CONNECT from existing session. Resending ACK.");
 
-        if (_onConnect) {
-            _onConnect(session);
+                packet::internal::ConnectAck ackPacket;
+                ackPacket.assignedSessionId = session->getId();
+
+                Packet p(packet::internal::ConnectAck::kId, packet::internal::ConnectAck::kFlag);
+                p << ackPacket;
+                session->send(p);
+                return;
+            }
+        } else {  // New connection
+            if (!packet::is<packet::internal::Connect>(
+                    *data)) {  // todo: you can optimize this because another call to Header::parse is made in Session::handleIncoming.
+                LOG_DEBUG("Not CONNECT packet, ignoring...");
+                return;
+            }
+
+            LOG_DEBUG("Is CONNECT packet, creating session.");
+
+            session = std::make_shared<Session>(
+                sender, [this, sender](std::shared_ptr<ByteBuffer> rawBytes) {
+                    this->sendToTarget(sender, rawBytes);
+                });
+            _sessions[sender] = session;
+            isNewConnection = true;
         }
     }
 
-    Packet packet(0);
+    if (isNewConnection) {
+        _eventQueue.push([this, session]() {
+            if (_onConnect) {
+                _onConnect(session);
+            }
+        });
+    }
 
-    if (session->handleIncoming(data, packet)) {
-        _packetDispatcher.dispatch(session, packet);
+    auto packetsToProcess = session->handleIncoming(data);
 
-        if (packet.getId() >= 128 && _onMessage) {
-            _onMessage(session, packet);
-        }
+    if (packetsToProcess.empty()) {
+        return;
+    }
+
+    for (Packet& packet : packetsToProcess) {
+        _eventQueue.push([this, session, pkt = packet]() mutable {
+            _packetDispatcher.dispatch(session, pkt);
+            if (pkt.getId() >= 128 && _onMessage) {
+                _onMessage(session, pkt);
+            }
+        });
+    }
+}
+
+/// Used to process events on main thread and not on io thread
+void Server::_processEvents()
+{
+    while (auto task = _eventQueue.pop()) {
+        (*task)();
     }
 }
 
