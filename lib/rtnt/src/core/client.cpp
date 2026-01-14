@@ -51,9 +51,7 @@ void Client::disconnect()
 
     if (_isConnected && _serverSession) {
         packet::internal::Disconnect packet{};
-        Packet packetToSend(packet::internal::Disconnect::kId, packet::internal::Disconnect::kFlag);
-        packetToSend << packet;
-        _serverSession->send(packetToSend);
+        _serverSession->send(packet);
     }
 
     _serverSession.reset();
@@ -200,9 +198,7 @@ void Client::_internal_attemptConnection()
     _lastConnectionAttemptTime = steady_clock::now();
 
     constexpr packet::internal::Connect packet;
-    Packet packetToSend(packet::internal::Connect::kId, packet::internal::Connect::kFlag);
-    packetToSend << packet;
-    _serverSession->send(packetToSend);
+    _serverSession->send(packet);
 }
 
 /// Used to process events on main thread and not on io thread
