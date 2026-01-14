@@ -219,6 +219,21 @@ constexpr std::string_view getName()
 
 /**
  * @tparam  T   Packet struct
+ * @return  The channel ID that is contained in the packet struct.
+ *          Default to @code DEFAULT_CHANNEL_ID@endcode.
+ */
+template <typename T>
+constexpr ChannelId getChannelId()
+{
+    if constexpr (requires { T::kChannel; }) {
+        return T::kChannel;
+    } else {
+        return DEFAULT_CHANNEL_ID;
+    }
+}
+
+/**
+ * @tparam  T   Packet struct
  * @return  The flag that is contained in the packet struct.
  *          Default to @code Flag::kUnreliable@endcode.
  */
@@ -282,6 +297,11 @@ void verifyUserPacketData()
 
     static_assert(static_cast<const Id>(T::kId) >= 128,  // fixme: fix magic number
                   "User-defined packet IDs must be >= 128.");
+    if constexpr (!requires { T::kChannel; }) {
+        static_assert(getChannelId<T>() > INTERNAL_CHANNEL_ID,
+                      "User-defined packets channel ID must be greater than 0 "
+                      "(INTERNAL_CHANNEL_ID), as it is the channel reserved for internal packets.");
+    }
 }
 
 /**
@@ -300,6 +320,11 @@ void verifyInternalPacketData()
 
     static_assert(static_cast<const Id>(T::kId) < 128,  // fixme: fix magic number
                   "Internal packet IDs must be < 128.");
+
+    if constexpr (!requires { T::kChannel; }) {
+        static_assert(getChannelId<T>() == INTERNAL_CHANNEL_ID,
+                      "Internal packets channel ID must be set to 0 (INTERNAL_CHANNEL_ID).");
+    }
 }
 
 /**
@@ -460,7 +485,7 @@ private:
     // Metadata
     packet::Id _messageId = 0x0;
     packet::Flag _flag = packet::Flag::kUnreliable;
-    uint8_t _channelId = 0;
+    packet::ChannelId _channelId = 0;
 
     // Data
     ByteBuffer _buffer{};
