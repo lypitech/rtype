@@ -269,8 +269,9 @@ void verifyPacketData()
 
     using IdType = decltype(T::kId);
 
-    static_assert(std::is_same_v<const Id, IdType>,
-                  "Packet kId must be a 16-bit unsigned integer (uint16_t).");
+    static_assert(
+        std::is_same_v<const Id, IdType>,
+        "Packet kId must be a 16-bit unsigned integer (uint16_t, rtnt::core::packet::Id).");
 
     if constexpr (!requires { T::kName; }) {
         LOG_WARN(
@@ -294,8 +295,11 @@ void verifyPacketData()
 /**
  * @brief   Verifies if a given struct has the layout of a user-defined packet.
  *
- * It acts the same as @code verifyPacketData@endcode, but also checks for the ID.
- * If the ID is less than 128 (0-128 is reserved to internal packets), a compilation error will be thrown.
+ * It acts the same as @code verifyPacketData@endcode but also checks for the ID.
+ * If the ID is less than 128 (0-128 is reserved to internal packets), a compiler assertion will be
+ * raised.
+ * If the channel ID is equal to 0 (which is reserved for internal rtnt packets), a compiler
+ * assertion will be raised as well.
  *
  * @tparam  T   Packet struct to verify
  */
@@ -306,6 +310,7 @@ void verifyUserPacketData()
 
     static_assert(static_cast<const Id>(T::kId) >= 128,  // fixme: fix magic number
                   "User-defined packet IDs must be >= 128.");
+
     if constexpr (!requires { T::kChannel; }) {
         static_assert(getChannelId<T>() > INTERNAL_CHANNEL_ID,
                       "User-defined packets channel ID must be greater than 0 "
@@ -316,9 +321,11 @@ void verifyUserPacketData()
 /**
  * @brief   Verifies if a given struct has the layout of a user-defined packet.
  *
- * It acts the same as @code verifyPacketData@endcode, but also checks for the ID.
- * If the ID is equal or greater than 128 (128-65535 is reserved to user-defined packets), a compilation error will
- * be thrown.
+ * It acts the same as @code verifyPacketData@endcode but also checks for the ID and channel ID.
+ * If the ID is equal or greater than 128 (128-65535 is reserved to user-defined packets), a
+ * compiler assertion will be raised.
+ * If the channel ID does not equal to 0 (@code INTERNAL_CHANNEL_ID@endcode), a compiler assertion
+ * will be raised as well.
  *
  * @tparam  T   Packet struct to verify
  */
@@ -560,7 +567,7 @@ operator>>(Packet& p,
 
 /**
  * @brief       Specialization to safely write @code std::vector@endcode.
- * @warning     T MUST be serializable by rtnt (no complex types).
+ * @warning     @code T@endcode MUST be serializable by rtnt (no complex types).
  * @tparam      T       Type of data that is contained in the vector
  * @param       p       Packet to write into
  * @param       data    Const reference to the vector to write
@@ -602,7 +609,7 @@ Packet& operator>>(Packet& p,
 
 /**
  * @brief       Specialization to safely write @code std::deque@endcode.
- * @warning     T MUST be serializable by rtnt (no complex types).
+ * @warning     @code T@endcode MUST be serializable by rtnt (no complex types).
  * @tparam      T       Type of data that is contained in the deque
  * @param       p       Packet to write into
  * @param       data    Const reference to the deque to write
