@@ -5,28 +5,34 @@
 
 using namespace rtecs::bitset;
 
-TEST(DynamicBitSet, left_equal_bitshift)
+TEST(DynamicBitSet,
+     left_equal_bitshift)
 {
     DynamicBitSet set{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000001},
     }};
 
     set <<= 1;
-    ASSERT_STREQ(set.toString().data(), "0000000000000000000000000000000000000000000000000000000000000010");
+    ASSERT_STREQ(
+        set.toString().data(), "0000000000000000000000000000000000000000000000000000000000000010");
 };
 
-TEST(DynamicBitSet, left_bitshift)
+TEST(DynamicBitSet,
+     left_bitshift)
 {
     const DynamicBitSet set{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000001},
     }};
 
     const DynamicBitSet newSet = set << 1;
-    EXPECT_STREQ(newSet.toString().data(), "0000000000000000000000000000000000000000000000000000000000000010");
-    EXPECT_STREQ(set.toString().data(), "0000000000000000000000000000000000000000000000000000000000000001");
+    EXPECT_STREQ(newSet.toString().data(),
+                 "0000000000000000000000000000000000000000000000000000000000000010");
+    EXPECT_STREQ(
+        set.toString().data(), "0000000000000000000000000000000000000000000000000000000000000001");
 };
 
-TEST(DynamicBitSet, advanced_left_equal_bitshift)
+TEST(DynamicBitSet,
+     advanced_left_equal_bitshift)
 {
     DynamicBitSet set{{
         std::bitset<64>{0b1000000000000000000000000000000000000000000000000000000000000111},
@@ -39,7 +45,8 @@ TEST(DynamicBitSet, advanced_left_equal_bitshift)
                  "1000000000000000000000000000000000000000000000000000000000000010");
 };
 
-TEST(DynamicBitSet, advanced_left_bitshift)
+TEST(DynamicBitSet,
+     advanced_left_bitshift)
 {
     const DynamicBitSet set{{
         std::bitset<64>{0b1000000000000000000000000000000000000000000000000000000000000111},
@@ -55,28 +62,34 @@ TEST(DynamicBitSet, advanced_left_bitshift)
                  "1100000000000000000000000000000000000000000000000000000000000001");
 };
 
-TEST(DynamicBitSet, right_equal_bitshift)
+TEST(DynamicBitSet,
+     right_equal_bitshift)
 {
     DynamicBitSet set{{
         std::bitset<64>{0b1000000000000000000000000000000000000000000000000000000000000000},
     }};
 
     set >>= 1;
-    ASSERT_STREQ(set.toString().data(), "0100000000000000000000000000000000000000000000000000000000000000");
+    ASSERT_STREQ(
+        set.toString().data(), "0100000000000000000000000000000000000000000000000000000000000000");
 };
 
-TEST(DynamicBitSet, right_bitshift)
+TEST(DynamicBitSet,
+     right_bitshift)
 {
     const DynamicBitSet set{{
         std::bitset<64>{0b1000000000000000000000000000000000000000000000000000000000000000},
     }};
 
     const DynamicBitSet newSet = set >> 1;
-    EXPECT_STREQ(newSet.toString().data(), "0100000000000000000000000000000000000000000000000000000000000000");
-    EXPECT_STREQ(set.toString().data(), "1000000000000000000000000000000000000000000000000000000000000000");
+    EXPECT_STREQ(newSet.toString().data(),
+                 "0100000000000000000000000000000000000000000000000000000000000000");
+    EXPECT_STREQ(
+        set.toString().data(), "1000000000000000000000000000000000000000000000000000000000000000");
 };
 
-TEST(DynamicBitSet, advanced_right_equal_bitshift)
+TEST(DynamicBitSet,
+     advanced_right_equal_bitshift)
 {
     DynamicBitSet set{{
         std::bitset<64>{0b1000000000000000000000000000000000000000000000000000000000000001},
@@ -89,7 +102,8 @@ TEST(DynamicBitSet, advanced_right_equal_bitshift)
                  "1110000000000000000000000000000000000000000000000000000000000000");
 };
 
-TEST(DynamicBitSet, advanced_right_bitshift)
+TEST(DynamicBitSet,
+     advanced_right_bitshift)
 {
     const DynamicBitSet set{{
         std::bitset<64>{0b1000000000000000000000000000000000000000000000000000000000000111},

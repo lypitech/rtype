@@ -16,12 +16,12 @@ TEST_F(ComponentFixture,
 
     ecs.registerComponents<Profile, Health, Hitbox>();
 
-    const bitset::DynamicBitSet mask = ecs.getMask<Profile, Health, Hitbox>();
+    const bitset::DynamicBitSet mask = ecs.getComponentMask<Profile, Health, Hitbox>();
     const bitset::DynamicBitSet expectedMask(
         {std::bitset<64>{0b0111000000000000000000000000000000000000000000000000000000000000}});
     EXPECT_EQ(mask, expectedMask);
 
-    const bitset::DynamicBitSet healthMask = ecs.getMask<Health>();
+    const bitset::DynamicBitSet healthMask = ecs.getComponentMask<Health>();
     const bitset::DynamicBitSet expectedHealthMask(
         {std::bitset<64>{0b0010000000000000000000000000000000000000000000000000000000000000}});
     EXPECT_EQ(healthMask, expectedHealthMask);
@@ -35,12 +35,12 @@ TEST_F(ComponentFixture,
     ecs.registerComponents<Profile, Health>();
     ecs.registerComponents<Hitbox>();
 
-    const bitset::DynamicBitSet mask = ecs.getMask<Profile, Health, Hitbox>();
+    const bitset::DynamicBitSet mask = ecs.getComponentMask<Profile, Health, Hitbox>();
     const bitset::DynamicBitSet expectedMask(
         {std::bitset<64>{0b0111000000000000000000000000000000000000000000000000000000000000}});
     EXPECT_EQ(mask, expectedMask);
 
-    const bitset::DynamicBitSet healthMask = ecs.getMask<Health>();
+    const bitset::DynamicBitSet healthMask = ecs.getComponentMask<Health>();
     const bitset::DynamicBitSet expectedHealthMask(
         {std::bitset<64>{0b0010000000000000000000000000000000000000000000000000000000000000}});
     EXPECT_EQ(healthMask, expectedHealthMask);
@@ -75,7 +75,7 @@ TEST_F(ECSFixture,
     sparse::SparseGroup<Profile> group = _ecs.group<Profile>();
 
     ASSERT_TRUE(group.has(entityId));
-    group.apply([entityId](types::EntityID id, Profile &profileComp) {
+    group.apply([entityId](const types::EntityID id, const Profile &profileComp) {
         if (id == entityId) {
             EXPECT_STREQ(profileComp.name.data(), "L2x");
             EXPECT_EQ(profileComp.age, 21);
@@ -94,7 +94,7 @@ TEST_F(ECSFixture,
     sparse::SparseGroup<Hitbox> group = _ecs.group<Hitbox>();
     ASSERT_TRUE(group.has(entityId));
 
-    types::OptionalCRef<Hitbox> optHitboxComp = group.getEntity<Hitbox>(entityId);
+    const types::OptionalCRef<Hitbox> optHitboxComp = group.getEntity<Hitbox>(entityId);
     ASSERT_TRUE(optHitboxComp.has_value());
 
     const Hitbox &hitboxComp = optHitboxComp.value().get();

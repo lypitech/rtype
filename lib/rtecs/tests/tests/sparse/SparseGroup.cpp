@@ -9,7 +9,8 @@
 using namespace rtecs::tests::fixture;
 using namespace rtecs;
 
-TEST_F(SparseGroupFixture, create_sparse_group)
+TEST_F(SparseGroupFixture,
+       create_sparse_group)
 {
     sparse::SparseGroup<Hitbox, Health> group(*_hitboxSet, *_healthSet);
 
@@ -17,8 +18,8 @@ TEST_F(SparseGroupFixture, create_sparse_group)
     EXPECT_TRUE(group.has(1));
     EXPECT_FALSE(group.has(2));
 
-    const auto &hitboxView = group.get<Hitbox>();
-    const auto &healthView = group.get<Health>();
+    const auto &hitboxView = group.getAllInstances<Hitbox>();
+    const auto &healthView = group.getAllInstances<Health>();
 
     EXPECT_FALSE(hitboxView.has(0));
     EXPECT_TRUE(hitboxView.has(1));
@@ -33,11 +34,12 @@ TEST_F(SparseGroupFixture, create_sparse_group)
     EXPECT_FALSE(healthView.at(42).has_value());
 };
 
-TEST_F(SparseGroupFixture, edit_components_from_getEntity)
+TEST_F(SparseGroupFixture,
+       edit_components_from_getEntity)
 {
     sparse::SparseGroup<Hitbox, Health> group(*_hitboxSet, *_healthSet);
 
-    types::OptionalRef<Health> optionalComponent = group.getEntity<Health>(1);
+    const types::OptionalRef<Health> optionalComponent = group.getEntity<Health>(1);
     ASSERT_TRUE(optionalComponent.has_value());
 
     Health &component = optionalComponent.value();
@@ -48,10 +50,11 @@ TEST_F(SparseGroupFixture, edit_components_from_getEntity)
     EXPECT_EQ(setComponent.value().get().health, component.health);
 };
 
-TEST_F(SparseGroupFixture, edit_components_from_get)
+TEST_F(SparseGroupFixture,
+       edit_components_from_get)
 {
     sparse::SparseGroup<Hitbox, Health> group(*_hitboxSet, *_healthSet);
-    sparse::SparseGroup<Hitbox, Health>::View view = group.get<Health>();
+    sparse::SparseGroup<Hitbox, Health>::View view = group.getAllInstances<Health>();
 
     ASSERT_TRUE(view.has(1));
 
@@ -66,7 +69,8 @@ TEST_F(SparseGroupFixture, edit_components_from_get)
     EXPECT_EQ(setComponent.value().get().health, component.health);
 };
 
-TEST_F(SparseGroupFixture, edit_components_from_getAll)
+TEST_F(SparseGroupFixture,
+       edit_components_from_getAll)
 {
     sparse::SparseGroup<Hitbox, Health> group(*_hitboxSet, *_healthSet);
     auto &views = group.getAll();

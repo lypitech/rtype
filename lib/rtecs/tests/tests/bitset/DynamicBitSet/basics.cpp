@@ -5,14 +5,16 @@
 
 using namespace rtecs::bitset;
 
-TEST(DynamicBitSet, empty_to_string)
+TEST(DynamicBitSet,
+     empty_to_string)
 {
     const DynamicBitSet set{};
 
     ASSERT_STREQ(set.toString().c_str(), "");
 };
 
-TEST(DynamicBitSet, filled_to_string)
+TEST(DynamicBitSet,
+     filled_to_string)
 {
     const DynamicBitSet set{{
         std::bitset<64>{0b1111111111111111111111111111111111111111111111111111111111111110},
@@ -24,47 +26,39 @@ TEST(DynamicBitSet, filled_to_string)
                  "1000000000000000000000000000000000000000000000000000000000000000");
 };
 
-TEST(DynamicBitSet, empty_serialize)
+TEST(DynamicBitSet,
+     empty_serialize)
 {
-    const std::pair<std::vector<uint64_t>, size_t> expectedSerialized{
-        {},
-        0,
-    };
+    const std::vector<uint64_t> expectedSerialized{};
 
     const DynamicBitSet set{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000000},
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000000},
     }};
-    const std::pair<std::vector<uint64_t>, size_t> serializedSet = set.serialize();
+    const std::vector<uint64_t> serializedSet = set.serialize();
 
-    ASSERT_EQ(serializedSet.first.size(), expectedSerialized.first.size());
-    EXPECT_EQ(serializedSet.second, expectedSerialized.second);
-    for (size_t i = 0; i < expectedSerialized.first.size(); i++) {
-        EXPECT_EQ(serializedSet.first[i], expectedSerialized.first[i]);
-    }
+    ASSERT_EQ(serializedSet.size(), expectedSerialized.size());
 };
 
-TEST(DynamicBitSet, filled_serialize)
+TEST(DynamicBitSet,
+     filled_serialize)
 {
-    const std::pair<std::vector<uint64_t>, size_t> expectedSerialized{
-        {0, 61, 62, 63, 64, 65, 127},
-        128,
-    };
+    const std::vector<uint64_t> expectedSerialized{0, 61, 62, 63, 64, 65, 127};
 
     const DynamicBitSet set{{
         std::bitset<64>{0b1000000000000000000000000000000000000000000000000000000000000111},
         std::bitset<64>{0b1100000000000000000000000000000000000000000000000000000000000001},
     }};
-    const std::pair<std::vector<uint64_t>, size_t> serializedSet = set.serialize();
+    const std::vector<uint64_t> serializedSet = set.serialize();
 
-    ASSERT_EQ(serializedSet.first.size(), expectedSerialized.first.size());
-    EXPECT_EQ(serializedSet.second, expectedSerialized.second);
-    for (size_t i = 0; i < expectedSerialized.first.size(); i++) {
-        EXPECT_EQ(serializedSet.first[i], expectedSerialized.first[i]);
+    ASSERT_EQ(serializedSet.size(), expectedSerialized.size());
+    for (size_t i = 0; i < expectedSerialized.size(); i++) {
+        EXPECT_EQ(serializedSet[i], expectedSerialized[i]);
     }
 };
 
-TEST(DynamicBitSet, bit_order_access)
+TEST(DynamicBitSet,
+     bit_order_access)
 {
     DynamicBitSet set{{
         std::bitset<64>{0b1110000000000000000000000000000000000000000000000000000000000001},
@@ -88,7 +82,8 @@ TEST(DynamicBitSet, bit_order_access)
     EXPECT_TRUE(set[127] == true);
 };
 
-TEST(DynamicBitSet, bit_order_access_on_const_instance)
+TEST(DynamicBitSet,
+     bit_order_access_on_const_instance)
 {
     const DynamicBitSet set{{
         std::bitset<64>{0b1110000000000000000000000000000000000000000000000000000000000001},
@@ -112,7 +107,8 @@ TEST(DynamicBitSet, bit_order_access_on_const_instance)
     EXPECT_TRUE(set[127] == true);
 };
 
-TEST(DynamicBitSet, bitset_capacity)
+TEST(DynamicBitSet,
+     bitset_capacity)
 {
     DynamicBitSet set{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000000},
@@ -125,7 +121,8 @@ TEST(DynamicBitSet, bitset_capacity)
     EXPECT_EQ(set.capacity(), 128);
 };
 
-TEST(DynamicBitSet, bitsets_comparison)
+TEST(DynamicBitSet,
+     bitsets_comparison)
 {
     const DynamicBitSet doubled{{
         std::bitset<64>{0b1000000000000000000000000000000000000000000000000000000000000001},
@@ -151,7 +148,8 @@ TEST(DynamicBitSet, bitsets_comparison)
     EXPECT_TRUE(lastEmpty == single);
 };
 
-TEST(DynamicBitSet, clear_bitset)
+TEST(DynamicBitSet,
+     clear_bitset)
 {
     DynamicBitSet set{{
         std::bitset<64>{0b1000000000000000000000000000000000000000000000000000000000000001},
@@ -172,7 +170,8 @@ TEST(DynamicBitSet, clear_bitset)
     EXPECT_FALSE(set[127] == true);
 };
 
-TEST(DynamicBitSet, check_for_bits_on_empty_bitset)
+TEST(DynamicBitSet,
+     check_for_bits_on_empty_bitset)
 {
     const DynamicBitSet set{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000000},
@@ -184,7 +183,8 @@ TEST(DynamicBitSet, check_for_bits_on_empty_bitset)
     EXPECT_TRUE(set.none());
 };
 
-TEST(DynamicBitSet, check_for_bits_on_filled_bitset)
+TEST(DynamicBitSet,
+     check_for_bits_on_filled_bitset)
 {
     const DynamicBitSet set{{
         std::bitset<64>{0b1000000000001000000000000000000000000000000000000000000000000001},
@@ -196,7 +196,8 @@ TEST(DynamicBitSet, check_for_bits_on_filled_bitset)
     EXPECT_FALSE(set.none());
 };
 
-TEST(DynamicBitSet, check_for_bits_on_full_bitset)
+TEST(DynamicBitSet,
+     check_for_bits_on_full_bitset)
 {
     const DynamicBitSet set{{
         std::bitset<64>{0b1111111111111111111111111111111111111111111111111111111111111111},

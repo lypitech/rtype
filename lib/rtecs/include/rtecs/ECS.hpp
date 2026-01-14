@@ -114,7 +114,7 @@ private:
      * @return The component's mask if the component has been registered, or an empty mask otherwise.
      */
     template <typename T>
-    const bitset::DynamicBitSet &getComponentMask() const
+    const bitset::DynamicBitSet &getComponentMaskHelper() const
     {
         const types::ComponentID id = typeid(T).hash_code();
 
@@ -320,7 +320,7 @@ public:
     template <typename... T>
     bitset::DynamicBitSet getComponentMask() const
     {
-        return (getComponentMask<T>() | ...);
+        return (getComponentMaskHelper<T>() | ...);
     }
 
     /**

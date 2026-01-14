@@ -2,7 +2,8 @@
 
 rtecs::systems::SystemWrapper::SystemWrapper(std::function<void(ECS&)>& applyFn,
                                              const std::string& name = "UnknowSystem")
-    : ASystem(name), _applyFn(applyFn)
+    : ASystem(name),
+      _applyFn(applyFn)
 {
 }
 
