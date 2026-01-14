@@ -34,6 +34,9 @@ using ByteBuffer = std::vector<uint8_t>;
 
 namespace core::packet {
 
+static constexpr uint8_t INTERNAL_CHANNEL_ID = 0x00;
+static constexpr uint8_t DEFAULT_CHANNEL_ID = 0x01;
+
 static constexpr std::string_view UNKNOWN_PACKET_NAME = "__rtnt_UNKNOWN";
 
 /// @brief  Maximum timespan a peer can remain silent. If no packets are being sent, an ACK packet
