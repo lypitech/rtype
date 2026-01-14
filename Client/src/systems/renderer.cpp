@@ -5,18 +5,6 @@
 #include "enums/entity_types.hpp"
 #include "rtecs/ECS.hpp"
 
-void AssetManager::init()
-{
-    _textures.reserve(static_cast<size_t>(
-        entity::Type::kBullet));  // kBullet is the last element, hence the biggest index.
-    _textures.emplace_back(gui::PLAYER_TEXTURE_FILEPATH.data(), 0.2);
-}
-
-const gui::Texture& AssetManager::getTexture(entity::Type id) const
-{
-    return _textures[static_cast<size_t>(id)];
-}
-
 namespace systems {
 
 Renderer::Renderer()
