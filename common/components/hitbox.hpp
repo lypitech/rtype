@@ -7,4 +7,14 @@ struct Hitbox
     float height = 0.0f;
     float x = 0.0f;
     float y = 0.0f;
+
+    template <typename Archive>
+    void serialize(Archive& ar)
+    {
+        ar & shown;
+        ar & width;
+        ar & height;
+        ar & x;
+        ar & y;
+    }
 };
