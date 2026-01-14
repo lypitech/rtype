@@ -258,11 +258,15 @@ void Session::_internal_sendAck()
         LOG_DEBUG("History contains things, so we're gonna send RICH_ACK lol");
         packet::internal::RichAck ack{.oobAcks = _oldPacketHistory};
 
-        p = Packet(static_cast<packet::Id>(packet::SystemMessageId::kRichAck));
+        p = Packet(static_cast<packet::Id>(packet::SystemMessageId::kRichAck),
+                   packet::internal::RichAck::kFlag,
+                   packet::internal::RichAck::kChannel);
         p << ack;
     } else {
         LOG_DEBUG("Ahh it's empty, sending simple ACK...");
-        p = Packet(static_cast<packet::Id>(packet::SystemMessageId::kAck));
+        p = Packet(static_cast<packet::Id>(packet::SystemMessageId::kAck),
+                   packet::Flag::kUnreliable,
+                   packet::INTERNAL_CHANNEL_ID);
     }
     rawSend(p, sequenceId, 0);
 }

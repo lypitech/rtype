@@ -64,7 +64,7 @@ public:
 
         LOG_DEBUG("Session sending packet #{} {}...", T::kId, packet::getName<T>());
 
-        Packet packet(T::kId, packet::getFlag<T>());
+        Packet packet(T::kId, packet::getFlag<T>(), packet::getChannelId<T>());
         packet << packetData;
         send(packet);
     }
