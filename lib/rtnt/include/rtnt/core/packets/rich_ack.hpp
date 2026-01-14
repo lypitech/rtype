@@ -23,6 +23,7 @@ namespace rtnt::core::packet::internal {
 struct RichAck
 {
     static constexpr Id kId = static_cast<uint16_t>(SystemMessageId::kRichAck);
+    static constexpr ChannelId kChannel = INTERNAL_CHANNEL_ID;
     static constexpr Flag kFlag = Flag::kUnreliable;
     static constexpr Name kName = INTERNAL_PACKET_NAME("RICH_ACK");
 
