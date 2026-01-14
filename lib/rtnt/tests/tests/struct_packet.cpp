@@ -21,7 +21,7 @@ struct Body
 
 struct Example
 {
-    static constexpr rtnt::core::packet::Id kId = 1801;
+    static constexpr rtnt::core::packet::Id kId = 1001;
     static constexpr rtnt::core::packet::Name kName = "EXAMPLE";
 
     Body body;
