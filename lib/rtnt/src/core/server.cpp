@@ -113,7 +113,7 @@ void Server::onReceive(const udp::endpoint& sender,
     }
 }
 
-/// Used to process events on main thread and not on io thread
+/// Used to process events on the main thread and not on io thread
 void Server::_processEvents()
 {
     while (auto task = _eventQueue.pop()) {

@@ -201,7 +201,7 @@ void Client::_internal_attemptConnection()
     _serverSession->send(packet);
 }
 
-/// Used to process events on main thread and not on io thread
+/// Used to process events on the main thread and not on io thread
 void Client::_processEvents()
 {
     while (auto task = _eventQueue.pop()) {
