@@ -6,21 +6,9 @@
 #include <vector>
 
 #include "enums/entity_types.hpp"
+#include "gui/assetManager.hpp"
 #include "gui/texture.hpp"
 #include "rtecs/systems/ASystem.hpp"
-
-class AssetManager
-{
-public:
-    AssetManager() = default;
-
-    void init();
-    [[nodiscard]] const gui::Texture& getTexture(entity::Type id) const;
-
-private:
-    std::vector<gui::Texture> _textures;
-    std::vector<std::unique_ptr<Sound>> _sounds;
-};
 
 namespace systems {
 
