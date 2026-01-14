@@ -2,11 +2,11 @@
 #include <raylib.h>
 
 #include <string_view>
+#include "logger/Logger.h"
 
 namespace gui {
 
-static constexpr std::string_view PLAYER_TEXTURE_FILEPATH =
-    "../../Client/assets/sprites/Player.png";
+static constexpr std::string_view PLAYER_TEXTURE_FILEPATH = "Client/assets/sprites/players.gif";
 
 class Texture
 {
@@ -16,6 +16,11 @@ public:
         : _texture(LoadTexture(filepath)),
           _scale(scale)
     {
+        if (_texture.id == 0) {
+            LOG_ERR("Failed to load texture: {}", filepath);
+        } else {
+            LOG_INFO("Texture loaded successfully: {} (ID: {})", filepath, _texture.id);
+        }
     }
 
     ~Texture()
