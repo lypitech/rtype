@@ -24,7 +24,9 @@ private:
     size_t _nbits = 0;  ///< The index of the last activated bit.
 
     using Operation = std::function<uint64_t(bool a, bool b)>;
-    void applyOperation(const Operation &operation, DynamicBitSet &result, const DynamicBitSet &other) const;
+    void applyOperation(const Operation &operation,
+                        DynamicBitSet &result,
+                        const DynamicBitSet &other) const;
     void leftShift(size_t nb);
     void rightShift(size_t nb);
 
@@ -41,7 +43,8 @@ public:
         size_t _bitIndex;
 
     public:
-        explicit BitRef(std::bitset<64> &b, size_t bitIndex);
+        explicit BitRef(std::bitset<64> &b,
+                        size_t bitIndex);
 
         /** @return The bit value as boolean */
         explicit operator bool() const;
@@ -95,7 +98,7 @@ public:
      *  and as second value, the size of the DynamicBitSet.
      */
     [[nodiscard]]
-    std::pair<std::vector<uint64_t>, size_t> serialize() const;
+    std::vector<uint64_t> serialize() const;
 
     /**
      * @brief Get the string representation of the DynamicBitSet.
@@ -242,6 +245,7 @@ public:
     bool operator==(const DynamicBitSet &other) const;
 };
 
-std::ostream &operator<<(std::ostream &stream, const DynamicBitSet &ref);
+std::ostream &operator<<(std::ostream &stream,
+                         const DynamicBitSet &ref);
 
 }  // namespace rtecs::bitset
