@@ -98,10 +98,12 @@ void Director::update(const float dt,
         std::uniform_real_distribution xDist(150.0f, 1200.0f);
         float x = xDist(_rng);
         float y = yDist(_rng);
-        LOG_TRACE_R2("Spawning {} #{} of {} at ({}, {})",
+        LOG_TRACE_R2("Spawning {} {}/{} from group {}/{} at ({}, {})",
                      entity::TypeToString.at(group.type),
-                     wave.currentGroupIndex,
+                     wave.spawnedInGroup + 1,
                      group.count,
+                     wave.currentGroupIndex + 1,
+                     wave.archetype->enemies.size(),
                      x,
                      y);
         lobby.spawnEntity<components::Position, components::Type>(
