@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "level_director.hpp"
+#include "logger/Logger.h"
 
 namespace level {
 

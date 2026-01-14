@@ -40,11 +40,11 @@ void Director::parseArchetypes(const nlohmann::json& data)
     }
 }
 
-void Director::load(const std::string& config)
+void Director::load(const std::string& waveConfig)
 {
-    std::ifstream f(config);
+    std::ifstream f(waveConfig);
     if (!f.is_open()) {
-        LOG_CRIT("[Error] Could not open wave config file: {}", config);
+        LOG_CRIT("[Error] Could not open wave config file: {}", waveConfig);
         return;
     }
     using json = nlohmann::json;
