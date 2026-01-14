@@ -99,7 +99,7 @@ ecs.registerComponents<CollideBox2D>();
 ecs.getComponentMask<Transformation2D, Health>();
 ```
 
-> [!TIPS]
+> [!TIP]
 > To send a mask through network, there is a `DynamicBitSet::serialize` method that
 > returns a `std::vector` of all the enabled bits. You can use this method to send the mask through the network.
 
@@ -253,6 +253,6 @@ ecs.destroyEntity(entityId);
 const rtecs::bitset::DynamicBitSet& mask = ecs.getEntityMask(entityId);
 ```
 
-> [!TIPS]
+> [!TIP]
 > To send a mask through network, there is a `DynamicBitSet::serialize` method that
 > returns a `std::vector` of all the enabled bits. You can use this method to send the mask through the network.
