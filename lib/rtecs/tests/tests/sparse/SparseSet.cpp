@@ -4,7 +4,8 @@
 
 #include "logger/Logger.h"
 
-TEST(SparseSet, create_single_entity_without_auto_initializer)
+TEST(SparseSet,
+     create_single_entity_without_auto_initializer)
 {
     struct MyComponent
     {
@@ -20,7 +21,8 @@ TEST(SparseSet, create_single_entity_without_auto_initializer)
     ASSERT_TRUE(first.has_value());
 }
 
-TEST(SparseSet, create_single_entity_with_auto_initializer)
+TEST(SparseSet,
+     create_single_entity_with_auto_initializer)
 {
     struct MyComponent
     {
@@ -36,7 +38,8 @@ TEST(SparseSet, create_single_entity_with_auto_initializer)
     ASSERT_TRUE(component.has_value());
 }
 
-TEST(SparseSet, create_entity_with_id_zero)
+TEST(SparseSet,
+     create_entity_with_id_zero)
 {
     struct MyComponent
     {
@@ -53,7 +56,8 @@ TEST(SparseSet, create_entity_with_id_zero)
     ASSERT_TRUE(component.has_value());
 }
 
-TEST(SparseSet, create_multiple_ordered_entities)
+TEST(SparseSet,
+     create_multiple_ordered_entities)
 {
     struct MyComponent
     {
@@ -72,7 +76,8 @@ TEST(SparseSet, create_multiple_ordered_entities)
     }
 }
 
-TEST(SparseSet, create_multiple_entities_with_random_id)
+TEST(SparseSet,
+     create_multiple_entities_with_random_id)
 {
     struct MyComponent
     {
@@ -93,7 +98,8 @@ TEST(SparseSet, create_multiple_entities_with_random_id)
     }
 }
 
-TEST(SparseSet, clear_empty_sparseset)
+TEST(SparseSet,
+     clear_empty_sparseset)
 {
     struct MyComponent
     {
@@ -107,7 +113,8 @@ TEST(SparseSet, clear_empty_sparseset)
     ASSERT_FALSE(sparseSet.has(0));
 }
 
-TEST(SparseSet, clear_filled_sparseset)
+TEST(SparseSet,
+     clear_filled_sparseset)
 {
     struct MyComponent
     {
@@ -132,7 +139,8 @@ TEST(SparseSet, clear_filled_sparseset)
     }
 }
 
-TEST(SparseSet, remove_entity)
+TEST(SparseSet,
+     remove_entity)
 {
     struct MyComponent
     {
@@ -161,7 +169,8 @@ TEST(SparseSet, remove_entity)
     }
 }
 
-TEST(SparseSet, remove_undefined_entity)
+TEST(SparseSet,
+     remove_undefined_entity)
 {
     struct MyComponent
     {

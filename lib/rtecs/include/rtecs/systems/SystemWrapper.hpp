@@ -18,7 +18,8 @@ public:
      * @param applyFn The apply function to call on system apply.
      * @param name The name of the system.
      */
-    explicit SystemWrapper(std::function<void(ECS&)>& applyFn, const std::string& name);
+    explicit SystemWrapper(std::function<void(ECS&)>& applyFn,
+                           const std::string& name);
 
     /**
      * @brief Apply the system.

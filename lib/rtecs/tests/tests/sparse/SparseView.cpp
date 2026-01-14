@@ -6,7 +6,8 @@
 
 using namespace rtecs::sparse;
 
-TEST(SparseView, put_multiple_values)
+TEST(SparseView,
+     put_multiple_values)
 {
     SparseView<size_t, size_t> view;
 
@@ -26,7 +27,8 @@ TEST(SparseView, put_multiple_values)
     EXPECT_EQ(view.at(4).value(), 8);
 }
 
-TEST(SparseView, erase_unknown_value)
+TEST(SparseView,
+     erase_unknown_value)
 {
     SparseView<size_t, size_t> view;
 
@@ -34,7 +36,8 @@ TEST(SparseView, erase_unknown_value)
     ASSERT_FALSE(view.has(2));
 }
 
-TEST(SparseView, erase_present_value)
+TEST(SparseView,
+     erase_present_value)
 {
     SparseView<size_t, size_t> view;
 
@@ -55,7 +58,8 @@ TEST(SparseView, erase_present_value)
     EXPECT_EQ(view.at(4).value(), 8);
 }
 
-TEST(SparseView, has_value)
+TEST(SparseView,
+     has_value)
 {
     SparseView<size_t, size_t> view;
 
@@ -82,7 +86,8 @@ TEST(SparseView, has_value)
     EXPECT_FALSE(view.has(6));
 }
 
-TEST(SparseView, access_present_data)
+TEST(SparseView,
+     access_present_data)
 {
     SparseView<size_t, size_t> view;
 
@@ -99,7 +104,8 @@ TEST(SparseView, access_present_data)
     EXPECT_EQ(view.at(7).value(), 1);
 }
 
-TEST(SparseView, access_present_data_on_const)
+TEST(SparseView,
+     access_present_data_on_const)
 {
     using TestSparseView = SparseView<size_t, size_t>;
     TestSparseView view;
@@ -107,10 +113,11 @@ TEST(SparseView, access_present_data_on_const)
     view.put(42, 84);
     EXPECT_TRUE(view.has(42));
 
-    const std::function<void(const TestSparseView &)> accessConst = [](const TestSparseView &constView) {
-        ASSERT_TRUE(constView.at(42).has_value());
-        EXPECT_EQ(constView.at(42).value(), 84);
-        EXPECT_TRUE(constView.has(42));
-    };
+    const std::function<void(const TestSparseView &)> accessConst =
+        [](const TestSparseView &constView) {
+            ASSERT_TRUE(constView.at(42).has_value());
+            EXPECT_EQ(constView.at(42).value(), 84);
+            EXPECT_TRUE(constView.has(42));
+        };
     accessConst(view);
 }

@@ -196,7 +196,8 @@ size_t SparseSet<T>::size() const noexcept
 }
 
 template <typename T>
-bool SparseSet<T>::put(const size_t id, T component) noexcept
+bool SparseSet<T>::put(const size_t id,
+                       T component) noexcept
 {
     const size_t page = PAGE_OF(id, kPageSize);
     const size_t sparseIndex = PAGE_INDEX_OF(id, kPageSize);

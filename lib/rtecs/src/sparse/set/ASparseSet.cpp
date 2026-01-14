@@ -7,6 +7,9 @@ ASparseSet::ASparseSet(const types::ComponentID id)
 {
 }
 
-const std::vector<rtecs::types::EntityID>& ASparseSet::getEntities() const noexcept { return _entities; }
+const std::vector<rtecs::types::EntityID>& ASparseSet::getEntities() const noexcept
+{
+    return _entities;
+}
 
 rtecs::types::ComponentID ASparseSet::getId() const { return _id; }

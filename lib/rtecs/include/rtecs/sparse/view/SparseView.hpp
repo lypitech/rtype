@@ -33,7 +33,8 @@ public:
      * @param key The key of the value to insert.
      * @param value The value to insert.
      */
-    void put(Key key, T value)
+    void put(Key key,
+             T value)
     {
         _values.push_back(std::move(value));
         _keyToIndex.emplace(key, _values.size() - 1);

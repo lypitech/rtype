@@ -5,7 +5,8 @@
 
 using namespace rtecs::bitset;
 
-TEST(DynamicBitSet, and_operation)
+TEST(DynamicBitSet,
+     and_operation)
 {
     const DynamicBitSet set1{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000001},
@@ -22,7 +23,8 @@ TEST(DynamicBitSet, and_operation)
                  "0000000000000000000000000000000000000000000000000000000000000000");
 };
 
-TEST(DynamicBitSet, and_operation_with_lower_size)
+TEST(DynamicBitSet,
+     and_operation_with_lower_size)
 {
     const DynamicBitSet set1{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000001},
@@ -38,7 +40,8 @@ TEST(DynamicBitSet, and_operation_with_lower_size)
                  "0000000000000000000000000000000000000000000000000000000000000000");
 };
 
-TEST(DynamicBitSet, and_operation_with_bigger_size)
+TEST(DynamicBitSet,
+     and_operation_with_bigger_size)
 {
     const DynamicBitSet set1{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000001},
@@ -54,7 +57,8 @@ TEST(DynamicBitSet, and_operation_with_bigger_size)
                  "0000000000000000000000000000000000000000000000000000000000000000");
 };
 
-TEST(DynamicBitSet, and_equal_operation)
+TEST(DynamicBitSet,
+     and_equal_operation)
 {
     DynamicBitSet res{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000001},
@@ -71,7 +75,8 @@ TEST(DynamicBitSet, and_equal_operation)
                  "0000000000000000000000000000000000000000000000000000000000000100");
 };
 
-TEST(DynamicBitSet, and_equal_operation_with_lower_size)
+TEST(DynamicBitSet,
+     and_equal_operation_with_lower_size)
 {
     DynamicBitSet res{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000001},
@@ -87,7 +92,8 @@ TEST(DynamicBitSet, and_equal_operation_with_lower_size)
                  "0000000000000000000000000000000000000000000000000000000000000000");
 };
 
-TEST(DynamicBitSet, and_equal_operation_with_bigger_size)
+TEST(DynamicBitSet,
+     and_equal_operation_with_bigger_size)
 {
     DynamicBitSet res{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000001},
@@ -103,7 +109,8 @@ TEST(DynamicBitSet, and_equal_operation_with_bigger_size)
                  "0000000000000000000000000000000000000000000000000000000000000000");
 };
 
-TEST(DynamicBitSet, or_operation)
+TEST(DynamicBitSet,
+     or_operation)
 {
     const DynamicBitSet set1{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -120,7 +127,8 @@ TEST(DynamicBitSet, or_operation)
                  "0000000000000000000000000000000000000000000000000000000000000011");
 };
 
-TEST(DynamicBitSet, or_operation_with_lower_size)
+TEST(DynamicBitSet,
+     or_operation_with_lower_size)
 {
     const DynamicBitSet set1{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -136,7 +144,8 @@ TEST(DynamicBitSet, or_operation_with_lower_size)
                  "0000000000000000000000000000000000000000000000000000000000000011");
 };
 
-TEST(DynamicBitSet, or_operation_with_bigger_size)
+TEST(DynamicBitSet,
+     or_operation_with_bigger_size)
 {
     const DynamicBitSet set1{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -152,7 +161,8 @@ TEST(DynamicBitSet, or_operation_with_bigger_size)
                  "0000000000000000000000000000000000000000000000000000000000000011");
 };
 
-TEST(DynamicBitSet, or_equal_operation)
+TEST(DynamicBitSet,
+     or_equal_operation)
 {
     DynamicBitSet res{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -169,7 +179,8 @@ TEST(DynamicBitSet, or_equal_operation)
                  "0000000000000000000000000000000000000000000000000000000000000011");
 };
 
-TEST(DynamicBitSet, or_equal_operation_with_lower_size)
+TEST(DynamicBitSet,
+     or_equal_operation_with_lower_size)
 {
     DynamicBitSet res{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -185,7 +196,8 @@ TEST(DynamicBitSet, or_equal_operation_with_lower_size)
                  "0000000000000000000000000000000000000000000000000000000000000011");
 };
 
-TEST(DynamicBitSet, or_equal_operation_with_bigger_size)
+TEST(DynamicBitSet,
+     or_equal_operation_with_bigger_size)
 {
     DynamicBitSet res{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -201,7 +213,8 @@ TEST(DynamicBitSet, or_equal_operation_with_bigger_size)
                  "0000000000000000000000000000000000000000000000000000000000000011");
 };
 
-TEST(DynamicBitSet, xor_operation)
+TEST(DynamicBitSet,
+     xor_operation)
 {
     const DynamicBitSet set1{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -218,7 +231,8 @@ TEST(DynamicBitSet, xor_operation)
                  "0000000000000000000000000000000000000000000000000000000000000001");
 };
 
-TEST(DynamicBitSet, xor_operation_with_lower_size)
+TEST(DynamicBitSet,
+     xor_operation_with_lower_size)
 {
     const DynamicBitSet set1{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -234,7 +248,8 @@ TEST(DynamicBitSet, xor_operation_with_lower_size)
                  "0000000000000000000000000000000000000000000000000000000000000011");
 };
 
-TEST(DynamicBitSet, xor_operation_with_bigger_size)
+TEST(DynamicBitSet,
+     xor_operation_with_bigger_size)
 {
     const DynamicBitSet set1{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -250,7 +265,8 @@ TEST(DynamicBitSet, xor_operation_with_bigger_size)
                  "0000000000000000000000000000000000000000000000000000000000000011");
 };
 
-TEST(DynamicBitSet, xor_equal_operation)
+TEST(DynamicBitSet,
+     xor_equal_operation)
 {
     DynamicBitSet res{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -267,7 +283,8 @@ TEST(DynamicBitSet, xor_equal_operation)
                  "0000000000000000000000000000000000000000000000000000000000000001");
 };
 
-TEST(DynamicBitSet, xor_equal_operation_with_lower_size)
+TEST(DynamicBitSet,
+     xor_equal_operation_with_lower_size)
 {
     DynamicBitSet res{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -283,7 +300,8 @@ TEST(DynamicBitSet, xor_equal_operation_with_lower_size)
                  "0000000000000000000000000000000000000000000000000000000000000010");
 };
 
-TEST(DynamicBitSet, xor_equal_operation_with_bigger_size)
+TEST(DynamicBitSet,
+     xor_equal_operation_with_bigger_size)
 {
     DynamicBitSet res{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000011},
@@ -299,7 +317,8 @@ TEST(DynamicBitSet, xor_equal_operation_with_bigger_size)
                  "0000000000000000000000000000000000000000000000000000000000000010");
 };
 
-TEST(DynamicBitSet, not_operation)
+TEST(DynamicBitSet,
+     not_operation)
 {
     const DynamicBitSet set{{
         std::bitset<64>{0b0000000000000000000000000000000000000000000000000000000000000010},
