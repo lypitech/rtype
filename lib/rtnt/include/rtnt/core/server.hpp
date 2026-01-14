@@ -105,7 +105,7 @@ private:
 
         LOG_DEBUG("Server sending Packet #{} {}...", T::kId, packet::getName<T>());
 
-        Packet packetToSend(T::kId, packet::getFlag<T>());
+        Packet packetToSend(T::kId, packet::getFlag<T>(), packet::getChannelId<T>());
         packetToSend << packetData;
         session->send(packetToSend);
     }
