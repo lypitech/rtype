@@ -136,7 +136,7 @@ void Lobby::run()
         }
 
         if (lag < server::TIME_PER_TICK) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            std::this_thread::sleep_for(milliseconds(10));
         }
     }
 }
