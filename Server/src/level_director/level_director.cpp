@@ -88,8 +88,11 @@ void Director::update(const float dt,
 
         const auto& group = wave.archetype->enemies[wave.currentGroupIndex];
 
-        std::uniform_real_distribution yDist(5.0f, 95.0f);
-        lobby.spawnEntity<components::Position>({150, yDist(_rng)});
+        // TODO: Make the entities spawn off screen.
+        std::uniform_real_distribution yDist(200.0f, 950.0f);
+        std::uniform_real_distribution xDist(150.0f, 1200.0f);
+        lobby.spawnEntity<components::Position, components::Type>(
+            {xDist(_rng), yDist(_rng)}, {group.type});
 
         wave.spawnedInGroup++;
 
