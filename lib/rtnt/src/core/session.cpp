@@ -245,7 +245,6 @@ void Session::disconnect()
 
 void Session::_internal_sendAck()
 {
-    LOG_DEBUG("SENDACK CALLED AHHA");
     Packet p;
     uint32_t sequenceId = _localSequenceId++;
 
@@ -259,7 +258,6 @@ void Session::_internal_sendAck()
         LOG_DEBUG("Ahh it's empty, sending simple ACK...");
         p = Packet(static_cast<packet::Id>(packet::SystemMessageId::kAck));
     }
-    LOG_DEBUG("Raw send");
     rawSend(p, sequenceId, 0);
 }
 
