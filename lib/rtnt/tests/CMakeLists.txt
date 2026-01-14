@@ -12,6 +12,7 @@ set(RTNT_TEST_SOURCES
     tests/order.cpp
     tests/reconnection.cpp
     tests/packet_loss.cpp
+    tests/channel_independency.cpp
 )
 
 add_executable(rtnt_tests ${RTNT_TEST_SOURCES})
