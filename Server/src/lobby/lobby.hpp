@@ -137,7 +137,7 @@ public:
             components::GameComponents{}, *_engine.getEcs(), id);
         packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
         broadcast(p);
-    };
+    }
 
     /**
      * @brief Getter for the gameEngine.
