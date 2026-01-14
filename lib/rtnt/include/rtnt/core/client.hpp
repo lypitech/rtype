@@ -147,7 +147,7 @@ private:
         if (session) {
             LOG_DEBUG("Client sending Packet #{} {}...", T::kId, packet::getName<T>());
 
-            Packet packetToSend(T::kId, packet::getFlag<T>());
+            Packet packetToSend(T::kId, packet::getFlag<T>(), packet::getChannelId<T>());
             packetToSend << packetData;
             _serverSession->send(packetToSend);
         }
