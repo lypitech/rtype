@@ -1,28 +1,25 @@
 #include "rteng.hpp"
 
-#include "SparseSet.hpp"
 #include "behaviour.hpp"
 
 namespace rteng {
 
+void GameEngine::destroyEntity(const rtecs::types::EntityID& id) const { _ecs->destroyEntity(id); }
+
 void GameEngine::runOnce(const double dt) const
 {
-    {
-        auto& behaviourComponents = _ecs->getComponent<components::Behaviour>();
-        auto& behaviourSparseSet =
-            dynamic_cast<rtecs::SparseSet<components::Behaviour>&>(behaviourComponents);
+    auto behaviours = _ecs->group<components::Behaviour>();
 
-        for (auto& [instance, started] : behaviourSparseSet.getAll()) {
-            if (!instance) {
-                continue;
-            }
-            if (!started) {
-                instance->Start();
-                started = true;
-            }
-            instance->Update(dt);
+    behaviours.apply([&dt](const rtecs::types::EntityID&, components::Behaviour& c) {
+        if (!c.instance) {
+            return;
         }
-    }
+        if (!c.started) {
+            c.instance->Start();
+            c.started = true;
+        }
+        c.instance->Update(dt);
+    });
     _ecs->applyAllSystems();
 }
 

@@ -3,9 +3,9 @@
 #include <memory>
 #include <vector>
 
-#include "ECS.hpp"
 #include "behaviour.hpp"
 #include "monoBehaviour.hpp"
+#include "rtecs/ECS.hpp"
 
 namespace rteng {
 
@@ -28,7 +28,7 @@ public:
     template <typename... Components>
     explicit GameEngine(ComponentsList<Components...>)
     {
-        _ecs = rtecs::ECS::createWithComponents<Components..., components::Behaviour>();
+        _ecs->registerComponents<Components...>();
     }
 
     /**
@@ -39,24 +39,28 @@ public:
      * @return The id of the newly created entity.
      */
     template <typename... Components>
-    rtecs::EntityID registerEntity(const std::shared_ptr<behaviour::MonoBehaviour>& mono_behaviour,
-                                   Components&&... components)
+    rtecs::types::EntityID registerEntity(
+        const std::shared_ptr<behaviour::MonoBehaviour>& mono_behaviour,
+        Components&&... components)
     {
-        const rtecs::EntityID entityId = _ecs->registerEntity<std::decay_t<Components>...>(
+        const rtecs::types::EntityID entityId = _ecs->registerEntity<std::decay_t<Components>...>(
             std::forward<Components>(components)...);
 
-        if (!mono_behaviour || !_ecs->hasEntityComponent<components::Behaviour>(entityId)) {
+        if (!mono_behaviour) {
             return entityId;
         }
-        auto& behaviourComponents = _ecs->getComponent<components::Behaviour>();
-        auto& behaviourSparseSet =
-            dynamic_cast<rtecs::SparseSet<components::Behaviour>&>(behaviourComponents);
+        _ecs->addEntityComponents<components::Behaviour>(entityId, {});
+        rtecs::sparse::SparseGroup<components::Behaviour> behaviourGroup =
+            _ecs->group<components::Behaviour>();
 
+        behaviourGroup.apply([&](const rtecs::types::EntityID&, components::Behaviour& component) {
+            component.instance = mono_behaviour;
+            component.started = false;
+        });
         components::Behaviour behaviourComp;
         behaviourComp.instance = mono_behaviour;
         behaviourComp.started = false;
 
-        behaviourSparseSet.put(entityId, behaviourComp);
         return entityId;
     }
 
@@ -65,6 +69,25 @@ public:
      * @param dt The elapsed time since the last call to this function in second.
      */
     void runOnce(double dt) const;
+
+    /**
+     * @brief Removes an entity from the ecs.
+     * @param id The id of the entity to destroy.
+     */
+    void destroyEntity(const rtecs::types::EntityID& id) const;
+
+    /**
+     * @brief Updates the selected entity's specified components.
+     * @tparam Comps The list of components to update.
+     * @param id The id of the entity to update.
+     * @param components The value of to update the components to.
+     */
+    template <typename... Comps>
+    void updateEntity(const rtecs::types::EntityID& id,
+                      Comps&&... components) const
+    {
+        _ecs->updateEntity<std::decay_t<Comps>...>(id, std::forward<Comps>(components)...);
+    }
 
     /**
      * @brief Get a reference to the stored ecs.
