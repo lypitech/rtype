@@ -32,7 +32,9 @@ private:
      * @param set The set
      */
     template <typename T>
-    void addEntity(types::EntityID entityId, SparseView<types::EntityID, std::reference_wrapper<T>>& view,
+    void addEntity(types::EntityID entityId,
+                   SparseView<types::EntityID,
+                              std::reference_wrapper<T>>& view,
                    std::reference_wrapper<SparseSet<T>> set)
     {
         types::OptionalRef<T> optionalComponent = set.get().get(entityId);
@@ -40,8 +42,11 @@ private:
         if (optionalComponent.has_value()) {
             view.put(entityId, optionalComponent.value());
         } else {
-            LOG_WARN("Cannot add the entity to the view: The entity with id {} do not have the component with id {}",
-                     entityId, set.get().getId());
+            LOG_WARN(
+                "Cannot add the entity to the view: The entity with id {} do not have the "
+                "component with id {}",
+                entityId,
+                set.get().getId());
         }
     }
 
@@ -54,7 +59,9 @@ private:
      * @param callback The callback to apply on this entity instances
      * @param instances The instances of the entity
      */
-    static void applyHelper(types::EntityID entityId, std::function<void(const types::EntityID&, Ts&...)> callback,
+    static void applyHelper(types::EntityID entityId,
+                            std::function<void(const types::EntityID&,
+                                               Ts&...)> callback,
                             types::OptionalRef<Ts>... instances)
     {
         if ((... && instances.has_value())) {
@@ -74,14 +81,15 @@ public:
     {
         std::vector<types::OptionalRef<ISparseSet>> mixedSets{sets...};
 
-        const types::OptionalRef<ISparseSet> driver =
-            *std::min_element(mixedSets.begin(), mixedSets.end(),
-                              [](const types::OptionalCRef<ISparseSet> a, const types::OptionalCRef<ISparseSet> b) {
-                                  if (!a.has_value() || !b.has_value()) {
-                                      LOG_CRIT("A component in a group has not been registered in the ECS.");
-                                  }
-                                  return a.has_value() && b.has_value() && a->get().size() < b->get().size();
-                              });
+        const types::OptionalRef<ISparseSet> driver = *std::min_element(
+            mixedSets.begin(),
+            mixedSets.end(),
+            [](const types::OptionalCRef<ISparseSet> a, const types::OptionalCRef<ISparseSet> b) {
+                if (!a.has_value() || !b.has_value()) {
+                    LOG_CRIT("A component in a group has not been registered in the ECS.");
+                }
+                return a.has_value() && b.has_value() && a->get().size() < b->get().size();
+            });
 
         if (!driver.has_value()) {
             LOG_CRIT("None of the components specified for this group have been registered.");
@@ -92,7 +100,9 @@ public:
             const bool isValid = (... && (sets.has_value() && sets->get().has(entityId)));
 
             if (isValid) {
-                std::apply([&](auto&... view) { (addEntity<Ts>(entityId, view, sets.value()), ...); }, _group);
+                std::apply(
+                    [&](auto&... view) { (addEntity<Ts>(entityId, view, sets.value()), ...); },
+                    _group);
             }
         }
     }
@@ -109,7 +119,7 @@ public:
     template <typename T>
     types::OptionalRef<T> getEntity(types::EntityID entityId)
     {
-        return get<T>().at(entityId);
+        return getAllInstances<T>().at(entityId);
     }
 
     /**
@@ -126,7 +136,9 @@ public:
      * @return A SparseView of the entities
      */
     template <typename T>
-    SparseView<types::EntityID, std::reference_wrapper<T>>& get()
+    SparseView<types::EntityID,
+               std::reference_wrapper<T>>&
+    getAllInstances()
     {
         constexpr bool contains = (std::is_same_v<T, Ts> || ...);
         static_assert(contains, "Requested component type T is not part of this SparseGroup");
@@ -138,7 +150,12 @@ public:
      *
      * @return All the SparseView stored in the group.
      */
-    std::tuple<SparseView<types::EntityID, std::reference_wrapper<Ts>>...>& getAll() { return _group; }
+    std::tuple<SparseView<types::EntityID,
+                          std::reference_wrapper<Ts>>...>&
+    getAll()
+    {
+        return _group;
+    }
 
     /**
      * @brief Check if the group has an entity.
@@ -148,7 +165,8 @@ public:
      */
     bool has(types::EntityID entityId) { return std::get<0>(_group).has(entityId); }
 
-    void apply(std::function<void(const types::EntityID&, Ts&...)> callback)
+    void apply(std::function<void(const types::EntityID&,
+                                  Ts&...)> callback)
     {
         for (auto entity : getEntities()) {
             std::apply(
