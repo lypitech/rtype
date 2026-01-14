@@ -12,8 +12,8 @@ void ECSFixture::SetUp()
     // ==================================
     //   Profile & Hitbox : From 0 to 2
     // ==================================
-    const types::EntityID firstEntityId =
-        _ecs.registerEntity<Profile, Hitbox>({.name = "L1x", .age = 20}, {.x = 0, .y = 0, .width = 20, .height = 20});
+    const types::EntityID firstEntityId = _ecs.registerEntity<Profile, Hitbox>(
+        {.name = "L1x", .age = 20}, {.x = 0, .y = 0, .width = 20, .height = 20});
     const types::EntityID secondEntityId = _ecs.registerEntity<Profile, Hitbox>(
         {.name = "Shuvly", .age = 19}, {.x = 10, .y = 10, .width = 20, .height = 20});
     const types::EntityID thirdEntityId = _ecs.registerEntity<Profile, Hitbox>(
@@ -26,9 +26,12 @@ void ECSFixture::SetUp()
     // ==================================
     //   Hitbox & Health : From 3 to 5
     // ==================================
-    _ecs.registerEntity<Hitbox, Health>({.x = 0, .y = 0, .width = 20, .height = 20}, {.health = 20});
-    _ecs.registerEntity<Hitbox, Health>({.x = 10, .y = 10, .width = 20, .height = 20}, {.health = 50});
-    _ecs.registerEntity<Hitbox, Health>({.x = 15, .y = 15, .width = 20, .height = 20}, {.health = 100});
+    _ecs.registerEntity<Hitbox, Health>(
+        {.x = 0, .y = 0, .width = 20, .height = 20}, {.health = 20});
+    _ecs.registerEntity<Hitbox, Health>(
+        {.x = 10, .y = 10, .width = 20, .height = 20}, {.health = 50});
+    _ecs.registerEntity<Hitbox, Health>(
+        {.x = 15, .y = 15, .width = 20, .height = 20}, {.health = 100});
 
     // ==================================
     //   Health & Profile : From 6 to 8
@@ -46,7 +49,8 @@ void ECSFixture::SetUp()
 
             view.apply([&](types::EntityID entityId, Profile& profileComp, Health& healthComp) {
                 if (healthComp.health < 10) {
-                    LOG_TRACE_R3("Entity n°{} (Profile: {}) is low life !", entityId, profileComp.name);
+                    LOG_TRACE_R3(
+                        "Entity n°{} (Profile: {}) is low life !", entityId, profileComp.name);
                     profileComp.prefix = "[LOW]";
                 } else {
                     profileComp.prefix = "";
@@ -78,9 +82,11 @@ void ECSFixture::DamageOnCollideSystem::apply(ECS& ecs)
     // ecs.addEntityComponent<Hitbox, Health>(10, { 10, 10, 10, 10 }, {10})
 
     view.apply([&](types::EntityID entityId, Hitbox& hitbox, Health& health) {
-        view.apply([&entityId, &hitbox, &health](types::EntityID otherId, const Hitbox& otherHitbox, Health&) {
+        view.apply([&entityId, &hitbox, &health](
+                       types::EntityID otherId, const Hitbox& otherHitbox, Health&) {
             if (hitbox.collideWith(otherHitbox)) {
-                LOG_TRACE_R3("Collision detected between entity#{} and entity#{}.", entityId, otherId);
+                LOG_TRACE_R3(
+                    "Collision detected between entity#{} and entity#{}.", entityId, otherId);
                 health.health -= 5;
             }
         });
@@ -96,7 +102,7 @@ void ECSFixture::MoveToCenterSystem::apply(ECS& ecs)
 {
     sparse::SparseGroup<Hitbox> view = ecs.group<Hitbox>();
 
-    view.apply([&](types::EntityID entityId, Hitbox& hitboxComp) {
+    view.apply([&](types::EntityID, Hitbox& hitboxComp) {
         if (hitboxComp.x > 0) {
             hitboxComp.x -= 5;
         }
