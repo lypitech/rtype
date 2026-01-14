@@ -21,6 +21,7 @@ using Name = std::string_view;
 using ProtocolId = uint16_t;
 using ProtocolVersion = uint16_t;
 using SequenceId = uint32_t;
+using ChannelId = uint8_t;
 using OrderId = uint32_t;
 using AcknowledgeId = uint32_t;
 using AcknowledgeBitfield = uint32_t;
@@ -86,9 +87,10 @@ inline std::string_view to_string(const Error error)
 /**
  * @struct  packet::Header
  * @brief   The RUDP Wire Header.
- * @note    This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
+ * @note    This struct is packed (1-byte alignment) to ensure a consistent binary layout across
+ *          platforms.
  * @warning All multibyte fields MUST be converted to Network Byte Order (Big Endian) before sending
- * (cf. toNetwork and toHost).
+ *          (cf. toNetwork and toHost).
  */
 struct Header final
 {
@@ -96,6 +98,7 @@ struct Header final
         PROTOCOL_ID;  ///< Magic number representing unique ID of the protocol, to avoid internet noise
     ProtocolVersion protocolVersion = PROTOCOL_VER;  ///< Protocol version, to reject mismatch peers
     SequenceId sequenceId = 0;                       ///< The unique, incrementing ID of this packet
+    ChannelId channelId = 0;          ///< ID of the channel the packet will be processed in.
     OrderId orderId = 0;              ///< The unique, incrementing order ID of this packet.
     AcknowledgeId acknowledgeId = 0;  ///< Sequence ID of the latest packet received
     AcknowledgeBitfield acknowledgeBitfield =
@@ -116,6 +119,7 @@ struct Header final
         protocolId = endian::swap(protocolId);
         protocolVersion = endian::swap(protocolVersion);
         sequenceId = endian::swap(sequenceId);
+        // channelId is uint8_t, no conversion needed
         orderId = endian::swap(orderId);
         acknowledgeId = endian::swap(acknowledgeId);
         acknowledgeBitfield = endian::swap(acknowledgeBitfield);
@@ -447,7 +451,7 @@ public:
 
     [[nodiscard]] packet::Id getId() const { return _messageId; }
     [[nodiscard]] packet::Flag getReliability() const { return _flag; }
-    [[nodiscard]] uint8_t getChannel() const { return _channelId; }
+    [[nodiscard]] packet::ChannelId getChannel() const { return _channelId; }
     [[nodiscard]] const ByteBuffer& getPayload() const { return _buffer; }
 
 private:
