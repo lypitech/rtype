@@ -100,6 +100,8 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
     packet::ChannelId receivedChannelId = header.channelId;
     packet::OrderId receivedOrderId = header.orderId;
 
+    LOG_DEBUG("Received channel ID: {}", receivedChannelId);
+
     packet::OrderId& nextExpected = _nextExpectedOrderIds[receivedChannelId];
     auto& reorderBuffer = _reorderBuffers[receivedChannelId];
 
@@ -118,6 +120,11 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
         LOG_TRACE_R2(
             "Gap: Got order ID {}, expected {}. Buffering.", receivedOrderId, nextExpected);
         reorderBuffer[receivedOrderId] = std::move(incomingPacket);
+    } else {
+        LOG_WARN("Channel {}: Duplicate/Old Ordered Packet (Got {}, Expected {}). Ignoring.",
+                 receivedChannelId,
+                 receivedOrderId,
+                 nextExpected);
     }
 
     return readyPackets;
