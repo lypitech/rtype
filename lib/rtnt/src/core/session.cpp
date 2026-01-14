@@ -97,23 +97,27 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
         return readyPackets;
     }
 
-    uint32_t receivedOrderId = header.orderId;
+    packet::ChannelId receivedChannelId = header.channelId;
+    packet::OrderId receivedOrderId = header.orderId;
+
+    packet::OrderId& nextExpected = _nextExpectedOrderIds[receivedChannelId];
+    auto& reorderBuffer = _reorderBuffers[receivedChannelId];
 
     LOG_DEBUG("Received ordered ID: {}", receivedOrderId);
 
-    if (receivedOrderId == _nextExpectedOrderId) {
+    if (receivedOrderId == nextExpected) {
         readyPackets.push_back(std::move(incomingPacket));
-        _nextExpectedOrderId++;
+        nextExpected++;
 
-        while (_reorderBuffer.contains(_nextExpectedOrderId)) {
-            auto node = _reorderBuffer.extract(_nextExpectedOrderId);
+        while (reorderBuffer.contains(nextExpected)) {
+            auto node = reorderBuffer.extract(nextExpected);
             readyPackets.push_back(std::move(node.mapped()));
-            _nextExpectedOrderId++;
+            nextExpected++;
         }
-    } else if (receivedOrderId > _nextExpectedOrderId) {
+    } else if (receivedOrderId > nextExpected) {
         LOG_TRACE_R2(
-            "Gap: Got order ID {}, expected {}. Buffering.", receivedOrderId, _nextExpectedOrderId);
-        _reorderBuffer[receivedOrderId] = std::move(incomingPacket);
+            "Gap: Got order ID {}, expected {}. Buffering.", receivedOrderId, nextExpected);
+        reorderBuffer[receivedOrderId] = std::move(incomingPacket);
     }
 
     return readyPackets;
@@ -123,11 +127,12 @@ void Session::send(Packet& packet)
 {
     std::lock_guard lock(_mutex);
 
-    uint32_t sequenceId = _localSequenceId++;
-    uint32_t orderId = 0;
+    packet::SequenceId sequenceId = _localSequenceId++;
+    packet::OrderId orderId = 0;
 
     if ((packet.getReliability() & packet::Flag::kOrdered) == packet::Flag::kOrdered) {
-        orderId = _localOrderId++;
+        packet::ChannelId channel = packet.getChannel();
+        orderId = _localOrderIds[channel]++;
     }
 
     if (packet.getReliability() != packet::Flag::kUnreliable) {
@@ -138,12 +143,13 @@ void Session::send(Packet& packet)
 }
 
 void Session::rawSend(Packet& packet,
-                      uint32_t sequenceId,
-                      uint32_t orderId)
+                      packet::SequenceId sequenceId,
+                      packet::OrderId orderId)
 {
     packet::Header header{};
 
     header.sequenceId = sequenceId;
+    header.channelId = packet.getChannel();
     header.orderId = orderId;
     header.acknowledgeId = _remoteAcknowledgeId;
     header.acknowledgeBitfield = _remoteAcknowledgeBitfield;

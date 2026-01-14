@@ -128,10 +128,10 @@ private:
     packet::AcknowledgeId _remoteAcknowledgeId = 0;
     packet::AcknowledgeBitfield _remoteAcknowledgeBitfield = 0;
 
-    packet::OrderId _localOrderId = 0;
-    packet::OrderId _nextExpectedOrderId = 0;
+    std::map<packet::ChannelId, packet::OrderId> _localOrderIds{};
+    std::map<packet::ChannelId, packet::OrderId> _nextExpectedOrderIds{};
 
-    std::map<packet::OrderId, Packet> _reorderBuffer;
+    std::map<packet::ChannelId, std::map<packet::OrderId, Packet>> _reorderBuffers;
     std::map<packet::SequenceId, SentPacketInfo> _sentPackets;
     std::deque<packet::AcknowledgeId> _oldPacketHistory;
     mutable std::mutex _mutex;
