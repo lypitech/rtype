@@ -13,4 +13,7 @@ enum class Type
 static const std::unordered_map<std::string, Type> StringToType = {
     {"Player", Type::kPlayer}, {"Enemy", Type::kEnemy}, {"Bullet", Type::kBullet}};
 
+static const std::unordered_map<Type, std::string> TypeToString = {
+    {Type::kPlayer, "Player"}, {Type::kEnemy, "Enemy"}, {Type::kBullet, "Bullet"}};
+
 }  // namespace entity

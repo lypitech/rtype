@@ -65,19 +65,23 @@ void Director::update(const float dt,
 
     const float incomeRate = BASE_INCOME + (_gameTime / 60.0f) * INCOME_MULTIPLIER;
     _credits += incomeRate * dt;
+    LOG_TRACE_R2("Gained {} credits.", incomeRate * dt);
 
     pickNewWaveIfNeeded();
     if (_activeWaves.empty()) {
+        LOG_TRACE_R2("No wave picked, Skipping frame...");
         return;
     }
     for (int i = _activeWaves.size() - 1; i >= 0; --i) {
         wave::Active& wave = _activeWaves[i];
 
         if (wave.isFinished) {
+            LOG_TRACE_R2("Waved ended. Removing wave from activeWaves...");
             _activeWaves.erase(_activeWaves.begin() + i);
             continue;
         }
 
+        LOG_TRACE_R2("Spawning wave {}, active for {} seconds.", wave.archetype->name, wave.timer);
         wave.timer += dt;
 
         if (wave.timer < wave.archetype->spawnInterval) {
@@ -91,12 +95,22 @@ void Director::update(const float dt,
         // TODO: Make the entities spawn off screen.
         std::uniform_real_distribution yDist(200.0f, 950.0f);
         std::uniform_real_distribution xDist(150.0f, 1200.0f);
+        float x = xDist(_rng);
+        float y = yDist(_rng);
+        LOG_TRACE_R2("Spawning {} #{} of {} at ({}, {})",
+                     entity::TypeToString.at(group.type),
+                     wave.currentGroupIndex,
+                     group.count,
+                     x,
+                     y);
         lobby.spawnEntity<components::Position, components::Type>(
             {xDist(_rng), yDist(_rng)}, {group.type});
 
         wave.spawnedInGroup++;
 
         if (wave.spawnedInGroup >= group.count) {
+            LOG_TRACE_R2(
+                "Spawned all enemy of group #{}, going to next group...", wave.currentGroupIndex);
             wave.spawnedInGroup = 0;
             wave.currentGroupIndex++;
 

@@ -12,7 +12,7 @@ void Director::pickRandomWaves()
     for (const auto& arch : candidates) {
         wave::Active instance;
         instance.archetype = arch;
-        std::uniform_real_distribution<float> delay(0.0f, 2.0f);
+        std::uniform_real_distribution delay(0.0f, 2.0f);
         instance.timer = -delay(_rng);
         _activeWaves.push_back(instance);
     }
@@ -76,6 +76,7 @@ void Director::pickNewWaveIfNeeded()
         return;
     }
     pickRandomWaves();
+    LOG_TRACE_R2("Picked {} new waves.", _activeWaves.size());
 }
 
 }  // namespace level
