@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
 project(rtnt
-    VERSION 1.1.3
+    VERSION 1.3.0
     DESCRIPTION "R-Type Network library"
     HOMEPAGE_URL "https://github.com/lypitech/rtype"
     LANGUAGES CXX
@@ -68,10 +68,8 @@ else()
 endif()
 
 # --- Tests ---
-if(RTNT_BUILD_TESTS OR BUILD_TESTS)
-    if (PROJECT_IS_TOP_LEVEL)
-        enable_testing()
-        find_package(GTest REQUIRED)
-    endif()
+if(RTNT_BUILD_TESTS OR PROJECT_IS_TOP_LEVEL)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC RTNT_TESTS)
+    enable_testing()
     add_subdirectory(tests)
 endif()

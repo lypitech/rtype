@@ -12,7 +12,7 @@ TEST_F(NetworkTest,
 
     client->connect("127.0.0.1", 4242);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    EXPECT_TRUE(waitFor([&]() { return client->isConnected(); })) << "Client failed to connect.";
 
     client->disconnect();
 

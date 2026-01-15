@@ -18,7 +18,7 @@ class Client;
  * handler.
  *
  * Handlers must be bound with the @code bind@endcode function. Everything else is automatically
- * managed by Dispatcher, Server and Client classes.
+ * managed by Dispatcher, Server, and Client classes.
  */
 class Dispatcher final
 {
@@ -46,7 +46,7 @@ public:
     /**
      * @brief   Binds a packet type to a certain callback.
      *
-     * In this overload, callback is automatically resolved from the Packet struct.
+     * In this overload, the callback is automatically resolved from the Packet struct.
      *
      * @tparam  T   Type of packet to bind
      */

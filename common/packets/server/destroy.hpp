@@ -8,7 +8,6 @@ namespace packet {
  * @struct packet::Destroy
  *
  * @brief Notify the client of the destruction of an entity.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct Destroy
 {

@@ -6,7 +6,7 @@ namespace {
 
 struct Example
 {
-    static constexpr rtnt::core::packet::Id kId = 1801;
+    static constexpr rtnt::core::packet::Id kId = 1001;
     static constexpr rtnt::core::packet::Name kName = "EXAMPLE";
 };
 
@@ -15,7 +15,7 @@ struct Example
 TEST_F(NetworkTest,
        empty_packet)
 {
-    size_t packetSize = 0;
+    size_t packetSize = 1801;
 
     server->onMessage([&](const std::shared_ptr<rtnt::core::Session>&, rtnt::core::Packet& p) {
         if (p.getId() == Example::kId) {

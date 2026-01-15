@@ -3,9 +3,13 @@
 #include <thread>
 
 #ifdef _WIN32
+#include <Windows.h>   // Must be included first
+#include <mmsystem.h>  // Required for timeBeginPeriod
 #include <timeapi.h>
+#undef PlaySound
+#undef CloseWindow
+#undef ShowCursor
 #pragma comment(lib, "winmm.lib")
-
 inline void enableHighPrecisionTimer() { timeBeginPeriod(1); }
 #endif
 

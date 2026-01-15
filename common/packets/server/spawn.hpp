@@ -8,7 +8,6 @@ namespace packet {
  * @struct packet::Spawn
  *
  * @brief Notify the client of the spawn of an entity.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct Spawn
 {

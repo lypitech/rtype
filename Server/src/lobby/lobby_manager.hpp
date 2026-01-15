@@ -12,7 +12,8 @@ namespace lobby {
 class Manager
 {
 public:
-    explicit Manager(packet::server::OutGoingQueue& outGoing);
+    explicit Manager(packet::server::OutGoingQueue& outGoing,
+                     const std::string& config);
     ~Manager();
 
     /**
@@ -54,6 +55,7 @@ private:
     packet::server::OutGoingQueue& _outGoing;
     std::unordered_map<Id, std::unique_ptr<Lobby>> _lobbies;
     std::unordered_map<packet::server::SessionPtr, Lobby*> _playerLookup;
+    const std::string& _config;
 };
 
 }  // namespace lobby

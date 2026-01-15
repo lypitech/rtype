@@ -1,13 +1,11 @@
 #pragma once
 
-#include <cstddef>
+#include "rtecs/types/types.hpp"
 
-namespace rtecs {
-
-class DynamicBitSet;
+namespace rtecs::sparse {
 
 /**
- * @brief Abstract interface for a sparse-set container used by the ECS.
+ * @brief Interface for a sparse-set container used by the ECS.
  *
  * `ISparseSet` exposes the minimum operations required by the engine to
  * interact with component storage without coupling to a concrete
@@ -18,13 +16,6 @@ class ISparseSet
 {
 public:
     virtual ~ISparseSet() = default;
-
-    /**
-     * @brief Return a mask representing which component slot this sparse-set
-     * corresponds to. The mask can be combined with entity masks to test
-     * entity membership for systems.
-     */
-    DynamicBitSet getMask();
 
     /**
      * @brief Check if the sparse-set has the given entity.
@@ -39,9 +30,6 @@ public:
     /**
      * @brief Remove the entity associated component from the sparse-set.
      *
-     * Implementations should ensure removing an entity is O(1) where
-     * possible (e.g., swap-remove from dense storage).
-     *
      * @param id The entity to remove from the sparse-set.
      */
     virtual void remove(size_t id) noexcept = 0;
@@ -50,6 +38,30 @@ public:
      * @brief Clear the sparse-set, removing all stored components.
      */
     virtual void clear() noexcept = 0;
+
+    /**
+     * @brief Get the number of values stored in the SparseSet.
+     *
+     * @return The number of values stored in the SparseSet.
+     */
+    [[nodiscard]]
+    virtual size_t size() const noexcept = 0;
+
+    /**
+     * @brief Get the dense list of entities that possess this component.
+     * @note Indices match the getAll() vector.
+     * @returns A vector of the indice for the corresponding entities.
+     */
+    [[nodiscard]]
+    virtual const std::vector<size_t> &getEntities() const noexcept = 0;
+
+    /**
+     * @brief Get the ID of the SparseSet.
+     *
+     * @return The ID of the SparseSet.
+     */
+    [[nodiscard]]
+    virtual types::ComponentID getId() const = 0;
 };
 
-}  // namespace rtecs
+}  // namespace rtecs::sparse

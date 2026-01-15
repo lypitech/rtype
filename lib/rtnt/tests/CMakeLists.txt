@@ -8,6 +8,11 @@ set(RTNT_TEST_SOURCES
     tests/broadcast.cpp
     tests/vector_packet.cpp
     tests/complex_packet.cpp
+    tests/struct_packet.cpp
+    tests/order.cpp
+    tests/reconnection.cpp
+    tests/packet_loss.cpp
+    tests/channel_independency.cpp
 )
 
 add_executable(rtnt_tests ${RTNT_TEST_SOURCES})

@@ -16,6 +16,8 @@ Client::Client(asio::io_context& context)
 void Client::connect(const std::string& ip,
                      const unsigned short port)
 {
+    std::lock_guard lock(_mutex);
+
     if (_isConnected) {
         LOG_ERR("Trying to connect while already connected. Ignoring...");
         return;
@@ -36,82 +38,130 @@ void Client::connect(const std::string& ip,
     LOG_INFO("Connecting to remote server {}:{}...", ip, port);
 
     const asio::ip::address address = asio::ip::make_address(ip);
-
     _serverEndpoint = udp::endpoint(address, port);
-    _serverSession =
-        std::make_shared<Session>(_serverEndpoint, [this](std::shared_ptr<ByteBuffer> rawBytes) {
-            this->sendToTarget(_serverEndpoint, rawBytes);
-        });
-    start();
+    _reconnectionRetries = 0;
 
-    packet::internal::Connect packet;
-    _internal_send(packet);
+    start();
+    _internal_attemptConnection();
 }
 
 void Client::disconnect()
 {
-    if (!_isConnected) {
-        LOG_WARN("Trying to disconnect while not connected.");
-        return;
+    std::lock_guard lock(_mutex);
+
+    if (_isConnected && _serverSession) {
+        packet::internal::Disconnect packet{};
+        _serverSession->send(packet);
     }
 
-    constexpr packet::internal::Disconnect packet{};
-    _internal_send(packet);
-    // stop(); /// fixme: this makes the program crash because of Asio async operations (closing the hardware interface before finishing async work). Maybe move this at another place?
     _serverSession.reset();
     _isConnected = false;
+
+    _eventQueue.push([this]() {
+        if (_onDisconnect) {
+            _onDisconnect();
+        }
+    });
+
+    // stop(); /// fixme: this makes the program crash because of Asio async operations (closing the hardware interface before finishing async work). Maybe move this at another place?
 }
 
 void Client::update(milliseconds timeout)
 {
-    if (!_isConnected || !_serverSession) {
-        LOG_WARN("Trying to update while disconnected from server.");
+    _processEvents();
+
+    std::shared_ptr<Session> session;
+    bool isConnected = false;
+
+    {
+        std::lock_guard lock(_mutex);
+        session = _serverSession;
+        isConnected = _isConnected;
+
+        if (session && !isConnected) {
+            auto now = steady_clock::now();
+            bool timedOut = (now - _lastConnectionAttemptTime) > RECONNECTION_TIMEOUT;
+            bool sessionFailed = session->shouldClose();
+
+            if (timedOut || sessionFailed) {
+                if (_reconnectionRetries < MAX_RECONNECTION_ATTEMPTS) {
+                    _reconnectionRetries++;
+                    LOG_WARN("Connection attempt {}/{} timed out ({} delay). Retrying...",
+                             _reconnectionRetries,
+                             MAX_RECONNECTION_ATTEMPTS,
+                             RECONNECTION_TIMEOUT);
+                    _internal_attemptConnection();
+                    return;
+                }
+                LOG_FATAL("Could not connect to server after {} attempts. Aborting.",
+                          MAX_RECONNECTION_ATTEMPTS);
+                _serverSession.reset();
+            }
+        }
+    }
+
+    if (!session) {
         return;
     }
 
-    if (_serverSession->shouldClose()) {
-        LOG_INFO("Disconnected by server");
-        if (_onDisconnect) {
-            _onDisconnect();
-        }
-        stop();  /// todo: can make the program crash.
-        _serverSession.reset();
-        _isConnected = false;
+    if (session->shouldClose()) {
+        LOG_INFO("Disconnected by server (session closed)");
+        disconnect();
         return;
     }
 
-    auto now = steady_clock::now();
-    auto lastSeenTimestamp = _serverSession->getLastSeenTimestamp();
-    auto age = duration_cast<milliseconds>(now - lastSeenTimestamp);
+    if (isConnected) {
+        auto now = steady_clock::now();
+        auto lastSeenTimestamp = session->getLastSeenTimestamp();
+        auto age = duration_cast<milliseconds>(now - lastSeenTimestamp);
 
-    if (age > timeout) {
-        LOG_FATAL("Server timeout exceeded, disconnecting...");
-
-        if (_onDisconnect) {
-            _onDisconnect();
+        if (age > timeout) {
+            LOG_FATAL("Server timeout exceeded ({}ms), disconnecting...", age.count());
+            disconnect();
+            return;
         }
-        // todo: maybe try a reconnect mechanism? like you try to reconnect 3 times and if it still fails, then abort
     }
+
+    session->update();
 }
 
 void Client::onReceive(const udp::endpoint& sender,
                        std::shared_ptr<ByteBuffer> data)
 {
-    if (sender != _serverEndpoint || !_serverSession) {
+    std::shared_ptr<Session> session;
+
+    {
+        std::lock_guard lock(_mutex);
+        session = _serverSession;
+    }
+
+    if (sender != _serverEndpoint || !session) {
         LOG_WARN(
             "Received data that doesn't come from the remote server. Probably random internet "
             "noise, skipping...");
         return;
     }
 
-    Packet packet(0);
+    auto packetsToProcess = session->handleIncoming(data);
 
-    if (_serverSession->handleIncoming(data, packet)) {
-        _packetDispatcher.dispatch(_serverSession, packet);
+    if (packetsToProcess.empty()) {
+        return;
+    }
 
-        if (_isConnected && _onMessage) {
-            _onMessage(packet);
-        }
+    for (Packet& packet : packetsToProcess) {
+        _eventQueue.push([this, session, pkt = packet]() mutable {
+            _packetDispatcher.dispatch(session, pkt);
+
+            bool isConnected;
+            {
+                std::lock_guard lock(_mutex);
+                isConnected = _isConnected;
+            }
+
+            if (isConnected && _onMessage) {
+                _onMessage(pkt);
+            }
+        });
     }
 }
 
@@ -120,13 +170,43 @@ void Client::_internal_registerInternalPacketHandlers()
     _packetDispatcher._internal_bind<packet::internal::ConnectAck>(
         [this](const std::shared_ptr<Session>& /*session*/,
                const packet::internal::ConnectAck& packet) {
-            LOG_DEBUG("Received ID: {}", packet.assignedSessionId);
-            this->_isConnected = true;
+            {
+                std::lock_guard lock(_mutex);
+
+                if (_isConnected) {
+                    return;
+                }
+
+                LOG_DEBUG("Handshake success. Assigned Session ID: {}", packet.assignedSessionId);
+                LOG_INFO("Successfully connected to server.");
+                this->_isConnected = true;
+            }
 
             if (_onConnect) {
                 _onConnect();
             }
         });
+}
+
+void Client::_internal_attemptConnection()
+{
+    _serverSession =
+        std::make_shared<Session>(_serverEndpoint, [this](std::shared_ptr<ByteBuffer> rawBytes) {
+            this->sendToTarget(_serverEndpoint, rawBytes);
+        });
+
+    _lastConnectionAttemptTime = steady_clock::now();
+
+    constexpr packet::internal::Connect packet;
+    _serverSession->send(packet);
+}
+
+/// Used to process events on the main thread and not on io thread
+void Client::_processEvents()
+{
+    while (auto task = _eventQueue.pop()) {
+        (*task)();
+    }
 }
 
 }  // namespace rtnt::core

@@ -1,4 +1,6 @@
 #include "app.hpp"
+#include "components/sprite.hpp"
+#include "components/target_pos.hpp"
 #include "handlers.hpp"
 #include "rteng.hpp"
 

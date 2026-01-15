@@ -8,7 +8,6 @@ namespace packet {
  * @struct packet::UserInput
  *
  * @brief Notify the server that the player executed a set of actions.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct UserInput
 {

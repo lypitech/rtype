@@ -1,6 +1,7 @@
-#include "ECS.hpp"
+#include "rtecs/ECS.hpp"
 
-#include "ASystem.hpp"
+#include "rtecs/systems/ISystem.hpp"
+#include "rtecs/systems/SystemWrapper.hpp"
 
 using namespace rtecs;
 

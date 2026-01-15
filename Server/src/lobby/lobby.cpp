@@ -2,6 +2,7 @@
 
 #include <ranges>
 
+#include "app.hpp"
 #include "components/factory.hpp"
 #include "components/position.hpp"
 #include "components/type.hpp"
@@ -58,13 +59,11 @@ void Lobby::join(const packet::server::SessionPtr& session)
 {
     _actionQueue.push([this, session](Lobby&) {
         LOG_INFO("Joining lobby.");
-        const rtecs::types::EntityID id =
-            _engine.registerEntity<components::Position, components::Type>(
-                nullptr, {10, 10}, {entity::Type::kPlayer});
-        _players[session] = id;
-        const auto& infos = _engine.getEntityInfos(components::GameComponents{}, id);
-        packet::Spawn p = {static_cast<uint32_t>(id), infos.first, infos.second};
-        _outGoing.push({{getAllSessions()}, p});
+        spawnEntity<components::Position, components::Type>(
+            {10, 10}, {entity::Type::kPlayer}, session);
+        packet::JoinAck j = {static_cast<uint32_t>(_players.at(session)), true};
+        send(session, j);
+        // TODO: Send a WorldInit packet if not the first entity.
     });
 }
 
@@ -95,8 +94,9 @@ void Lobby::stop()
     }
 }
 
-void Lobby::start()
+void Lobby::start(const std::string& config)
 {
+    _levelDirector.load(config);
     _isRunning = true;
     _thread = std::thread(&Lobby::run, this);
     _thread.detach();
@@ -115,21 +115,42 @@ std::vector<packet::server::SessionPtr> Lobby::getAllSessions() const
 
 void Lobby::run()
 {
+    using namespace std::chrono;
+    double lag = 0;
     logger::setThreadLabel(("Lobby " + std::to_string(_roomId)).c_str());
     lobby::Callback callbackFunction;
+    time_point lastTime = steady_clock::now();
+
     while (_isRunning) {
+        auto currentTime = steady_clock::now();
+        duration<double> elapsed = currentTime - lastTime;
+        lastTime = currentTime;
+
+        lag += elapsed.count();
+
         while (_actionQueue.pop(callbackFunction)) {
             callbackFunction(*this);
         }
 
         while (lag >= server::TIME_PER_TICK) {
             _engine.runOnce(server::TIME_PER_TICK);
+            // TODO: Update only if the game is started.
+            _levelDirector.update(server::TIME_PER_TICK, *this);
             lag -= server::TIME_PER_TICK;
         }
 
         if (lag < server::TIME_PER_TICK) {
             std::this_thread::sleep_for(milliseconds(10));
         }
+
+        while (lag >= server::TIME_PER_TICK) {
+            _engine.runOnce(server::TIME_PER_TICK);
+            _levelDirector.update(server::TIME_PER_TICK, *this);
+            lag -= server::TIME_PER_TICK;
+        }
+
+        if (lag < server::TIME_PER_TICK) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
     }
 }
-

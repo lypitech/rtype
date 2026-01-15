@@ -4,6 +4,7 @@
 
 #include "components/position.hpp"
 #include "concurrent_queue.hpp"
+#include "level_director/level_director.hpp"
 #include "packets/server/destroy.hpp"
 #include "packets/server/join_ack.hpp"
 #include "packets/server/spawn.hpp"
@@ -78,8 +79,9 @@ public:
 
     /**
      * @brief Start this lobby.
+     * @param config The wave configuration file.
      */
-    void start();
+    void start(const std::string& config);
 
     /**
      * @brief Stop this lobby.
@@ -117,6 +119,27 @@ public:
     void broadcast(const packet::server::Variant& packet) const;
 
     /**
+     * @brief Create an entity and broadcasts it's creation.
+     * @tparam Components The types of the components to add to the entity.
+     * @param components The value of the components.
+     * @param session The session triggering the creation (nullptr if none).
+     */
+    template <typename... Components>
+    void spawnEntity(Components&&... components,
+                     const packet::server::SessionPtr session = nullptr)
+    {
+        const rtecs::EntityID id = _engine.registerEntity<std::decay_t<Components>...>(
+            nullptr, std::forward<Components>(components)...);
+        if (session) {
+            _players[session] = id;
+        }
+        const auto& [bitset, content] = components::getEntityComponentsInfos(
+            components::GameComponents{}, *_engine.getEcs(), id);
+        packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
+        broadcast(p);
+    }
+
+    /**
      * @brief Getter for the gameEngine.
      * @return A reference to the used gameEngine.
      */
@@ -130,6 +153,7 @@ private:
     std::unordered_map<packet::server::SessionPtr, rtecs::types::EntityID> _players;
     std::atomic<bool> _isRunning;
     std::thread _thread;
+    level::Director _levelDirector;
 
     void run();
     std::vector<packet::server::SessionPtr> getAllSessions() const;

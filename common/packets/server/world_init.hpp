@@ -9,7 +9,6 @@ namespace packet {
  * @struct packet::WorldInit
  *
  * @brief Send all the information about the current stage to the client.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct WorldInit
 {
