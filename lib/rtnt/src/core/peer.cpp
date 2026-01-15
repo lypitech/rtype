@@ -79,7 +79,7 @@ void Peer::sendToTarget(const udp::endpoint &target,
 #endif
 
     _socket.async_send_to(
-        asio::buffer(*data), target, [target](std::error_code ec, size_t bytesSent) {
+        asio::buffer(*data), target, [target, data](std::error_code ec, size_t bytesSent) {
             if (ec) {
                 LOG_ERR("Encountered an error while sending data: {}.", ec.message());
                 return;
