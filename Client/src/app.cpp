@@ -1,9 +1,15 @@
 #include "app.hpp"
 
+#include "components/me.hpp"
+#include "components/sprite.hpp"
+#include "components/target_pos.hpp"
 #include "handlers/handlers.hpp"
 #include "logger/Thread.h"
 #include "packets/server/spawn.hpp"
+#include "systems/IO.hpp"
+#include "systems/interpolation.hpp"
 #include "systems/network.hpp"
+#include "systems/renderer.hpp"
 
 namespace client {
 
@@ -14,6 +20,8 @@ App::App(const std::string& host,
                 rteng::GameEngine(components::GameComponents{}),
                 {}})
 {
+    registerAllComponents();
+    registerAllSystems();
     registerAllCallbacks();
     _client.connect(host, port);
     _ioThread = std::thread([this]() {
@@ -26,15 +34,22 @@ App::App(const std::string& host,
 
 App::~App() { stop(); }
 
+void App::registerAllComponents()
+{
+    _toolbox.engine.getEcs()->registerComponent<components::Sprite>();
+    _toolbox.engine.getEcs()->registerComponent<components::Me>();
+    _toolbox.engine.getEcs()->registerComponent<components::TargetPos>();
+}
+
 void App::registerAllSystems()
 {
     _toolbox.engine.getEcs()->registerSystem(
         std::make_unique<systems::Network>(_client, _networkService));
-}
-
-void App::registerAllComponents()
-{
-    // Empty for now.
+    _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Renderer>());
+    _toolbox.engine.getEcs()->registerSystem(
+        std::make_unique<systems::IO>(_toolbox.engine.getEcs(), _networkService));
+    _toolbox.engine.getEcs()->registerSystem(
+        std::make_unique<systems::Interpolation>(_toolbox.engine.getEcs()));
 }
 
 void App::registerAllCallbacks()
@@ -47,6 +62,23 @@ void App::registerAllCallbacks()
     _client.getPacketDispatcher().bind<packet::Spawn>(
         [this](const SessionPtr&, const packet::Spawn& p) {
             _actions.push([p](HandlerToolbox& tb) { packet::handler::handleSpawn(p, tb); });
+        });
+    _client.getPacketDispatcher().bind<packet::Destroy>(
+        [this](const SessionPtr&, const packet::Destroy& p) {
+            _actions.push([p](HandlerToolbox& tb) { packet::handler::handleDestroy(p, tb); });
+        });
+    _client.getPacketDispatcher().bind<packet::UpdatePosition>(
+        [this](const SessionPtr&, const packet::UpdatePosition& p) {
+            _actions.push(
+                [p](HandlerToolbox& tb) { packet::handler::handleUpdatePosition(p, tb); });
+        });
+    _client.getPacketDispatcher().bind<packet::WorldInit>(
+        [this](const SessionPtr&, const packet::WorldInit& p) {
+            _actions.push([p](HandlerToolbox& tb) { packet::handler::handleWorldInit(p, tb); });
+        });
+    _client.getPacketDispatcher().bind<packet::JoinAck>(
+        [this](const SessionPtr&, const packet::JoinAck& p) {
+            _actions.push([p](HandlerToolbox& tb) { packet::handler::handleJoinAck(p, tb); });
         });
 }
 

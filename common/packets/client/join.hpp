@@ -9,7 +9,6 @@ namespace packet {
  * @struct packet::Join
  *
  * @brief Ask to join a game.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct Join
 {

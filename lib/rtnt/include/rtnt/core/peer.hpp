@@ -40,7 +40,8 @@ public:
 
     /**
      * @brief   Shuts down and closes the Peer's socket.
-     * @note    Peer will switch to a degraded state unless @code server()@endcode or @code client()@endcode is called.
+     * @note    Peer will switch to a degraded state unless @code server()@endcode or
+     *          @code client()@endcode is called.
      */
     void stop();
 
@@ -49,7 +50,8 @@ public:
      *
      * @param   target  Target to send the data to
      * @param   data    Data to send (raw bytes)
-     * @note    This is a fire-and-forget operation. No delivery guarantee at this level (managed by RUDP, Session).
+     * @note    This is a fire-and-forget operation. No delivery guarantee at this level (managed by
+     *          RUDP, Session).
      */
     void sendToTarget(const udp::endpoint& target,
                       std::shared_ptr<ByteBuffer> data);
@@ -58,6 +60,24 @@ public:
      * @return  The local port the Peer is bound to.
      */
     [[nodiscard]] uint16_t getLocalPort() const { return _socket.local_endpoint().port(); }
+
+#if defined(RTNT_TESTS)
+    [[nodiscard]] uint8_t getSimulatedPacketLossPercentage() const
+    {
+        return _simulatedPacketLossPercentage;
+    }
+
+    void setSimulatedPacketLossPercentage(uint8_t value)
+    {
+        if (value > 100) {
+            LOG_WARN(
+                "Can't set a percentage greater than 100%. (got {}%). Falling back to 100%", value);
+            value = 100;
+        }
+        LOG_TRACE_R1("Setting simulation packet loss to {}%.", value);
+        _simulatedPacketLossPercentage = value;
+    }
+#endif
 
 protected:
     /**
@@ -98,6 +118,10 @@ private:
     udp::socket _socket;
     udp::endpoint _tmpEndpoint;
     std::array<char, BUFFER_SIZE> _receptionBuffer{};
+
+#if defined(RTNT_TESTS)
+    std::atomic<uint8_t> _simulatedPacketLossPercentage = 0;
+#endif
 
     void receive();
 };

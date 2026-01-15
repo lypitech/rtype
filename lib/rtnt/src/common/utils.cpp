@@ -35,4 +35,18 @@ std::string byteBufferToHexString(const core::ByteBuffer &buffer)
     return byteBufferToHexString(buffer.begin(), buffer.end());
 }
 
+std::string bitfieldToString(const uint32_t bitfield)
+{
+    std::string res;
+
+    for (uint8_t k = 0; k < 32; k++) {
+        if (bitfield & (1 << k)) {
+            res += "•";
+        } else {
+            res += "◦";
+        }
+    }
+    return res;
+}
+
 }  // namespace rtnt

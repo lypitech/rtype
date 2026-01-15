@@ -20,8 +20,17 @@ if(PROJECT_IS_TOP_LEVEL)
 endif()
 
 # --- Sources / Headers ---
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC
+    src/ECS.cpp
+
+    src/sparse/set/ASparseSet.cpp
+    src/systems/ASystem.cpp
+    src/systems/SystemWrapper.cpp
+
+    src/bitset/DynamicBitSet.cpp
+
+    src/systems/ASystem.cpp
+)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC

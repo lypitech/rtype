@@ -2,6 +2,7 @@
 
 #include <ranges>
 
+#include "app.hpp"
 #include "components/factory.hpp"
 #include "components/position.hpp"
 #include "components/type.hpp"
@@ -20,27 +21,55 @@ Lobby::Lobby(const lobby::Id id,
 
 lobby::Id Lobby::getRoomId() const { return _roomId; }
 
+rtecs::OptionalRef<components::Position> Lobby::getPlayerPosition(
+    const packet::server::SessionPtr& session)
+{
+    if (!_players.contains(session)) {
+        return std::nullopt;
+    }
+    using Pos = components::Position;
+    return dynamic_cast<rtecs::SparseSet<Pos>&>(_engine.getEcs()->getComponent<Pos>())
+        .get(_players.at(session));
+}
+
+std::optional<rtecs::EntityID> Lobby::getPlayerId(const packet::server::SessionPtr& session) const
+{
+    if (!_players.contains(session)) {
+        return std::nullopt;
+    }
+    return _players.at(session);
+}
+
+void Lobby::send(const packet::server::SessionPtr& session,
+                 const packet::server::Variant& packet) const
+{
+    _outGoing.push({{session}, packet});
+}
+
+void Lobby::broadcast(const packet::server::Variant& packet) const
+{
+    _outGoing.push({getAllSessions(), packet});
+}
+
+rteng::GameEngine& Lobby::getEngine() { return _engine; }
+
 void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action); }
 
 void Lobby::join(const packet::server::SessionPtr& session)
 {
-    _actionQueue.push([this, session](rteng::GameEngine& engine) {
+    _actionQueue.push([this, session](Lobby&) {
         LOG_INFO("Joining lobby.");
-        rtecs::EntityID id = engine.registerEntity<components::Position, components::Type>(
-            nullptr, {10, 10}, {entity::Type::kPlayer});
-        _players[session] = id;
-        const auto& [bitset, content] = components::getEntityComponentsInfos(
-            components::GameComponents{}, *_engine.getEcs(), id);
-        packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
-        broadcast(p);
-        packet::JoinAck j = {static_cast<uint32_t>(id), true};
+        spawnEntity<components::Position, components::Type>(
+            {10, 10}, {entity::Type::kPlayer}, session);
+        packet::JoinAck j = {static_cast<uint32_t>(_players.at(session)), true};
         send(session, j);
+        // TODO: Send a WorldInit packet if not the first entity.
     });
 }
 
 void Lobby::leave(const packet::server::SessionPtr& session)
 {
-    _actionQueue.push([this, session](rteng::GameEngine&) {
+    _actionQueue.push([this, session](Lobby&) {
         if (_players.contains(session)) {
             // TODO: destroy the entity and send a destroy packet to all other sessions;
             _players.erase(session);
@@ -84,11 +113,32 @@ std::vector<packet::server::SessionPtr> Lobby::getAllSessions() const
 
 void Lobby::run()
 {
+    using namespace std::chrono;
+    double lag = 0;
     logger::setThreadLabel(("Lobby " + std::to_string(_roomId)).c_str());
     lobby::Callback callbackFunction;
+    time_point lastTime = steady_clock::now();
+
     while (_isRunning) {
+        auto currentTime = steady_clock::now();
+        duration<double> elapsed = currentTime - lastTime;
+        lastTime = currentTime;
+
+        lag += elapsed.count();
+
         while (_actionQueue.pop(callbackFunction)) {
-            callbackFunction(_engine);
+            callbackFunction(*this);
+        }
+
+        while (lag >= server::TIME_PER_TICK) {
+            _engine.runOnce(server::TIME_PER_TICK);
+            // TODO: Update only if the game is started.
+            _levelDirector.update(server::TIME_PER_TICK, *this);
+            lag -= server::TIME_PER_TICK;
+        }
+
+        if (lag < server::TIME_PER_TICK) {
+            std::this_thread::sleep_for(milliseconds(10));
         }
 
         while (lag >= server::TIME_PER_TICK) {
@@ -102,4 +152,3 @@ void Lobby::run()
         }
     }
 }
-

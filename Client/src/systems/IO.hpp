@@ -1,0 +1,60 @@
+#pragma once
+
+#include "ASystem.hpp"
+#include "ECS.hpp"
+#include "components/position.hpp"
+#include "network.hpp"
+
+namespace button {
+
+static constexpr uint8_t STATE_CHANGED_BIT = 0b10;
+
+enum class State : uint8_t
+{
+    UP = 0b00,        // is not pressed
+    DOWN = 0b01,      // is being held down
+    RELEASED = 0b10,  // just got released
+    PRESSED = 0b11,   // just got pressed
+};
+
+}  // namespace button
+
+struct IOValue
+{
+    struct Mouse
+    {
+        float x = 0;
+        float y = 0;
+        bool leftButton = false;
+        bool rightButton = false;
+    };
+    button::State up;
+    button::State down;
+    button::State left;
+    button::State right;
+    button::State action1;
+    button::State action2;
+    Mouse mouse;
+};
+
+namespace systems {
+
+class IO : public rtecs::ASystem
+{
+public:
+    explicit IO(const std::unique_ptr<rtecs::ECS>& ecs,
+                service::Network& service)
+        : ASystem(ecs->getComponentsBitSet<components::Position /*, comp::Velocity*/>()),
+          _service(service),
+          _input()
+    {
+    }
+
+    void apply(rtecs::ECS& ecs) override;
+
+private:
+    service::Network& _service;
+    IOValue _input;
+};
+
+}  // namespace systems

@@ -3,6 +3,7 @@
 #include "dispatcher.hpp"
 #include "logger/Logger.h"
 #include "peer.hpp"
+#include "rtnt/common/thread_safe_queue.hpp"
 #include "session.hpp"
 
 namespace rtnt::core {
@@ -19,6 +20,8 @@ class Client : public Peer
     using OnConnectFunction = std::function<void()>;
     using OnDisconnectFunction = std::function<void()>;
     using OnMessageFunction = std::function<void(Packet&)>;
+
+    using Task = std::function<void()>;
 
 public:
     explicit Client(asio::io_context& context);
@@ -51,7 +54,11 @@ public:
     /**
      * @brief   Initiates the connection handshake.
      *
-     * This creates the Session and sends an initial @code __rtnt_internal_CONNECT@endcode packet to the server.
+     * This creates the Session and sends an initial @code __rtnt_internal_CONNECT@endcode packet to
+     * the server.
+     * If the server doesn't respond to the handshake within @code RECONNECTION_TIMEOUT@endcode
+     * milliseconds, a reconnection is tried. After failing @code MAX_RECONNECTION_ATTEMPTS@endcode
+     * times, the client considers that the server can't be connected to.
      * @param   ip      The server IP address.
      * @param   port    The server port.
      */
@@ -78,13 +85,18 @@ public:
     }
 
     /**
-     * @brief   Main maintenance loop. Checks for timeouts.
+     * @brief   Main maintenance loop. Checks for timeouts and lost packets.
      * @param   timeout The duration after which the server is considered unresponsive and so, dead
      * @note    This should be called regularly (e.g., in a main game loop).
      */
     void update(milliseconds timeout = seconds(10));
 
-    [[nodiscard]] bool isConnected() const { return _isConnected; }
+    [[nodiscard]] bool isConnected() const
+    {
+        std::lock_guard lock(_mutex);
+        return _isConnected;
+    }
+
     [[nodiscard]] Dispatcher& getPacketDispatcher() { return this->_packetDispatcher; }
 
 protected:
@@ -94,7 +106,15 @@ protected:
 private:
     udp::endpoint _serverEndpoint;
     std::shared_ptr<Session> _serverSession;
+    mutable std::mutex _mutex;
+
+    ThreadSafeQueue<Task> _eventQueue;
+
+    // Connection state //
     bool _isConnected = false;
+    uint8_t _reconnectionRetries = 0;
+    time_point<steady_clock> _lastConnectionAttemptTime;
+    // ---------------- //
 
     Dispatcher _packetDispatcher;
 
@@ -117,12 +137,36 @@ private:
     {
         packet::verifyPacketData<T>();
 
-        LOG_DEBUG("Client sending Packet #{} {}...", T::kId, packet::getName<T>());
+        std::shared_ptr<Session> session;
 
-        Packet packetToSend(T::kId, packet::getFlag<T>());
-        packetToSend << packetData;
-        _serverSession->send(packetToSend);
+        {
+            std::lock_guard lock(_mutex);
+            session = _serverSession;
+        }
+
+        if (session) {
+            LOG_DEBUG("Client sending Packet #{} {}...", T::kId, packet::getName<T>());
+
+            Packet packetToSend(T::kId, packet::getFlag<T>(), packet::getChannelId<T>());
+            packetToSend << packetData;
+            _serverSession->send(packetToSend);
+        }
     }
+
+    /**
+     * @brief   Attempts a connection to the remote server.
+     *
+     * This function resets the server session (any old pending packets will be erased) and sends a
+     * @code __rtnt_internal_CONNECT@endcode packet to the remote server.
+     */
+    void _internal_attemptConnection();
+
+    /**
+     * @brief   Processes the events that have been received so far.
+     * @note    This function MUST be called from the main thread. Not doing so would result in
+     *          thread issues (data races).
+     */
+    void _processEvents();
 };
 
 }  // namespace rtnt::core

@@ -1,0 +1,37 @@
+{
+  "waves": [
+    {
+      "name": "mosquito_squad",
+      "difficultyCost": 5,
+      "weight": 50,
+      "spawnInterval": 0.2,
+      "postWaveDelay": 2.0,
+      "enemies": [
+        { "type": "Enemy", "pattern": "zigzag", "count": 5 }
+      ]
+    },
+    {
+      "name": "shield_wall",
+      "difficultyCost": 20,
+      "weight": 20,
+      "spawnInterval": 0.0,
+      "postWaveDelay": 4.0,
+      "enemies": [
+        { "type": "Enemy", "pattern": "straight_slow", "count": 1 },
+        { "type": "Enemy", "pattern": "straight_slow", "count": 1 },
+        { "type": "Enemy", "pattern": "straight_slow", "count": 1 }
+      ]
+    },
+    {
+      "name": "boss_escort",
+      "difficultyCost": 100,
+      "weight": 5,
+      "spawnInterval": 1.5,
+      "postWaveDelay": 10.0,
+      "enemies": [
+        { "type": "Enemy", "pattern": "hover", "count": 1 },
+        { "type": "Enemy", "pattern": "orbit", "count": 4 }
+      ]
+    }
+  ]
+}

@@ -15,7 +15,7 @@ public:
     {
         const std::string projectName{ "rtecs (tests)" };
 
-        Logger::getInstance().addSink<logger::ConsoleSink>();
+        // Logger::getInstance().addSink<logger::ConsoleSink>();
         Logger::getInstance().addSink<logger::LogFileSink>("logs/latest.log");
         Logger::getInstance().addSink<logger::LogFileSink>(std::format(
             "logs/{}",

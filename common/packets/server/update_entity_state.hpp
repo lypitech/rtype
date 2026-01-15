@@ -8,7 +8,6 @@ namespace packet {
  * @struct packet::UpdateEntityState
  *
  * @brief Updates the state of an entity.
- * @note This struct is packed (1-byte alignment) to ensure consistent binary layout across platforms.
  */
 struct UpdateEntityState
 {

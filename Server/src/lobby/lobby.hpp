@@ -2,11 +2,14 @@
 #include <unordered_map>
 #include <variant>
 
+#include "components/factory.hpp"
+#include "components/position.hpp"
 #include "concurrent_queue.hpp"
 #include "level_director/level_director.hpp"
 #include "packets/server/destroy.hpp"
 #include "packets/server/join_ack.hpp"
 #include "packets/server/spawn.hpp"
+#include "packets/server/update_position.hpp"
 #include "rteng.hpp"
 #include "rtnt/core/session.hpp"
 #include "utils.hpp"
@@ -24,10 +27,12 @@ using OutGoingQueue = utils::ConcurrentQueue<SendInterface>;
 
 }  // namespace packet::server
 
+class Lobby;
+
 namespace lobby {
 
 using Id = uint32_t;
-using Callback = std::function<void(rteng::GameEngine&)>;
+using Callback = std::function<void(Lobby&)>;
 
 }  // namespace lobby
 
@@ -83,6 +88,62 @@ public:
      * @brief Stop this lobby.
      */
     void stop();
+
+    /**
+     * @brief Get the player id associated to the session.
+     * @param session The session to retrieve the id from.
+     * @return The entityId of the corresponding entity.
+     */
+    std::optional<rtecs::EntityID> getPlayerId(const packet::server::SessionPtr& session) const;
+
+    /**
+     * @brief Get the position of a player through its session pointer.
+     * @param session A pointer to the session to retrieve the position from.
+     * @return An optional reference to the position of the player connected t the session.
+     */
+    rtecs::OptionalRef<components::Position> getPlayerPosition(
+        const packet::server::SessionPtr& session);
+
+    /**
+     * @brief Send a packet to a specific session.
+     * @param session The session to send the packet to.
+     * @param packet The packet to send.
+     */
+    void send(const packet::server::SessionPtr& session,
+              const packet::server::Variant& packet) const;
+
+    /**
+     * @brief Send a packet to all player present in the session.
+     * @param packet The packet to send.
+     */
+    void broadcast(const packet::server::Variant& packet) const;
+
+    /**
+     * @brief Create an entity and broadcasts it's creation.
+     * @tparam Components The types of the components to add to the entity.
+     * @param components The value of the components.
+     * @param session The session triggering the creation (nullptr if none).
+     */
+    template <typename... Components>
+    void spawnEntity(Components&&... components,
+                     const packet::server::SessionPtr session = nullptr)
+    {
+        const rtecs::EntityID id = _engine.registerEntity<std::decay_t<Components>...>(
+            nullptr, std::forward<Components>(components)...);
+        if (session) {
+            _players[session] = id;
+        }
+        const auto& [bitset, content] = components::getEntityComponentsInfos(
+            components::GameComponents{}, *_engine.getEcs(), id);
+        packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
+        broadcast(p);
+    }
+
+    /**
+     * @brief Getter for the gameEngine.
+     * @return A reference to the used gameEngine.
+     */
+    rteng::GameEngine& getEngine();
 
 private:
     lobby::Id _roomId;

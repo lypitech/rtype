@@ -26,7 +26,7 @@ public:
     template <typename T>
     void send(T packet)
     {
-        _outgoingQueue.push(packet);
+        _outgoingQueue.emplace(packet);
     }
 
     void flush(rtnt::core::Client& client)

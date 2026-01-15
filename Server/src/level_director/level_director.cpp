@@ -24,26 +24,27 @@ std::vector<level::Enemy> parseEnemies(const nlohmann::json& data)
 namespace level {
 void Director::parseArchetypes(const nlohmann::json& data)
 {
-    if (!data.contains("wave") || !data["wave"].is_array()) {
+    if (!data.contains("waves") || !data["waves"].is_array()) {
         LOG_CRIT("[ERROR]: Wave object should be an array.");
         return;
     }
-    for (const auto& wave : data["wave"]) {
+    for (const auto& wave : data["waves"]) {
         wave::Archetype archetype;
-        archetype.name = wave.at("id");
-        archetype.difficultyCost = wave.at("cost");
-        archetype.postWaveDelay = wave.at("delay");
-        archetype.spawnInterval = wave.at("interval");
+        archetype.name = wave.at("name");
+        archetype.difficultyCost = wave.at("difficultyCost");
+        archetype.weight = wave.at("weight");
+        archetype.spawnInterval = wave.at("spawnInterval");
+        archetype.postWaveDelay = wave.at("postWaveDelay");
         archetype.enemies = parseEnemies(wave);
         _wavePool.push_back(archetype);
     }
 }
 
-void Director::load(const std::string& config)
+void Director::load(const std::string& waveConfig)
 {
-    std::ifstream f(config);
+    std::ifstream f(waveConfig);
     if (!f.is_open()) {
-        LOG_CRIT("[Error] Could not open wave config file: {}", config);
+        LOG_CRIT("[Error] Could not open wave config file: {}", waveConfig);
         return;
     }
     using json = nlohmann::json;
@@ -64,15 +65,18 @@ void Director::update(const float dt,
 
     const float incomeRate = BASE_INCOME + (_gameTime / 60.0f) * INCOME_MULTIPLIER;
     _credits += incomeRate * dt;
+    LOG_TRACE_R2("Gained {} credits.", incomeRate * dt);
 
     pickNewWaveIfNeeded();
     if (_activeWaves.empty()) {
+        LOG_TRACE_R2("No wave picked, Skipping frame...");
         return;
     }
     for (int i = _activeWaves.size() - 1; i >= 0; --i) {
         wave::Active& wave = _activeWaves[i];
 
         if (wave.isFinished) {
+            LOG_TRACE_R2("Waved ended. Removing wave from activeWaves...");
             _activeWaves.erase(_activeWaves.begin() + i);
             continue;
         }
@@ -83,16 +87,33 @@ void Director::update(const float dt,
             continue;
         }
 
+        LOG_TRACE_R2(
+            "Spawning a wave of {}, timer is {} seconds.", wave.archetype->name, wave.timer);
         wave.timer -= wave.archetype->spawnInterval;
 
         const auto& group = wave.archetype->enemies[wave.currentGroupIndex];
 
-        std::uniform_real_distribution yDist(5.0f, 95.0f);
-        lobby.spawnEntity<components::Position>({150, yDist(_rng)});
+        // TODO: Make the entities spawn off screen.
+        std::uniform_real_distribution yDist(200.0f, 950.0f);
+        std::uniform_real_distribution xDist(150.0f, 1200.0f);
+        float x = xDist(_rng);
+        float y = yDist(_rng);
+        LOG_TRACE_R2("Spawning {} {}/{} from group {}/{} at ({}, {})",
+                     entity::TypeToString.at(group.type),
+                     wave.spawnedInGroup + 1,
+                     group.count,
+                     wave.currentGroupIndex + 1,
+                     wave.archetype->enemies.size(),
+                     x,
+                     y);
+        lobby.spawnEntity<components::Position, components::Type>(
+            {xDist(_rng), yDist(_rng)}, {group.type});
 
         wave.spawnedInGroup++;
 
         if (wave.spawnedInGroup >= group.count) {
+            LOG_TRACE_R2(
+                "Spawned all enemy of group #{}, going to next group...", wave.currentGroupIndex);
             wave.spawnedInGroup = 0;
             wave.currentGroupIndex++;
 
