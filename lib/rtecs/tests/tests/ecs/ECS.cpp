@@ -84,12 +84,26 @@ TEST_F(ECSFixture,
 }
 
 TEST_F(ECSFixture,
+       update_invalid_entity)
+{
+    EXPECT_FALSE(_ecs.updateEntity<Profile>(42, {"", "L2x", 21}));
+}
+
+TEST_F(ECSFixture,
        add_entity_component)
 {
     const types::EntityID entityId = _ecs.registerEntity<Profile, Health>(
         {.prefix = "", .name = "L1x", .age = 20}, {.health = 20});
+    bitset::DynamicBitSet entityMask = _ecs.getEntityMask(entityId);
+    bitset::DynamicBitSet expectedEntityMask =
+        _ecs.getComponentMask<Profile>() | _ecs.getComponentMask<Health>();
+    ASSERT_EQ(entityMask, expectedEntityMask);
 
     _ecs.addEntityComponents<Hitbox>(entityId, {0, 0, 10, 10});
+
+    entityMask = _ecs.getEntityMask(entityId);
+    expectedEntityMask |= _ecs.getComponentMask<Hitbox>();
+    ASSERT_EQ(entityMask, expectedEntityMask);
 
     sparse::SparseGroup<Hitbox> group = _ecs.group<Hitbox>();
     ASSERT_TRUE(group.has(entityId));
@@ -104,21 +118,22 @@ TEST_F(ECSFixture,
 TEST_F(ECSFixture,
        destroy_entity)
 {
-    const types::EntityID entityId = _ecs.registerEntity<Profile, Health>(
-        {.prefix = "", .name = "L1x", .age = 20}, {.health = 20});
+    const types::EntityID entityId = _ecs.registerEntity<Profile, Health>({"", "L1x", 20}, {20});
 
     _ecs.destroyEntity(entityId);
 
     sparse::SparseGroup<Profile, Health> group = _ecs.group<Profile, Health>();
 
-    const types::EntityID newEntityId = _ecs.registerEntity<Profile, Health>(
-        {.prefix = "", .name = "L1x", .age = 20}, {.health = 20});
+    const types::EntityID newEntityId = _ecs.registerEntity<Profile, Health>({"", "L1x", 20}, {20});
     sparse::SparseGroup<Profile, Health> newGroup = _ecs.group<Profile, Health>();
-
+    EXPECT_TRUE(entityId != newEntityId);
     EXPECT_FALSE(group.has(entityId));
-    ASSERT_TRUE(entityId != newEntityId);
     EXPECT_FALSE(newGroup.has(entityId));
     EXPECT_TRUE(newGroup.has(newEntityId));
+
+    bitset::DynamicBitSet entityMask = _ecs.getEntityMask(entityId);
+    bitset::DynamicBitSet expectedMask{};
+    ASSERT_EQ(entityMask, expectedMask);
 }
 
 TEST_F(ECSFixture,
