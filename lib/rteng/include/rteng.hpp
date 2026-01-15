@@ -27,6 +27,7 @@ public:
      */
     template <typename... Components>
     explicit GameEngine(ComponentsList<Components...>)
+        : _ecs(std::make_unique<rtecs::ECS>())
     {
         _ecs->registerComponents<Components...>();
     }
