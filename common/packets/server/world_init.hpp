@@ -18,8 +18,8 @@ struct WorldInit
     static constexpr rtnt::core::packet::Name kName = "WORLD_INIT";
 
     uint16_t stage;                              ///< The current started stage.
-    std::vector<std::vector<uint8_t>> bitsets;   ///< The bitsets of all the created entities.
-    std::vector<rtecs::EntityID> ids;            ///< The ids of all the created entities.
+    std::vector<std::vector<uint64_t>> bitsets;  ///< The bitsets of all the created entities.
+    std::vector<rtecs::types::EntityID> ids;     ///< The ids of all the created entities.
     std::vector<std::vector<uint8_t>> entities;  ///< The content of all created entities.
 
     template <typename Archive>
