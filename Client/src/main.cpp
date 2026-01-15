@@ -1,3 +1,4 @@
+#include "app.hpp"
 #include "cli_parser.hpp"
 #include "logger/Logger.h"
 #include "logger/Sinks/LogFileSink.h"
@@ -12,8 +13,14 @@ int main(const int argc,
     Logger::initialize("R-Type Client", argc, argv, logger::BuildInfo::fromCMake());
     cli_parser::Parser p(argc, argv);
 
-    rteng::GameEngine eng(p.getValue("-h").as<std::string>(), p.getValue("-p").as<int>());
-    eng.init(800, 600, "Test");
-    eng.run();
+    if (!p.hasFlag("-h")) {
+        LOG_FATAL("No host specified, use \"-h <host>\"");
+    }
+    if (!p.hasFlag("-p")) {
+        LOG_FATAL("No port specified, use \"-p <port>\"");
+    }
+    client::App client(
+        p.getValue("-h").as<std::string>(), static_cast<short>(p.getValue("-p").as<int>()));
+    client.run();
     return 0;
 }

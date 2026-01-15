@@ -4,8 +4,6 @@
 
 namespace packet {
 
-using packetId = rtnt::core::packet::Id;
-
 /**
  * @struct packet::JoinAck
  *
@@ -14,7 +12,7 @@ using packetId = rtnt::core::packet::Id;
  */
 struct JoinAck
 {
-    static constexpr auto kId = static_cast<packetId>(type::Server::kJoinAck);
+    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Server::kJoinAck);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "JOIN_ACK";
 

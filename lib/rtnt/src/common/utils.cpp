@@ -1,5 +1,7 @@
 #include "rtnt/common/utils.hpp"
 
+#include <format>
+
 namespace rtnt {
 
 std::string byteBufferToHexString(const core::ByteBuffer::const_iterator begin,

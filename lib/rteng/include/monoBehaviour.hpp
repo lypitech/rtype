@@ -11,7 +11,7 @@ public:
     virtual void Start() = 0;
 
     // Called every frame with delta time in seconds
-    virtual void Update(float /*dt*/) = 0;
+    virtual void Update(double /*dt*/) = 0;
 
     // Called when the behaviour is destroyed / removed
     virtual void OnDestroy() = 0;

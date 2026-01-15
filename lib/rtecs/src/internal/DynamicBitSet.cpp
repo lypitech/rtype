@@ -50,7 +50,7 @@ DynamicBitSet::toBytes() const
 
     for (size_t i = 0; i < _nbits; i++) {
         if ((*this)[i]) {
-            bytes.push_back(i);
+            bytes.push_back(static_cast<uint8_t>(i));
         }
     }
     return {bytes, _nbits};

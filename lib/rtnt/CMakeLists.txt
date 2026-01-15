@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
 project(rtnt
-    VERSION 1.1.2
+    VERSION 1.1.3
     DESCRIPTION "R-Type Network library"
     HOMEPAGE_URL "https://github.com/lypitech/rtype"
     LANGUAGES CXX

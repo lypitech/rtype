@@ -5,8 +5,6 @@
 
 namespace packet {
 
-using packetId = rtnt::core::packet::Id;
-
 /**
  * @struct packet::Join
  *
@@ -15,7 +13,7 @@ using packetId = rtnt::core::packet::Id;
  */
 struct Join
 {
-    static constexpr packetId kId = static_cast<packetId>(type::Client::kJoin);
+    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Client::kJoin);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr rtnt::core::packet::Name kName = "JOIN";
 
