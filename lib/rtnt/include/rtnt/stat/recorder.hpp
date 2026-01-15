@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "metrics.hpp"
+#include "rtnt/core/client.hpp"
 #include "rtnt/core/server.hpp"
 
 namespace rtnt::stat {
@@ -15,9 +16,17 @@ class Recorder final
 {
 public:
     explicit Recorder(core::Server& server)
-        : _server(server)
+        : _peer(server),
+          _server(&server)
     {
     }
+
+    explicit Recorder(core::Client& client)
+        : _peer(client),
+          _client(&client)
+    {
+    }
+
     ~Recorder() { stop(); }
 
     void start(milliseconds interval = seconds(1));
@@ -25,7 +34,10 @@ public:
     void exportToCsv(const std::string& filename) const;
 
 private:
-    core::Server& _server;
+    core::Peer& _peer;
+
+    core::Server* _server = nullptr;
+    core::Client* _client = nullptr;
 
     std::vector<SystemSnapshot> _history;
     mutable std::mutex _historyMutex;
