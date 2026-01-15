@@ -2,6 +2,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "components/type.hpp"
 #include "enums/entity_types.hpp"
 #include "lobby/lobby.hpp"
 

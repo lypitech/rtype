@@ -4,8 +4,8 @@
 
 namespace packet::handler {
 
-void handleJoinAck(const JoinAck,
-                   client::HandlerToolbox&)
+void handleJoinAck(const JoinAck packet,
+                   client::HandlerToolbox& toolbox)
 {
     const auto& binding_map = toolbox.serverToClient;
     const rtecs::types::EntityID real = binding_map.at(packet.id);

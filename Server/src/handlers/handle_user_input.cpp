@@ -26,7 +26,7 @@ void handleUserInput(const SessionPtr& s,
     x -= (packet.input_mask & static_cast<uint8_t>(game::Input::kLeft)) ? 10.0f : 0.0f;
     y += (packet.input_mask & static_cast<uint8_t>(game::Input::kDown)) ? 10.0f : 0.0f;
     y -= (packet.input_mask & static_cast<uint8_t>(game::Input::kUp)) ? 10.0f : 0.0f;
-    const std::optional<rtecs::EntityID>& id = lobby.getPlayerId(s);
+    const std::optional<rtecs::types::EntityID>& id = lobby.getPlayerId(s);
     if (!id) {
         LOG_WARN(
             "This should not be happening, the session may have been removed during the process.");

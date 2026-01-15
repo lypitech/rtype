@@ -66,7 +66,7 @@ private:
     template <typename T>
     void registerComponent()
     {
-        _creators.push_back([](rtecs::ECS&, size_t, rtnt::core::Packet& p) {
+        _creators.push_back([](rtecs::ECS& ecs, size_t entityId, rtnt::core::Packet& p) {
             LOG_DEBUG("Reassembling component ({})", typeid(T).name());
             T component;
 

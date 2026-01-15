@@ -5,8 +5,8 @@
 
 namespace packet::handler {
 
-void handleUpdatePosition(UpdatePosition,
-                          client::HandlerToolbox&)
+void handleUpdatePosition(UpdatePosition packet,
+                          client::HandlerToolbox& toolbox)
 {
     const rtecs::types::EntityID id = toolbox.serverToClient.at(packet.id);
     auto positions = toolbox.engine.getEcs()->group<components::Position, components::TargetPos>();

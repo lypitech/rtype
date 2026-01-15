@@ -14,7 +14,7 @@ Interpolation::Interpolation()
 {
 }
 
-void Interpolation::apply(rtecs::ECS&)
+void Interpolation::apply(rtecs::ECS& ecs)
 {
     ecs.group<components::Position, components::TargetPos>().apply(
         [](const rtecs::types::EntityID&,

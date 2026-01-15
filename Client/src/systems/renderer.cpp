@@ -27,7 +27,7 @@ Renderer::Renderer()
     _assetManager.init();
 }
 
-void Renderer::apply(rtecs::ECS&)
+void Renderer::apply(rtecs::ECS& ecs)
 {
     if (WindowShouldClose()) {
         if (_closing) {
