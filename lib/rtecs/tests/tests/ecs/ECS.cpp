@@ -64,6 +64,19 @@ TEST_F(ComponentFixture,
     EXPECT_EQ(mask, expectedMask);
 }
 
+TEST_F(ComponentFixture,
+       register_entity_without_any_components)
+{
+    ECS ecs;
+
+    const types::EntityID id = ecs.preRegisterEntity();
+    EXPECT_EQ(id, 0);
+
+    const bitset::DynamicBitSet &mask = ecs.getEntityMask(id);
+    const bitset::DynamicBitSet expectedMask{};
+    EXPECT_EQ(mask, expectedMask);
+}
+
 TEST_F(ECSFixture,
        update_entity)
 {
