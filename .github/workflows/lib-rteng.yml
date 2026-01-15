@@ -6,9 +6,6 @@ on:
     push:
         branches: ["feat/ci-cd/compile-libraries-separatly"]
 
-env:
-    LIB_NAME: rteng
-
 jobs:
     check-coding-style-on-rteng:
         runs-on: ubuntu-latest
@@ -75,8 +72,8 @@ jobs:
             - name: Install all dependencies with conan
               shell: bash
               run: |
-                  conan install lib/${LIB_NAME}                     \
-                    --output-folder=lib/${LIB_NAME}/build           \
+                  conan install lib/rteng                           \
+                    --output-folder=lib/rteng/build                 \
                     --build=missing                                 \
                     -s build_type=Release                           \
                     -s compiler.cppstd=23                           \
@@ -85,23 +82,23 @@ jobs:
 
             - name: Configure CMake
               shell: bash
-              run: cmake -S lib/${LIB_NAME} -B lib/${LIB_NAME}/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -DRTENG_BUILD_TESTS=ON
+              run: cmake -S lib/rteng -B lib/rteng/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -DRTENG_BUILD_TESTS=ON
 
             - name: Build Project
               shell: bash
-              run: cmake --build lib/${LIB_NAME}/build --config Release --parallel
+              run: cmake --build lib/rteng/build --config Release --parallel
 
             - name: Run Tests
-              working-directory: lib/${LIB_NAME}/build
+              working-directory: lib/rteng/build
               run: ctest --output-on-failure -C Release
 
             - name: Upload Build Artifacts
               uses: actions/upload-artifact@v4
               with:
-                  name: ${LIB_NAME}-binaries-${{ matrix.os }}
+                  name: rteng-binaries-${{ matrix.os }}
                   path: |
-                      lib/${LIB_NAME}/build/lib/lib${LIB_NAME}.a
-                      lib/${LIB_NAME}/build/tests/${LIB_NAME}_tests
-                      lib/${LIB_NAME}/build/tests/logs/latest.log
+                      lib/rteng/build/lib/librteng.a
+                      lib/rteng/build/tests/rteng_tests
+                      lib/rteng/build/tests/logs/latest.log
                   retention-days: 5
                   if-no-files-found: warn
