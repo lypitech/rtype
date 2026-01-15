@@ -51,6 +51,7 @@ private:
     void registerComponent()
     {
         if ((_componentMaskIndex >> 1).none()) {
+            LOG_TRACE_R1("Increasing component mask index of 64 bits.");
             _componentMaskIndex.increase(1);
         }
         _componentMaskIndex >>= 1;
@@ -62,13 +63,14 @@ private:
 
         if (_components.contains(componentId)) {
             LOG_WARN(
-                "Cannot register the component with id {}: This component has already been "
+                "Cannot register the component#{}: This component has already been "
                 "registered.",
                 componentId);
             return;
         }
         _componentsMasks.emplace(componentId, mask);
         _components.emplace(componentId, std::move(sparse));
+        LOG_TRACE_R2("Registered component#{} (\"{}\") with the following mask:\n[{}]", componentId, typeid(T).name(), mask.toString().data());
     }
 
     /**
@@ -86,6 +88,14 @@ private:
     {
         const types::ComponentID componentId = typeid(T).hash_code();
 
+        if (!_entities.contains(entityId)) {
+            LOG_WARN(
+                "Cannot add the component {} to the entity {}: This entity does not exist.",
+                componentId,
+                entityId);
+            return;
+        }
+
         if (!_components.contains(componentId)) {
             LOG_WARN(
                 "Cannot add the component {} to the entity {}: This component is not registered.",
@@ -102,8 +112,10 @@ private:
                 entityId);
             return;
         }
-        ptr->put(entityId, instance);
         _entities.at(entityId) |= getComponentMask<T>();
+        LOG_TRACE_R3("Updated mask of entity#{}", entityId);
+        ptr->put(entityId, instance);
+        LOG_TRACE_R3("Updated component#{} of entity#{}", componentId, entityId);
     }
 
     /**
@@ -121,7 +133,7 @@ private:
 
         if (!_componentsMasks.contains(id)) {
             LOG_WARN(
-                "Cannot get the component with id {}: This component has not been registered.", id);
+                "Cannot get the component#{}: This component has not been registered.", id);
             return _emptyComponentMask;
         }
         return _componentsMasks.at(id);
@@ -141,7 +153,7 @@ private:
         const types::ComponentID id = typeid(T).hash_code();
 
         if (!_components.contains(id)) {
-            LOG_WARN("The component {} do not exist.", id);
+            LOG_WARN("Cannot get the component#{}: This component does not exist.", id);
             return std::nullopt;
         }
         return dynamic_cast<sparse::SparseSet<T> &>(*_components.at(id));
@@ -166,8 +178,7 @@ private:
 
         if (!optSet.has_value()) {
             LOG_WARN(
-                "Cannot update component with id {} of the entity with id {}: This component has "
-                "not been registered.",
+                "Cannot update component#{} of the entity#{}: This component has not been registered.",
                 getComponentID<T>(),
                 entityId);
             return false;
@@ -177,37 +188,26 @@ private:
 
         if (!optSet.value().get().has(entityId)) {
             LOG_WARN(
-                "Cannot update component with id {} of the entity with id {}: The entity do not "
-                "have this component.",
+                "Cannot update component#{} of the entity#{}: The entity do not have this component.",
                 set.getId(),
                 entityId);
             return false;
         }
         set.put(entityId, newInstance);
+        LOG_TRACE_R3("Updated component#{} of entity#{}", set.getId(), entityId);
         return true;
     }
 
     /**
      * @brief Get the component id.
      *
-     * @warning If the component has not been registered, a warning will be logged but the ID of the component will still be returned.
-     *
      * @tparam T The component type.
      * @return The id of the component.
      */
     template <typename T>
-    types::ComponentID getComponentID() const
+    static types::ComponentID getComponentID()
     {
-        const types::ComponentID id = typeid(T).hash_code();
-
-        if (!_components.contains(id)) {
-            LOG_WARN(
-                "Getting an non-registered component's id ({}): This component has not been "
-                "registered.",
-                id);
-            return id;
-        }
-        return id;
+        return typeid(T).hash_code();
     }
 
 public:
@@ -235,11 +235,12 @@ public:
 
         if (mask.none()) {
             LOG_CRIT("Cannot register entity with unregistered components. Component mask: {}",
-                     mask.toString(" ").data());
+                     mask.toString(" "));
             return types::NullEntityID;
         }
-        addEntityComponents<T...>(entityId, instances...);
         _entities.insert({entityId, mask});
+        LOG_TRACE_R2("Entity#{} registered.", entityId);
+        addEntityComponents<T...>(entityId, instances...);
         _entitiesID++;
         return entityId;
     }
