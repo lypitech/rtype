@@ -2,7 +2,9 @@ name: CI/CD R-Type (rtnt)
 
 on:
     pull_request:
-        branches: ["main", "dev", "feat/ci-cd/compile-libraries-separatly"]
+        branches: ["main", "dev"]
+    push:
+        branches: ["feat/ci-cd/compile-libraries-separatly"]
 
 jobs:
     check-coding-style:
