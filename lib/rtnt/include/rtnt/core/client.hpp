@@ -6,6 +6,12 @@
 #include "rtnt/common/thread_safe_queue.hpp"
 #include "session.hpp"
 
+namespace rtnt::stat {
+
+class Recorder;
+
+}
+
 namespace rtnt::core {
 
 /**
@@ -104,6 +110,8 @@ protected:
                    std::shared_ptr<ByteBuffer> data) override;
 
 private:
+    friend class stat::Recorder;
+
     udp::endpoint _serverEndpoint;
     std::shared_ptr<Session> _serverSession;
     mutable std::mutex _mutex;

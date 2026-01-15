@@ -48,6 +48,10 @@ void Peer::receive()
                          _tmpEndpoint.port());
 
             if (bytesReceived > 0) {
+                _networkMetrics.totalBytesReceived.fetch_add(
+                    bytesReceived, std::memory_order_relaxed);
+                _networkMetrics.totalPacketsReceived.fetch_add(1, std::memory_order_relaxed);
+
                 // todo: optimization is possible by making a buffer pool (avoiding buffer recreation c;)
                 auto data = std::make_shared<ByteBuffer>(
                     _receptionBuffer.begin(), _receptionBuffer.begin() + bytesReceived);
@@ -79,11 +83,14 @@ void Peer::sendToTarget(const udp::endpoint &target,
 #endif
 
     _socket.async_send_to(
-        asio::buffer(*data), target, [target, data](std::error_code ec, size_t bytesSent) {
+        asio::buffer(*data), target, [this, target, data](std::error_code ec, size_t bytesSent) {
             if (ec) {
                 LOG_ERR("Encountered an error while sending data: {}.", ec.message());
                 return;
             }
+
+            _networkMetrics.totalBytesSent.fetch_add(data->size(), std::memory_order_relaxed);
+            _networkMetrics.totalPacketsSent.fetch_add(1, std::memory_order_relaxed);
 
             LOG_TRACE_R3(
                 "Sent {} bytes to {}:{}.", bytesSent, target.address().to_string(), target.port());
