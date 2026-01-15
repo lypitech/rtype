@@ -7,7 +7,7 @@ on:
         branches: ["feat/ci-cd/compile-libraries-separatly"]
 
 jobs:
-    check-coding-style:
+    check-coding-style-on-rtnt:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -16,8 +16,8 @@ jobs:
                   chmod +x scripts/checker.sh
                   ./scripts/checker.sh
 
-    build-and-test:
-        needs: check-coding-style
+    build-and-test-on-rtnt:
+        needs: check-coding-style-on-rtnt
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false # If one failed, don't cancel the other jobs (Kinda like a debug option)
@@ -86,7 +86,7 @@ jobs:
 
             - name: Build Project
               shell: bash
-              run: cmake --build build --config Release --parallel
+              run: cmake --build lib/rtnt/build --config Release --parallel
 
             - name: Run Tests
               working-directory: build
