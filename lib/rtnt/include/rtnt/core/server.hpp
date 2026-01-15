@@ -8,6 +8,12 @@
 #include "peer.hpp"
 #include "session.hpp"
 
+namespace rtnt::stat {
+
+class Recorder;
+
+}
+
 namespace rtnt::core {
 
 /**
@@ -86,6 +92,8 @@ protected:
                    std::shared_ptr<ByteBuffer> data) override;
 
 private:
+    friend class stat::Recorder;
+
     std::map<udp::endpoint, std::shared_ptr<Session>> _sessions;
     mutable std::mutex _sessionsMutex;
 

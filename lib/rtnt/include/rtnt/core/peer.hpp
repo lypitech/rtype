@@ -4,6 +4,7 @@
 #include <asio/ip/udp.hpp>
 
 #include "packet.hpp"
+#include "rtnt/stat/metrics.hpp"
 
 static constexpr size_t BUFFER_SIZE = USHRT_MAX;
 
@@ -79,6 +80,8 @@ public:
     }
 #endif
 
+    [[nodiscard]] stat::NetworkMetrics& getNetworkMetrics() { return _networkMetrics; }
+
 protected:
     /**
      * @brief   Constructs a Peer in a degraded state. You NEED to call either @code server()@endcode or
@@ -122,6 +125,8 @@ private:
 #if defined(RTNT_TESTS)
     std::atomic<uint8_t> _simulatedPacketLossPercentage = 0;
 #endif
+
+    stat::NetworkMetrics _networkMetrics;
 
     void receive();
 };

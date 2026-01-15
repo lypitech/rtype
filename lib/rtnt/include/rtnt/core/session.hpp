@@ -5,6 +5,7 @@
 #include <map>
 
 #include "packet.hpp"
+#include "rtnt/stat/metrics.hpp"
 
 namespace rtnt::core {
 
@@ -113,6 +114,8 @@ public:
      */
     [[nodiscard]] bool shouldClose() const { return _shouldClose; }
 
+    [[nodiscard]] const stat::SessionMetrics& getSessionMetrics() const { return _sessionMetrics; }
+
 private:
     const session::Id _id;
 
@@ -142,6 +145,8 @@ private:
 
     time_point<steady_clock> _lastSeen;
     bool _shouldClose = false;
+
+    stat::SessionMetrics _sessionMetrics;
 
     /**
      * @brief   Constructs the final wire-format buffer and transmits it to the Peer.
@@ -234,6 +239,8 @@ private:
      */
     void checkForOldPackets(std::shared_ptr<ByteBuffer> rawData,
                             const packet::Header& header);
+
+    void _updateRtt(milliseconds rtt);
 };
 
 }  // namespace rtnt::core

@@ -44,11 +44,29 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
 
     _lastSeen = steady_clock::now();
 
+    {
+        auto& channelMetrics = _sessionMetrics.channels[header.channelId];
+        channelMetrics.packetsReceived.fetch_add(1, std::memory_order_relaxed);
+        channelMetrics.bytesReceived.fetch_add(rawData->size(), std::memory_order_relaxed);
+    }
+
     bool hasAck = (header.flags & static_cast<uint8_t>(packet::Flag::kHasAck)) != 0;
 
     if (hasAck && !_sentPackets.empty()) {
         LOG_DEBUG("Checking sent packets buffer...");
-        _sentPackets.erase(header.acknowledgeId);
+
+        auto it = _sentPackets.find(header.acknowledgeId);
+
+        if (it != _sentPackets.end()) {
+            if (it->second.retries == 0) {
+                auto now = steady_clock::now();
+                auto rtt = duration_cast<milliseconds>(now - it->second.sentTime);
+
+                _updateRtt(rtt);
+            }
+            _sentPackets.erase(it);
+        }
+
         for (int i = 0; i < 32; ++i) {
             if (header.acknowledgeBitfield & (1 << i)) {
                 LOG_DEBUG(
@@ -62,6 +80,7 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
 
     if (isDuplicate) {
         LOG_WARN("Dropped duplicate packet #{}", header.sequenceId);
+        ++_sessionMetrics.duplicateCount;
         return readyPackets;
     }
 
@@ -209,6 +228,13 @@ void Session::rawSend(Packet& packet,
 
     _hasUnsentAck = false;
     _lastAckTime = steady_clock::now();
+
+    {
+        auto& channelMetrics = _sessionMetrics.channels[packet.getChannel()];
+        channelMetrics.packetsSent.fetch_add(1, std::memory_order_relaxed);
+        channelMetrics.bytesSent.fetch_add(
+            packet.getPayload().size() + sizeof(packet::Header), std::memory_order_relaxed);
+    }
 }
 
 void Session::update()
@@ -240,6 +266,7 @@ void Session::update()
 
             info.sentTime = now;
             info.retries++;
+            ++_sessionMetrics.retransmitCount;
         }
         ++it;
     }
@@ -387,6 +414,17 @@ void Session::checkForOldPackets(std::shared_ptr<ByteBuffer> rawData,
         } catch (const std::exception& e) {
             LOG_ERR("Failed to deserialize RICH_ACK packet: {}", e.what());
         }
+    }
+}
+
+void Session::_updateRtt(const milliseconds rtt)
+{
+    const auto rttMs = static_cast<uint32_t>(rtt.count());
+    _sessionMetrics.rtt.store(rttMs, std::memory_order_relaxed);
+
+    const uint32_t currentMax = _sessionMetrics.maxRtt.load(std::memory_order_relaxed);
+    if (rttMs > currentMax) {
+        _sessionMetrics.maxRtt.store(rttMs, std::memory_order_relaxed);
     }
 }
 
