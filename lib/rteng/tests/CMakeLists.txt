@@ -10,6 +10,7 @@ project(rteng_tests
 # --- Sources ---
 set(RTENG_TEST_SOURCES
     Main.cpp
+    tests/getEntityInfos.cpp
 #    tests/Initialization.cpp
 #    tests/TextureTests.cpp
 )
@@ -39,7 +40,6 @@ target_include_directories(rteng_tests PRIVATE
 target_link_directories(rteng_tests PRIVATE
     ${CMAKE_BINARY_DIR}/lib
 )
-
 
 # --- Dependencies ---
 find_package(GTest REQUIRED)

@@ -1,16 +1,48 @@
-#include <gtest/gtest.h>
-#include <raylib.h>
+#pragma once
 
-class RaylibTestEnvironment : public testing::Environment
+#include <gtest/gtest.h>
+
+#include "logger/Logger.h"
+#include "logger/Sinks/LogFileSink.h"
+
+class LogEnvironment final : public testing::Environment
 {
 public:
-    // Before each test
-    void SetUp()
+    LogEnvironment(const int argc,
+                   char** argv)
+        : _argc(argc),
+          _argv(argv)
     {
-        InitWindow(1, 1, "GTest Raylib Context");
-        SetTargetFPS(60);
     }
 
-    // After each test
-    void TearDown() { CloseWindow(); }
+    void SetUp() override
+    {
+        const std::string projectName{"rteng (tests)"};
+
+        Logger::getInstance().addSink<logger::ConsoleSink>();
+        Logger::getInstance().addSink<logger::LogFileSink>(
+            std::format("logs/{}", Logger::generateLogFileName(projectName, ".log")));
+
+        Logger::initialize(
+            projectName, _argc, const_cast<const char**>(_argv), logger::BuildInfo::fromCMake());
+    }
+
+    void TearDown() override { Logger::getInstance().shutdown(); }
+
+private:
+    int _argc;
+    char** _argv;
+};
+
+class LoggingListener : public testing::EmptyTestEventListener
+{
+    void OnTestStart(const testing::TestInfo& testInfo) override
+    {
+        LOG_INFO("[{}] Starting test.", testInfo.name());
+    }
+    void OnTestEnd(const testing::TestInfo& testInfo) override
+    {
+        LOG_INFO(
+            "[{}] Test ended: {}.", testInfo.name(), testInfo.result()->Passed() ? "OK" : "KO");
+    }
 };
