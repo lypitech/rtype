@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <variant>
 
+#include "components/factory.hpp"
 #include "components/position.hpp"
 #include "concurrent_queue.hpp"
 #include "level_director/level_director.hpp"
@@ -128,13 +129,12 @@ public:
     void spawnEntity(Components&&... components,
                      const packet::server::SessionPtr session = nullptr)
     {
-        const rtecs::EntityID id = _engine.registerEntity<std::decay_t<Components>...>(
+        const rtecs::types::EntityID id = _engine.registerEntity<std::decay_t<Components>...>(
             nullptr, std::forward<Components>(components)...);
         if (session) {
             _players[session] = id;
         }
-        const auto& [bitset, content] = components::getEntityComponentsInfos(
-            components::GameComponents{}, *_engine.getEcs(), id);
+        const auto& [bitset, content] = _engine.getEntityInfos(components::GameComponents{}, id);
         packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
         broadcast(p);
     }
