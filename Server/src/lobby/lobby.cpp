@@ -26,11 +26,10 @@ void Lobby::join(const packet::server::SessionPtr& session)
 {
     _actionQueue.push([this, session](rteng::GameEngine& engine) {
         LOG_INFO("Joining lobby.");
-        rtecs::EntityID id = engine.registerEntity<components::Position, components::Type>(
+        rtecs::types::EntityID id = engine.registerEntity<components::Position, components::Type>(
             nullptr, {10, 10}, {entity::Type::kPlayer});
         _players[session] = id;
-        const auto& infos = components::getEntityComponentsInfos(
-            components::GameComponents{}, *engine.getEcs(), id);
+        const auto& infos = engine.getEntityInfos(components::GameComponents{}, id);
         packet::Spawn p = {static_cast<uint32_t>(id), infos.first, infos.second};
         _outGoing.push({{getAllSessions()}, p});
     });

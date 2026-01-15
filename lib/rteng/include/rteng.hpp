@@ -9,6 +9,8 @@
 
 namespace rteng {
 
+using EntityInfos = std::pair<std::vector<uint64_t>, std::vector<uint8_t>>;
+
 template <typename... Ts>
 struct ComponentsList
 {
@@ -95,6 +97,31 @@ public:
      * @return A reference to the stored @code std::unique_ptr<<ECS>@endcode.
      */
     std::unique_ptr<rtecs::ECS>& getEcs() { return _ecs; }
+
+    template <typename... Components>
+    EntityInfos getEntityInfos(ComponentsList<Components...>,
+                               const rtecs::types::EntityID& id) const
+    {
+        size_t componentIndex = 0;
+        const rtecs::types::Entity& bitmask = _ecs->getEntityMask(id);
+        std::vector<uint8_t> contentStream;
+
+        auto packIfPresent = [&]<typename T>(T*) {
+            if (bitmask[componentIndex]) {
+                const rtecs::types::OptionalRef<T> entity =
+                    _ecs->group<T>().template getEntity<T>(id);
+                if (entity) {
+                    size_t size = sizeof(T);
+                    const auto* ptr = reinterpret_cast<const uint8_t*>(&entity.value().get());
+
+                    contentStream.insert(contentStream.end(), ptr, ptr + size);
+                }
+            }
+            componentIndex++;
+        };
+        (packIfPresent(static_cast<Components*>(nullptr)), ...);
+        return {bitmask.serialize(), contentStream};
+    };
 
 private:
     std::unique_ptr<rtecs::ECS> _ecs;
