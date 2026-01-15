@@ -1,10 +1,10 @@
 #pragma once
 #include <variant>
 
-#include "ASystem.hpp"
 #include "packets/client/join.hpp"
 #include "packets/client/start.hpp"
 #include "packets/client/user_input.hpp"
+#include "rtecs/systems/ASystem.hpp"
 #include "rtnt/core/client.hpp"
 
 namespace packet {
@@ -45,7 +45,7 @@ private:
 
 namespace systems {
 
-class Network final : public rtecs::ASystem
+class Network final : public rtecs::systems::ASystem
 {
 public:
     /**

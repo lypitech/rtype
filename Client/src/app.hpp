@@ -20,7 +20,7 @@ struct HandlerToolbox
 {
     components::Factory componentFactory;  ///< A component factory to create an entity.
     rteng::GameEngine engine;              ///< The game engine instance.
-    std::unordered_map<rtecs::EntityID, rtecs::EntityID>
+    std::unordered_map<rtecs::types::EntityID, rtecs::types::EntityID>
         serverToClient;  ///< A map binding the entity id that the server uses and the real one
 };
 

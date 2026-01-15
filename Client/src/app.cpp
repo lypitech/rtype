@@ -26,15 +26,19 @@ App::App(const std::string& host,
 
 App::~App() { stop(); }
 
+void App::registerAllComponents()
+{
+    using namespace components;
+    _toolbox.engine.getEcs()->registerComponents<Sprite, Me, TargetPos>();
+}
+
 void App::registerAllSystems()
 {
     _toolbox.engine.getEcs()->registerSystem(
         std::make_unique<systems::Network>(_client, _networkService));
-}
-
-void App::registerAllComponents()
-{
-    // Empty for now.
+    _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Renderer>());
+    _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::IO>(_networkService));
+    _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Interpolation>());
 }
 
 void App::registerAllCallbacks()
