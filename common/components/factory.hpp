@@ -18,7 +18,8 @@ using GameComponents = rteng::ComponentsList<Position, Transform, Rectangle, Typ
 class Factory
 {
 public:
-    using ComponentCreator = std::function<void(rtecs::ECS&, rtecs::EntityID, rtnt::core::Packet&)>;
+    using ComponentCreator =
+        std::function<void(rtecs::ECS&, rtecs::types::EntityID, rtnt::core::Packet&)>;
 
     template <typename... Components>
     explicit Factory(rteng::ComponentsList<Components...>)
@@ -31,7 +32,7 @@ public:
      */
     void apply(rtecs::ECS& ecs,
                const size_t entityId,
-               rtecs::DynamicBitSet bitmask,
+               rtecs::bitset::DynamicBitSet bitmask,
                const std::vector<uint8_t>& data) const
     {
         rtnt::core::Packet reader(data);
@@ -57,8 +58,7 @@ private:
 
             p >> component;
 
-            auto& sparseSet = dynamic_cast<rtecs::SparseSet<T>&>(ecs.getComponent<T>());
-            sparseSet.put(entityId, component);
+            rtecs::sparse::SparseGroup<T> group = ecs.group<T>().getEntity(entityId);
         });
     }
 };
