@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "EntityContent.hpp"
 #include "behaviour.hpp"
 #include "monoBehaviour.hpp"
 #include "rtecs/ECS.hpp"
@@ -29,7 +30,9 @@ public:
      */
     template <typename... Components>
     explicit GameEngine(ComponentsList<Components...>)
-        : _ecs(std::make_unique<rtecs::ECS>())
+        : _ecs(std::make_unique<rtecs::ECS>()),
+          _gameState(0),
+          _menuState(0)
     {
         _ecs->registerComponents<Components...>();
     }
@@ -92,6 +95,49 @@ public:
         _ecs->updateEntity<std::decay_t<Comps>...>(id, std::forward<Comps>(components)...);
     }
 
+    template <typename Component,
+              typename... Components>
+    rtecs::types::OptionalRef<Component> getEntityFromGroup(const rtecs::types::EntityID& id) const
+    {
+        return _ecs->group<std::decay_t<Component>, std::decay_t<Components>...>()
+            .template getEntity<Component>(id);
+    }
+
+    template <typename Component>
+    rtecs::types::OptionalRef<Component> getEntityWithComponent(
+        const rtecs::types::EntityID& id) const
+    {
+        return _ecs->group<std::decay_t<Component>>().template getEntity<Component>(id);
+    }
+
+    template <typename... Components>
+    void updateEntity(const rtecs::types::EntityID& id,
+                      Components&&... components)
+    {
+        _ecs->updateEntity<std::decay_t<Components>...>(
+            id, std::forward<Components>(components)...);
+    }
+
+    template <typename... Components>
+    void addEntityComponents(const rtecs::types::EntityID& id,
+                             Components&&... components)
+    {
+        _ecs->addEntityComponents<std::decay_t<Components>...>(
+            id, std::forward<Components>(components)...);
+    }
+
+    template <typename... Components>
+    void registerComponents() const
+    {
+        _ecs->registerComponents<std::decay_t<Components>...>();
+    }
+
+    template <typename System>
+    void registerSystem(const std::unique_ptr<System>& sys)
+    {
+        _ecs->registerSystem(std::move(sys));
+    }
+
     /**
      * @brief Get a reference to the stored ecs.
      * @return A reference to the stored @code std::unique_ptr<<ECS>@endcode.
@@ -104,23 +150,19 @@ public:
     {
         size_t componentIndex = 0;
         const rtecs::types::Entity& bitmask = _ecs->getEntityMask(id);
-        std::vector<uint8_t> contentStream;
+        EntityContent contentStream;
 
         auto packIfPresent = [&]<typename T>(T*) {
-            if (bitmask[componentIndex]) {
-                const rtecs::types::OptionalRef<T> entity =
-                    _ecs->group<T>().template getEntity<T>(id);
-                if (entity) {
-                    size_t size = sizeof(T);
-                    const auto* ptr = reinterpret_cast<const uint8_t*>(&entity.value().get());
-
-                    contentStream.insert(contentStream.end(), ptr, ptr + size);
-                }
+            LOG_DEBUG("called for bit {} ({})", componentIndex, typeid(T).name());
+            rtecs::types::OptionalRef<T> entity = getEntityWithComponent<T>(id);
+            if (entity) {
+                LOG_DEBUG("Serializing component {}", typeid(T).name());
+                contentStream << entity.value().get();
             }
             componentIndex++;
         };
         (packIfPresent(static_cast<Components*>(nullptr)), ...);
-        return {bitmask.serialize(), contentStream};
+        return {bitmask.serialize(), contentStream.getData()};
     };
 
     /**
