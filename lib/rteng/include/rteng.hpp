@@ -163,7 +163,7 @@ public:
         };
         (packIfPresent(static_cast<Components*>(nullptr)), ...);
         return {bitmask.serialize(), contentStream.getData()};
-    };
+    }
 
     /**
      * @brief Set the current state of the game.

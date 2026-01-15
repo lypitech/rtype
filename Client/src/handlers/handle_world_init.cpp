@@ -6,8 +6,8 @@ namespace packet::handler {
 
 using Vec = std::vector<std::vector<uint8_t>>;
 
-void handleWorldInit(WorldInit packet,
-                     client::HandlerToolbox& toolbox)
+void handleWorldInit(WorldInit,
+                     client::HandlerToolbox&)
 {
     LOG_DEBUG("Handling WorldInit.");
     for (size_t i = 0; i < packet.bitsets.size(); i++) {

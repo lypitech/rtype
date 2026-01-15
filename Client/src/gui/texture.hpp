@@ -1,6 +1,8 @@
 #pragma once
 #include <raylib.h>
 
+#include <string_view>
+
 namespace gui {
 
 static constexpr std::string_view PLAYER_TEXTURE_FILEPATH =

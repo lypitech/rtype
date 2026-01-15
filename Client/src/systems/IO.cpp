@@ -5,6 +5,7 @@
 #include "enums/input.hpp"
 #include "packets/client/user_input.hpp"
 #include "raylib.h"
+#include "rtecs/ECS.hpp"
 #include "rteng.hpp"
 
 namespace systems {

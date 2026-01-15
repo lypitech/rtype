@@ -1,6 +1,6 @@
 #pragma once
-#include "ECS.hpp"
 #include "enums/packets.hpp"
+#include "rtecs/ECS.hpp"
 #include "rtnt/core/packet.hpp"
 
 namespace packet {

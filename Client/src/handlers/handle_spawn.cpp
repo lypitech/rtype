@@ -23,8 +23,8 @@ static void addGraphicalComponents(rtecs::types::EntityID id,
 
 namespace packet::handler {
 
-void handleSpawn(Spawn packet,
-                 client::HandlerToolbox& toolbox)
+void handleSpawn(Spawn,
+                 client::HandlerToolbox&)
 {
     auto& binding_map = toolbox.serverToClient;
     const std::unique_ptr<rtecs::ECS>& ecs = toolbox.engine.getEcs();

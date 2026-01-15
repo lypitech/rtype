@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ASystem.hpp"
-#include "ECS.hpp"
 #include "components/position.hpp"
 #include "network.hpp"
 #include "rtecs/systems/ASystem.hpp"
