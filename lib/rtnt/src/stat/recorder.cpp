@@ -105,42 +105,50 @@ void Recorder::_workerLoop(milliseconds interval)
 
 SystemSnapshot Recorder::_takeSnapshot()
 {
-    SystemSnapshot snap{};
+    SystemSnapshot snapshot{};
 
-    // 1. Global Network Stats (Peer)
-    auto& net = _server.getNetworkMetrics();
-    snap.totalBytesSent = net.totalBytesSent.load(std::memory_order_relaxed);
-    snap.totalBytesReceived = net.totalBytesReceived.load(std::memory_order_relaxed);
+    const auto& metrics = _peer.getNetworkMetrics();
+    snapshot.totalBytesSent = metrics.totalBytesSent.load(std::memory_order_relaxed);
+    snapshot.totalBytesReceived = metrics.totalBytesReceived.load(std::memory_order_relaxed);
 
-    // 2. Session Stats
-    {
-        // Friend access to server sessions
-        std::lock_guard lock(_server._sessionsMutex);
-        for (const auto& [endpoint, session] : _server._sessions) {
-            const auto& metrics = session->getSessionMetrics();
-
-            SessionSnapshot sSnap{};
-            sSnap.sessionId = session->getId();
-            sSnap.rtt = metrics.rtt.load(std::memory_order_relaxed);
-            sSnap.retransmitCount = metrics.retransmitCount.load(std::memory_order_relaxed);
-            sSnap.duplicateCount = metrics.duplicateCount.load(std::memory_order_relaxed);
-
-            // Channels
-            for (size_t i = 0; i < metrics.channels.size(); ++i) {
-                uint64_t ps = metrics.channels[i].packetsSent.load(std::memory_order_relaxed);
-                uint64_t pr = metrics.channels[i].packetsReceived.load(std::memory_order_relaxed);
-                uint64_t bs = metrics.channels[i].bytesSent.load(std::memory_order_relaxed);
-                uint64_t br = metrics.channels[i].bytesReceived.load(std::memory_order_relaxed);
-
-                if (ps > 0 || pr > 0) {
-                    sSnap.activeChannels.push_back({static_cast<uint8_t>(i), ps, pr, bs, br});
-                }
-            }
-            snap.sessions.push_back(sSnap);
+    auto snapshotSession = [&](const std::shared_ptr<core::Session>& session) {
+        if (!session) {
+            return;
         }
+
+        const auto& sessionMetrics = session->getSessionMetrics();
+        SessionSnapshot snap{};
+
+        snap.sessionId = session->getId();
+        snap.rtt = sessionMetrics.rtt.load(std::memory_order_relaxed);
+        snap.retransmitCount = sessionMetrics.retransmitCount.load(std::memory_order_relaxed);
+        snap.duplicateCount = sessionMetrics.duplicateCount.load(std::memory_order_relaxed);
+
+        for (size_t i = 0; i < sessionMetrics.channels.size(); ++i) {
+            uint64_t ps = sessionMetrics.channels[i].packetsSent.load(std::memory_order_relaxed);
+            uint64_t pr =
+                sessionMetrics.channels[i].packetsReceived.load(std::memory_order_relaxed);
+            uint64_t bs = sessionMetrics.channels[i].bytesSent.load(std::memory_order_relaxed);
+            uint64_t br = sessionMetrics.channels[i].bytesReceived.load(std::memory_order_relaxed);
+
+            if (ps > 0 || pr > 0) {
+                snap.activeChannels.push_back({static_cast<uint8_t>(i), ps, pr, bs, br});
+            }
+        }
+        snapshot.sessions.push_back(snap);
+    };
+
+    if (_server) {  // if server, then snapshot all sessions
+        std::lock_guard lock(_server->_sessionsMutex);
+        for (const auto& [endpoint, session] : _server->_sessions) {
+            snapshotSession(session);
+        }
+    } else if (_client) {  // and client only has one.
+        std::lock_guard lock(_client->_mutex);
+        snapshotSession(_client->_serverSession);
     }
 
-    return snap;
+    return snapshot;
 }
 
 }  // namespace rtnt::stat
