@@ -13,13 +13,14 @@ ECS::ECS()
 
 void ECS::registerSystem(std::unique_ptr<systems::ISystem>&& system)
 {
+    LOG_TRACE_R2("Registered system \"{}\"", system->getName().data());
     _systems.push_back(std::move(system));
 }
 
-void ECS::registerSystem(std::function<void(ECS& ecs)> applyFn,
+void ECS::registerSystem(const std::function<void(ECS& ecs)>& applyFn,
                          const std::string& name = "UnknowSystem")
 {
-    LOG_TRACE_R2("Registering lambda system \"{}\"", name);
+    LOG_TRACE_R2("Registered lambda system \"{}\"", name.data());
     registerSystem(std::make_unique<systems::SystemWrapper>(applyFn, name));
 }
 
@@ -31,7 +32,7 @@ const bitset::DynamicBitSet& ECS::getEntityMask(const types::EntityID entityId) 
     return _entities.at(entityId);
 }
 
-void ECS::destroyEntity(const types::EntityID entityId) const
+void ECS::destroyEntity(const types::EntityID entityId)
 {
     for (auto& _component : _components) {
         if (_component.second->has(entityId)) {
@@ -39,6 +40,7 @@ void ECS::destroyEntity(const types::EntityID entityId) const
             _component.second->remove(entityId);
         }
     }
+    _entities.erase(entityId);
     LOG_TRACE_R2("Destroyed entity#{}", entityId);
 }
 
