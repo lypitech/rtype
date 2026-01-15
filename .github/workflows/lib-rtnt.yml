@@ -89,7 +89,7 @@ jobs:
               run: cmake --build lib/rtnt/build --config Release --parallel
 
             - name: Run Tests
-              working-directory: build
+              working-directory: lib/rtnt/build
               run: ctest --output-on-failure -C Release
 
             - name: Upload Build Artifacts
