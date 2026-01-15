@@ -91,7 +91,7 @@ public:
      * @param session The session to retrieve the id from.
      * @return The entityId of the corresponding entity.
      */
-    const std::optional<rtecs::EntityID>& getPlayerId(
+    std::optional<rtecs::types::EntityID> getPlayerId(
         const packet::server::SessionPtr& session) const;
 
     /**
@@ -99,7 +99,7 @@ public:
      * @param session A pointer to the session to retrieve the position from.
      * @return An optional reference to the position of the player connected t the session.
      */
-    const rtecs::OptionalRef<components::Position>& getPlayerPosition(
+    rtecs::types::OptionalRef<components::Position> getPlayerPosition(
         const packet::server::SessionPtr& session);
 
     /**
@@ -127,7 +127,7 @@ private:
     utils::ConcurrentQueue<lobby::Callback> _actionQueue;
     packet::server::OutGoingQueue& _outGoing;
     rteng::GameEngine _engine;
-    std::unordered_map<packet::server::SessionPtr, rtecs::EntityID> _players;
+    std::unordered_map<packet::server::SessionPtr, rtecs::types::EntityID> _players;
     std::atomic<bool> _isRunning;
     std::thread _thread;
 
