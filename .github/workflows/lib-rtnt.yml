@@ -1,0 +1,101 @@
+name: CI/CD R-Type (rtnt)
+
+on:
+    pull_request:
+        branches: ["main", "dev", "feat/ci-cd/compile-libraries-separatly"]
+
+jobs:
+    check-coding-style:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Run Coding Style Script
+              run: |
+                  chmod +x scripts/checker.sh
+                  ./scripts/checker.sh
+
+    build-and-test:
+        needs: check-coding-style
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false # If one failed, don't cancel the other jobs (Kinda like a debug option)
+            matrix:
+                os: [ubuntu-latest, macos-latest, windows-latest]
+
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  submodules: recursive # Checkout doesn't fetch submodules so it has to be done manually
+
+            - name: Install system dependencies (Linux)
+              if: matrix.os == 'ubuntu-latest'
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    build-essential \
+                    cmake \
+                    ninja-build \
+                    pkg-config
+
+            - name: Install system dependencies (Mac)
+              if: matrix.os == 'macos-latest'
+              run: brew install cmake ninja
+
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.x"
+
+            - name: Install Conan
+              run: pip install conan
+
+            - name: Configure Conan Profile
+              run: conan profile detect --force
+
+            - name: Get Conan home
+              id: conan_home
+              shell: bash
+              run: |
+                  echo "home=$(conan config home)" >> $GITHUB_OUTPUT
+
+            - name: Cache Conan packages
+              id: cache-conan
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.conan_home.outputs.home }}
+                  key: conan-${{ matrix.os }}-${{ hashFiles('conanfile.txt') }}
+                  restore-keys: |
+                      conan-${{ matrix.os }}-
+
+            - name: Install all dependencies with conan
+              shell: bash
+              run: |
+                  conan install lib/rtnt                            \
+                    --output-folder=lib/rtecs/build                 \
+                    --build=missing                                 \
+                    -s build_type=Release                           \
+                    -s compiler.cppstd=23                           \
+                    -c tools.system.package_manager:mode=install    \
+                    -c tools.system.package_manager:sudo=True
+
+            - name: Configure CMake
+              shell: bash
+              run: cmake -S lib/rtnt -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -DRTNT_BUILD_TESTS=ON
+
+            - name: Build Project
+              shell: bash
+              run: cmake --build build --config Release --parallel
+
+            - name: Run Tests
+              working-directory: build
+              run: ctest --output-on-failure -C Release
+
+            - name: Upload Build Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: rtnt-binaries-${{ matrix.os }}
+                  path: |
+                      build/lib/librtnt.a
+                      build/tests/rtnt_tests
+                  retention-days: 5
+                  if-no-files-found: warn
