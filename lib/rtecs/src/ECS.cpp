@@ -4,11 +4,47 @@
 
 using namespace rtecs;
 
-void ECS::applySystem(const SystemID id) { _systemView[id]->apply(*this); }
+ECS::ECS()
+    : _componentMaskIndex(
+          {std::bitset<64>{0b1000000000000000000000000000000000000000000000000000000000000000}})
+{
+    LOG_TRACE_R2("ECS created.");
+}
+
+void ECS::registerSystem(std::unique_ptr<systems::ISystem>&& system)
+{
+    _systems.push_back(std::move(system));
+}
+
+void ECS::registerSystem(std::function<void(ECS& ecs)> applyFn,
+                         const std::string& name = "UnknowSystem")
+{
+    LOG_TRACE_R2("Registering lambda system \"{}\"", name);
+    registerSystem(std::make_unique<systems::SystemWrapper>(applyFn, name));
+}
+
+const bitset::DynamicBitSet& ECS::getEntityMask(const types::EntityID entityId) const
+{
+    if (!_entities.contains(entityId)) {
+        return _emptyComponentMask;
+    }
+    return _entities.at(entityId);
+}
+
+void ECS::destroyEntity(const types::EntityID entityId) const
+{
+    for (auto& _component : _components) {
+        if (_component.second->has(entityId)) {
+            LOG_TRACE_R2("Removing component {} from entity#{}", _component.first, entityId);
+            _component.second->remove(entityId);
+        }
+    }
+    LOG_TRACE_R2("Destroyed entity#{}", entityId);
+}
 
 void ECS::applyAllSystems()
 {
-    for (const auto &system : _systemView.getDense()) {
+    for (auto&& system : _systems) {
         system->apply(*this);
     }
 }
