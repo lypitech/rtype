@@ -11,6 +11,16 @@ ECS::ECS()
     LOG_TRACE_R2("ECS created.");
 }
 
+types::EntityID ECS::preRegisterEntity()
+{
+    types::EntityID entityId = _entitiesID;
+
+    _entitiesID++;
+    _entities.insert({entityId, bitset::DynamicBitSet{}});
+    LOG_TRACE_R2("Entity#{} pre-registered.", entityId);
+    return entityId;
+}
+
 void ECS::registerSystem(std::unique_ptr<systems::ISystem>&& system)
 {
     LOG_TRACE_R2("Registered system \"{}\"", system->getName().data());

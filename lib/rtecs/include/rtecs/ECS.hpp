@@ -249,6 +249,12 @@ public:
     }
 
     /**
+     * @brief Pre-register an empty entity.
+     * @return The new entity ID.
+     */
+    types::EntityID preRegisterEntity();
+
+    /**
      * @brief Add new components to an entity.
      *
      * @warning If one of the components has not been registered, a warning will be logged but this will not impact the flow of the program.
