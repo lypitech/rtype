@@ -70,7 +70,10 @@ private:
         }
         _componentsMasks.emplace(componentId, mask);
         _components.emplace(componentId, std::move(sparse));
-        LOG_TRACE_R2("Registered component#{} (\"{}\") with the following mask:\n[{}]", componentId, typeid(T).name(), mask.toString().data());
+        LOG_TRACE_R2("Registered component#{} (\"{}\") with the following mask:\n[{}]",
+                     componentId,
+                     typeid(T).name(),
+                     mask.toString().data());
     }
 
     /**
@@ -89,10 +92,9 @@ private:
         const types::ComponentID componentId = typeid(T).hash_code();
 
         if (!_entities.contains(entityId)) {
-            LOG_WARN(
-                "Cannot add the component {} to the entity {}: This entity does not exist.",
-                componentId,
-                entityId);
+            LOG_WARN("Cannot add the component {} to the entity {}: This entity does not exist.",
+                     componentId,
+                     entityId);
             return;
         }
 
@@ -132,8 +134,7 @@ private:
         const types::ComponentID id = typeid(T).hash_code();
 
         if (!_componentsMasks.contains(id)) {
-            LOG_WARN(
-                "Cannot get the component#{}: This component has not been registered.", id);
+            LOG_WARN("Cannot get the component#{}: This component has not been registered.", id);
             return _emptyComponentMask;
         }
         return _componentsMasks.at(id);
@@ -178,7 +179,8 @@ private:
 
         if (!optSet.has_value()) {
             LOG_WARN(
-                "Cannot update component#{} of the entity#{}: This component has not been registered.",
+                "Cannot update component#{} of the entity#{}: This component has not been "
+                "registered.",
                 getComponentID<T>(),
                 entityId);
             return false;
@@ -188,7 +190,8 @@ private:
 
         if (!optSet.value().get().has(entityId)) {
             LOG_WARN(
-                "Cannot update component#{} of the entity#{}: The entity do not have this component.",
+                "Cannot update component#{} of the entity#{}: The entity do not have this "
+                "component.",
                 set.getId(),
                 entityId);
             return false;
