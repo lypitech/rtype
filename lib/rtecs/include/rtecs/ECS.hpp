@@ -295,7 +295,7 @@ public:
      *
      * @param entityId The entity's ID
      */
-    void destroyEntity(types::EntityID entityId) const;
+    void destroyEntity(types::EntityID entityId);
 
     /******************/
     /**  COMPONENTS  **/
@@ -361,7 +361,7 @@ public:
      * @param applyFn A function that correspond to the apply method of the System.
      * @param name The name of the registered system.
      */
-    void registerSystem(std::function<void(ECS &ecs)> applyFn,
+    void registerSystem(const std::function<void(ECS &ecs)> &applyFn,
                         const std::string &name);
 
     /**
