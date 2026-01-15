@@ -73,7 +73,7 @@ jobs:
               shell: bash
               run: |
                   conan install lib/rtnt                            \
-                    --output-folder=lib/rtecs/build                 \
+                    --output-folder=lib/rtnt/build                  \
                     --build=missing                                 \
                     -s build_type=Release                           \
                     -s compiler.cppstd=23                           \
@@ -82,7 +82,7 @@ jobs:
 
             - name: Configure CMake
               shell: bash
-              run: cmake -S lib/rtnt -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -DRTNT_BUILD_TESTS=ON
+              run: cmake -S lib/rtnt -B lib/rtnt/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -DRTNT_BUILD_TESTS=ON
 
             - name: Build Project
               shell: bash
@@ -97,7 +97,8 @@ jobs:
               with:
                   name: rtnt-binaries-${{ matrix.os }}
                   path: |
-                      build/lib/librtnt.a
-                      build/tests/rtnt_tests
+                      lib/rtnt/build/lib/librtnt.a
+                      lib/rtnt/build/tests/rtnt_tests
+                      lib/rtnt/build/tests/logs/latest.log
                   retention-days: 5
                   if-no-files-found: warn
