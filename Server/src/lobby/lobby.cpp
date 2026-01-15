@@ -26,9 +26,8 @@ rtecs::types::OptionalRef<components::Position> Lobby::getPlayerPosition(
     if (!_players.contains(session)) {
         return std::nullopt;
     }
-    using Pos = components::Position;
-    return dynamic_cast<rtecs::SparseSet<Pos>&>(_engine.getEcs()->getComponent<Pos>())
-        .get(_players.at(session));
+    return _engine.getEcs()->group<components::Position>().template getEntity<components::Position>(
+        _players.at(session));
 }
 
 std::optional<rtecs::types::EntityID> Lobby::getPlayerId(
@@ -59,10 +58,11 @@ void Lobby::join(const packet::server::SessionPtr& session)
 {
     _actionQueue.push([this, session](Lobby&) {
         LOG_INFO("Joining lobby.");
-        rtecs::types::EntityID id = engine.registerEntity<components::Position, components::Type>(
-            nullptr, {10, 10}, {entity::Type::kPlayer});
+        const rtecs::types::EntityID id =
+            _engine.registerEntity<components::Position, components::Type>(
+                nullptr, {10, 10}, {entity::Type::kPlayer});
         _players[session] = id;
-        const auto& infos = engine.getEntityInfos(components::GameComponents{}, id);
+        const auto& infos = _engine.getEntityInfos(components::GameComponents{}, id);
         packet::Spawn p = {static_cast<uint32_t>(id), infos.first, infos.second};
         _outGoing.push({{getAllSessions()}, p});
     });
@@ -72,9 +72,11 @@ void Lobby::leave(const packet::server::SessionPtr& session)
 {
     _actionQueue.push([this, session](Lobby&) {
         if (_players.contains(session)) {
-            // TODO: destroy the entity and send a destroy packet to all other sessions;
+            const rtecs::types::EntityID id = _players.at(session);
+            _engine.destroyEntity(id);
+            broadcast(packet::Destroy{static_cast<uint32_t>(id), 0});
             _players.erase(session);
-            LOG_INFO("Player left lobby {}", _roomId);
+            LOG_INFO("Player {} left lobby {}", session->getId(), _roomId);
         } else {
             LOG_WARN("Session tried to leave lobby {} but was not in it.", _roomId);
         }
@@ -119,7 +121,15 @@ void Lobby::run()
         while (_actionQueue.pop(callbackFunction)) {
             callbackFunction(*this);
         }
-        _engine.runOnce(0.16);
+
+        while (lag >= server::TIME_PER_TICK) {
+            _engine.runOnce(server::TIME_PER_TICK);
+            lag -= server::TIME_PER_TICK;
+        }
+
+        if (lag < server::TIME_PER_TICK) {
+            std::this_thread::sleep_for(milliseconds(10));
+        }
     }
 }
 

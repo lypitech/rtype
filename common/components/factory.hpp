@@ -58,7 +58,7 @@ private:
 
             p >> component;
 
-            rtecs::sparse::SparseGroup<T> group = ecs.group<T>().getEntity(entityId);
+            ecs.updateEntity<T>(entityId, component);
         });
     }
 };
