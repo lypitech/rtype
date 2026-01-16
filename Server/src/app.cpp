@@ -72,8 +72,10 @@ void App::registerCallbacks()
             const SessionPtr& s, const packet::Join& j) { _lobbyManager.joinRoom(s, j.room_id); });
     _server.getPacketDispatcher().bind<packet::Start>(
         [this](const SessionPtr& s, const packet::Start&) {
-            _lobbyManager.pushActionToLobby(
-                s, [](Lobby& lobby) { lobby.changeGameState(game::state::GameRunning); });
+            _lobbyManager.pushActionToLobby(s, [](Lobby& lobby) {
+                lobby.changeGameState(game::state::GameRunning);
+                lobby.restart();
+            });
         });
 }
 

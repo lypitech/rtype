@@ -151,6 +151,8 @@ public:
      */
     void changeGameState(const uint8_t& gameState);
 
+    void restart();
+
 private:
     lobby::Id _roomId;
     utils::ConcurrentQueue<lobby::Callback> _actionQueue;

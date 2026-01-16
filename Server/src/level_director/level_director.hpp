@@ -34,6 +34,8 @@ public:
     void update(float dt,
                 Lobby& lobby);
 
+    void restart();
+
 private:
     std::vector<wave::Archetype> _wavePool;
     std::mt19937 _rng{1234};
