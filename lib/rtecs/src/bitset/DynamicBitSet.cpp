@@ -53,7 +53,9 @@ DynamicBitSet DynamicBitSet::deserialize(const std::vector<uint64_t>& indexes)
 {
     DynamicBitSet set;
 
-    set._bitsets.resize((indexes.back() + 1) / 64);
+    if ((set._bitsets.size() * 64) < indexes.back()) {
+        set._bitsets.resize((indexes.back() / 64) + 1);
+    }
     for (const size_t index : indexes) {
         set._bitsets[DYN_BLOCK_INDEX(index)][DYN_BIT_INDEX(index)] = true;
     }
