@@ -14,7 +14,8 @@ Lobby::Lobby(const lobby::Id id,
     : _roomId(id),
       _outGoing(outGoing),
       _engine(components::GameComponents{}),
-      _isRunning(false)
+      _isRunning(false),
+      _levelDirector()
 {
     LOG_INFO("Creating new lobby.");
 }
