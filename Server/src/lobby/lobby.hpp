@@ -145,6 +145,12 @@ public:
      */
     rteng::GameEngine& getEngine();
 
+    /**
+     * @brief Changes the current gameState and updates the clients.
+     * @param gameState The new state to put the game in.
+     */
+    void changeGameState(const uint8_t& gameState);
+
 private:
     lobby::Id _roomId;
     utils::ConcurrentQueue<lobby::Callback> _actionQueue;
