@@ -54,7 +54,7 @@ TEST_F(SparseGroupFixture,
        edit_components_from_get)
 {
     sparse::SparseGroup<Hitbox, Health> group(*_hitboxSet, *_healthSet);
-    sparse::SparseGroup<Hitbox, Health>::View view = group.getAllInstances<Health>();
+    auto view = group.getAllInstances<Health>();
 
     ASSERT_TRUE(view.has(1));
 
