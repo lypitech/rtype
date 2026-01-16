@@ -34,7 +34,7 @@ public:
           _gameState(0),
           _menuState(0)
     {
-        _ecs->registerComponents<Components...>();
+        _ecs->registerComponents<std::decay_t<Components>..., components::Behaviour>();
     }
 
     /**
