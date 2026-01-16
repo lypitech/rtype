@@ -86,7 +86,7 @@ jobs:
 
             - name: Build Project
               shell: bash
-              run: cmake --build lib/rtecs/build --config Release --parallel
+              run: cmake --build lib/rtecs/build --config Release
 
             - name: Run Tests
               working-directory: lib/rtecs/build
