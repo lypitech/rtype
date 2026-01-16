@@ -7,10 +7,11 @@
 
 namespace systems {
 
-Renderer::Renderer()
+Renderer::Renderer(bool& shouldStop)
     : ASystem("Renderer"),
-      _closing(false)
+      _closing(shouldStop)
 {
+    SetTraceLogLevel(LOG_NONE);
     InitWindow(1920, 1080, "Renderer");
     _assetManager.init();
 }
