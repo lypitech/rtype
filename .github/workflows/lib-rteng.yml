@@ -4,7 +4,7 @@ on:
     pull_request:
         branches: ["main", "dev"]
     push:
-        branches: ["*rteng*", "feat/ci-cd/compile-libraries-separatly"]
+        branches: ["*rteng*"]
 
 jobs:
     check-coding-style-on-rteng:
