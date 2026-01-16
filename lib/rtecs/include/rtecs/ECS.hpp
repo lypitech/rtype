@@ -33,7 +33,7 @@ class ECS final
 {
 private:
     std::unordered_map<types::EntityID, types::Entity> _entities;
-    std::vector<std::unique_ptr<systems::ISystem>> _systems;
+    std::vector<std::shared_ptr<systems::ISystem>> _systems;
     size_t _entitiesID = 0;
 
     /// Key: Component hashcode - Value: Pointer to an ISparseSet
@@ -366,7 +366,7 @@ public:
      *
      * @param system A unique pointer that will be moved to the ECS.
      */
-    void registerSystem(std::unique_ptr<systems::ISystem> &&system);
+    void registerSystem(const std::shared_ptr<systems::ISystem> &system);
 
     /**
      * @brief Create a new system class from the SystemWrapper.
