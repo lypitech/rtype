@@ -1,5 +1,5 @@
 #pragma once
-#include "enums/game_state.hpp"
+
 #include "enums/packets.hpp"
 #include "rtnt/core/packet.hpp"
 
