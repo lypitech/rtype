@@ -11,8 +11,6 @@ void handleWorldInit(WorldInit packet,
 {
     LOG_DEBUG("Handling WorldInit.");
     for (size_t i = 0; i < packet.bitsets.size(); i++) {
-        // TODO: Same as spawn packet handler
-        const rtecs::bitset::DynamicBitSet bitset;  // packet.bitsets[i]
         auto& binding_map = toolbox.serverToClient;
         const std::unique_ptr<rtecs::ECS>& ecs = toolbox.engine.getEcs();
 
@@ -20,10 +18,11 @@ void handleWorldInit(WorldInit packet,
             return;
         }
         LOG_TRACE_R1("Creating new entity.");
-        // TODO: Same...
-        const rtecs::types::EntityID real = 0;
+        const rtecs::types::EntityID real = ecs->preRegisterEntity();
         binding_map.emplace(packet.ids[i], real);
-        toolbox.componentFactory.apply(*ecs, real, bitset, packet.entities[i]);
+        using Bitset = rtecs::bitset::DynamicBitSet;
+        toolbox.componentFactory.apply(
+            *ecs, real, Bitset::deserialize(packet.bitsets[i]), packet.entities[i]);
     }
 }
 

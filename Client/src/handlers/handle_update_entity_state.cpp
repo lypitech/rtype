@@ -7,11 +7,13 @@ namespace packet::handler {
 void handleUpdateEntityState(const UpdateEntityState packet,
                              const client::HandlerToolbox& toolbox)
 {
-    if (toolbox.serverToClient.contains(packet.id)) {
+    auto& binding_map = toolbox.serverToClient;
+
+    if (!binding_map.contains(packet.id)) {
         LOG_TRACE_R3("Could not update entity {}'s state, doesn't exist.", packet.id);
         return;
     }
-    const rtecs::types::EntityID real = toolbox.serverToClient.at(packet.id);
+    const rtecs::types::EntityID real = binding_map.at(packet.id);
     const rtecs::types::OptionalRef<components::State> stateOpt =
         toolbox.engine.getEntityFromGroup<components::State>(real);
     if (stateOpt) {
