@@ -139,6 +139,7 @@ std::vector<packet::server::SessionPtr> Lobby::getAllSessions() const
 
 void Lobby::run()
 {
+    _engine.setGameState(game::state::GameWaiting);
     using namespace std::chrono;
     double lag = 0;
     logger::setThreadLabel(("Lobby " + std::to_string(_roomId)).c_str());
