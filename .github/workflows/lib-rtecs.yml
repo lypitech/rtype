@@ -4,7 +4,7 @@ on:
     pull_request:
         branches: ["main", "dev"]
     push:
-        branches: ["feat/ci-cd/compile-libraries-separatly"]
+        branches: ["*rtecs*", "feat/ci-cd/compile-libraries-separatly"]
 
 jobs:
     check-coding-style-on-rtecs:
