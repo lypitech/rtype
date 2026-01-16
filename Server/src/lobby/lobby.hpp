@@ -159,7 +159,7 @@ public:
      * @brief Changes the current gameState and updates the clients.
      * @param gameState The new state to put the game in.
      */
-    void changeGameState(const uint8_t& gameState);
+    void changeGameState(const uint64_t& gameState);
 
     void restart();
 
