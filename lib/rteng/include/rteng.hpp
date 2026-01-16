@@ -148,18 +148,15 @@ public:
     EntityInfos getEntityInfos(ComponentsList<Components...>,
                                const rtecs::types::EntityID& id) const
     {
-        size_t componentIndex = 0;
         const rtecs::types::Entity& bitmask = _ecs->getEntityMask(id);
         EntityContent contentStream;
 
         auto packIfPresent = [&]<typename T>(T*) {
-            LOG_DEBUG("called for bit {} ({})", componentIndex, typeid(T).name());
             rtecs::types::OptionalRef<T> entity = getEntityWithComponent<T>(id);
             if (entity) {
-                LOG_DEBUG("Serializing component {}", typeid(T).name());
+                LOG_TRACE_R2("Serializing component {} for entity {}", typeid(T).name(), id);
                 contentStream << entity.value().get();
             }
-            componentIndex++;
         };
         (packIfPresent(static_cast<Components*>(nullptr)), ...);
         return {bitmask.serialize(), contentStream.getData()};
