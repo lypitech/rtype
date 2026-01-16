@@ -10,6 +10,7 @@ void handleWorldInit(WorldInit packet,
                      client::HandlerToolbox& toolbox)
 {
     LOG_DEBUG("Handling WorldInit.");
+    toolbox.engine.setGameState(packet.state);
     for (size_t i = 0; i < packet.bitsets.size(); i++) {
         auto& binding_map = toolbox.serverToClient;
         const std::unique_ptr<rtecs::ECS>& ecs = toolbox.engine.getEcs();
