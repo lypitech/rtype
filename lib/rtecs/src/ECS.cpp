@@ -43,6 +43,16 @@ const bitset::DynamicBitSet& ECS::getEntityMask(const types::EntityID entityId) 
     return _entities.at(entityId);
 }
 
+std::vector<types::EntityID> ECS::getAllEntities() const
+{
+    std::vector<types::EntityID> entities;
+
+    for (const auto& entity : _entities | std::views::keys) {
+        entities.push_back(entity);
+    }
+    return entities;
+}
+
 void ECS::destroyEntity(const types::EntityID entityId)
 {
     for (auto& _component : _components) {
