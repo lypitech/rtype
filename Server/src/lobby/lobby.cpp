@@ -7,6 +7,7 @@
 #include "components/position.hpp"
 #include "components/type.hpp"
 #include "enums/entity_types.hpp"
+#include "enums/game_state.hpp"
 #include "logger/Thread.h"
 
 Lobby::Lobby(const lobby::Id id,
@@ -53,6 +54,8 @@ void Lobby::broadcast(const packet::server::Variant& packet) const
 }
 
 rteng::GameEngine& Lobby::getEngine() { return _engine; }
+
+void Lobby::changeGameState(const uint8_t& gameState) { _engine.setGameState(gameState); }
 
 void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action); }
 
@@ -135,8 +138,9 @@ void Lobby::run()
 
         while (lag >= server::TIME_PER_TICK) {
             _engine.runOnce(server::TIME_PER_TICK);
-            // TODO: Update only if the game is started.
-            _levelDirector.update(server::TIME_PER_TICK, *this);
+            if (_engine.getGameState() == game::state::GameRunning) {
+                _levelDirector.update(server::TIME_PER_TICK, *this);
+            }
             lag -= server::TIME_PER_TICK;
         }
 

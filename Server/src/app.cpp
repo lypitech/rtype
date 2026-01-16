@@ -1,9 +1,11 @@
 #include "app.hpp"
 
+#include "enums/game_state.hpp"
 #include "handlers/handlers.hpp"
 #include "logger/Logger.h"
 #include "logger/Thread.h"
 #include "packets/client/join.hpp"
+#include "packets/client/start.hpp"
 #include "utils.hpp"
 
 namespace server {
@@ -68,6 +70,11 @@ void App::registerCallbacks()
     _server.getPacketDispatcher().bind<packet::Join>(
         [this](
             const SessionPtr& s, const packet::Join& j) { _lobbyManager.joinRoom(s, j.room_id); });
+    _server.getPacketDispatcher().bind<packet::Start>(
+        [this](const SessionPtr& s, const packet::Start&) {
+            _lobbyManager.pushActionToLobby(
+                s, [](Lobby& lobby) { lobby.changeGameState(game::state::GameRunning); });
+        });
 }
 
 }  // namespace server
