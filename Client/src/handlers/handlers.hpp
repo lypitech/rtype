@@ -4,6 +4,7 @@
 #include "packets/server/destroy.hpp"
 #include "packets/server/join_ack.hpp"
 #include "packets/server/spawn.hpp"
+#include "packets/server/update_entity_state.hpp"
 #include "packets/server/update_game_state.hpp"
 #include "packets/server/update_health.hpp"
 #include "packets/server/update_position.hpp"
@@ -66,11 +67,18 @@ void handleUpdateGameState(UpdateGameState packet,
                            client::HandlerToolbox& toolbox);
 
 /**
- * @brief Updates the current game state.
- * @param packet A copy of a UpdateGameState packet.
+ * @brief Updates the health of the specified entity.
+ * @param packet A copy of a UpdateHealth packet.
  * @param toolbox A reference to the toolbox stored in the app.
  */
 void handleUpdateHealth(UpdateHealth packet,
                         const client::HandlerToolbox& toolbox);
 
+/**
+ * @brief Updates the state of the specified entity.
+ * @param packet A copy of a UpdateEntity packet.
+ * @param toolbox A reference to the toolbox stored in the app.
+ */
+void handleUpdateEntityState(UpdateEntityState packet,
+                             const client::HandlerToolbox& toolbox);
 }  // namespace packet::handler
