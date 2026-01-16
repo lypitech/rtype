@@ -51,10 +51,11 @@ public:
                rtecs::bitset::DynamicBitSet bitmask,
                const std::vector<uint8_t>& data) const
     {
+        LOG_TRACE_R2("Now reassembling entity {}", entityId);
         rtnt::core::Packet reader(data);
 
         for (size_t i = 0; i < _creators.size(); ++i) {
-            if (bitmask[i]) {
+            if (bitmask[i + 1]) {
                 if (i < _creators.size()) {
                     _creators[i](ecs, entityId, reader);
                 }
@@ -74,7 +75,7 @@ private:
 
             p >> component;
 
-            ecs.updateEntity<T>(entityId, component);
+            ecs.addEntityComponents<T>(entityId, component);
         });
     }
 };
