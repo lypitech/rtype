@@ -171,15 +171,5 @@ void Lobby::run()
         if (lag < server::TIME_PER_TICK) {
             std::this_thread::sleep_for(milliseconds(10));
         }
-
-        while (lag >= server::TIME_PER_TICK) {
-            _engine.runOnce(server::TIME_PER_TICK);
-            _levelDirector.update(server::TIME_PER_TICK, *this);
-            lag -= server::TIME_PER_TICK;
-        }
-
-        if (lag < server::TIME_PER_TICK) {
-            std::this_thread::sleep_for(milliseconds(10));
-        }
     }
 }
