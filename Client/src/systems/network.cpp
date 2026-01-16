@@ -12,6 +12,10 @@ Network::Network(rtnt::core::Client& client,
 {
 }
 
-void Network::apply(rtecs::ECS&) { _service.flush(_client); }
+void Network::apply(rtecs::ECS&)
+{
+    _service.flush(_client);
+    _client.update();
+}
 
 }  // namespace systems
