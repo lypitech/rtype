@@ -55,7 +55,7 @@ void Lobby::broadcast(const packet::server::Variant& packet) const
 
 rteng::GameEngine& Lobby::getEngine() { return _engine; }
 
-void Lobby::changeGameState(const uint8_t& gameState)
+void Lobby::changeGameState(const uint64_t& gameState)
 {
     _engine.setGameState(gameState);
     broadcast(packet::UpdateGameState{gameState});
@@ -74,7 +74,8 @@ void Lobby::join(const packet::server::SessionPtr& session)
         LOG_INFO("Joining lobby.");
         const rtecs::types::EntityID id = spawnEntity<components::Position, components::Type>(
             {10, 10}, {entity::Type::kPlayer}, session);
-        packet::JoinAck j = {static_cast<uint32_t>(_players.at(session)), true};
+        packet::JoinAck j = {
+            static_cast<uint32_t>(_players.at(session)), _engine.getGameState(), true};
         send(session, j);
         if (id != 0) {
             packet::WorldInit w;

@@ -16,7 +16,7 @@ void handleJoinAck(const JoinAck packet,
         return;
     }
     toolbox.engine.getEcs()->addEntityComponents<components::Me>(real, {});
-    toolbox.engine.setGameState(game::state::GameLobby);
+    toolbox.engine.setGameState(packet.gameState);
 }
 
 }  // namespace packet::handler
