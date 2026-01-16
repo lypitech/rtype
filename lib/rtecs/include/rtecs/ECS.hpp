@@ -154,7 +154,8 @@ private:
         const types::ComponentID id = typeid(T).hash_code();
 
         if (!_components.contains(id)) {
-            LOG_WARN("Cannot get the component#{}: This component does not exist.", id);
+            LOG_WARN(
+                "Cannot get the component#{}: This component does not exist.", typeid(T).name());
             return std::nullopt;
         }
         return dynamic_cast<sparse::SparseSet<T> &>(*_components.at(id));
@@ -295,6 +296,13 @@ public:
      * @return The mask of the entity or an empty mask if the entity has not been registered.
      */
     const bitset::DynamicBitSet &getEntityMask(types::EntityID entityId) const;
+
+    /**
+     * @brief Get all the registered entities.
+     * @return A `std::vector` that contains all the registered entities ID.
+     */
+    [[nodiscard]]
+    std::vector<types::EntityID> getAllEntities() const;
 
     /**
      * @brief Remove an entity from the ECS.
