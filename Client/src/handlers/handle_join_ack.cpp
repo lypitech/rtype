@@ -1,5 +1,6 @@
 #include "app.hpp"
 #include "components/me.hpp"
+#include "enums/game_state.hpp"
 #include "handlers.hpp"
 
 namespace packet::handler {
@@ -15,7 +16,7 @@ void handleJoinAck(const JoinAck packet,
         return;
     }
     toolbox.engine.getEcs()->addEntityComponents<components::Me>(real, {});
-    // TODO: Maybe change gameState or smthg
+    toolbox.engine.setGameState(game::state::GameLobby);
 }
 
 }  // namespace packet::handler
