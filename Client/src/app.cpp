@@ -56,26 +56,22 @@ void App::registerAllCallbacks()
         [](const rtnt::core::Packet& p) { LOG_DEBUG("Received a message (#{})", p.getId()); });
     _client.onDisconnect([]() { LOG_INFO("Disconnected."); });
 
-    _client.getPacketDispatcher().bind<packet::Spawn>(
-        [this](const SessionPtr&, const packet::Spawn& p) {
-            _actions.push([p](HandlerToolbox& tb) { packet::handler::handleSpawn(p, tb); });
-        });
     _client.getPacketDispatcher().bind<packet::Destroy>(
         [this](const SessionPtr&, const packet::Destroy& p) {
             _actions.push([p](HandlerToolbox& tb) { packet::handler::handleDestroy(p, tb); });
         });
-    _client.getPacketDispatcher().bind<packet::UpdatePosition>(
-        [this](const SessionPtr&, const packet::UpdatePosition& p) {
-            _actions.push(
-                [p](HandlerToolbox& tb) { packet::handler::handleUpdatePosition(p, tb); });
-        });
-    _client.getPacketDispatcher().bind<packet::WorldInit>(
-        [this](const SessionPtr&, const packet::WorldInit& p) {
-            _actions.push([p](HandlerToolbox& tb) { packet::handler::handleWorldInit(p, tb); });
-        });
     _client.getPacketDispatcher().bind<packet::JoinAck>(
         [this](const SessionPtr&, const packet::JoinAck& p) {
             _actions.push([p](HandlerToolbox& tb) { packet::handler::handleJoinAck(p, tb); });
+        });
+    _client.getPacketDispatcher().bind<packet::Spawn>(
+        [this](const SessionPtr&, const packet::Spawn& p) {
+            _actions.push([p](HandlerToolbox& tb) { packet::handler::handleSpawn(p, tb); });
+        });
+    _client.getPacketDispatcher().bind<packet::UpdateEntityState>(
+        [this](const SessionPtr&, const packet::UpdateEntityState& p) {
+            _actions.push(
+                [p](const HandlerToolbox& tb) { packet::handler::handleUpdateEntityState(p, tb); });
         });
     _client.getPacketDispatcher().bind<packet::UpdateGameState>(
         [this](const SessionPtr&, const packet::UpdateGameState& p) {
@@ -86,6 +82,15 @@ void App::registerAllCallbacks()
         [this](const SessionPtr&, const packet::UpdateHealth& p) {
             _actions.push(
                 [p](const HandlerToolbox& tb) { packet::handler::handleUpdateHealth(p, tb); });
+        });
+    _client.getPacketDispatcher().bind<packet::UpdatePosition>(
+        [this](const SessionPtr&, const packet::UpdatePosition& p) {
+            _actions.push(
+                [p](HandlerToolbox& tb) { packet::handler::handleUpdatePosition(p, tb); });
+        });
+    _client.getPacketDispatcher().bind<packet::WorldInit>(
+        [this](const SessionPtr&, const packet::WorldInit& p) {
+            _actions.push([p](HandlerToolbox& tb) { packet::handler::handleWorldInit(p, tb); });
         });
 }
 
