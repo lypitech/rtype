@@ -55,7 +55,11 @@ void Lobby::broadcast(const packet::server::Variant& packet) const
 
 rteng::GameEngine& Lobby::getEngine() { return _engine; }
 
-void Lobby::changeGameState(const uint8_t& gameState) { _engine.setGameState(gameState); }
+void Lobby::changeGameState(const uint8_t& gameState)
+{
+    _engine.setGameState(gameState);
+    broadcast(packet::UpdateGameState{gameState});
+}
 
 void Lobby::restart() { _levelDirector.restart(); }
 
@@ -65,11 +69,20 @@ void Lobby::join(const packet::server::SessionPtr& session)
 {
     _actionQueue.push([this, session](Lobby&) {
         LOG_INFO("Joining lobby.");
-        spawnEntity<components::Position, components::Type>(
+        const rtecs::types::EntityID id = spawnEntity<components::Position, components::Type>(
             {10, 10}, {entity::Type::kPlayer}, session);
         packet::JoinAck j = {static_cast<uint32_t>(_players.at(session)), true};
         send(session, j);
-        // TODO: Send a WorldInit packet if not the first entity.
+        if (id != 0) {
+            packet::WorldInit w;
+            for (const auto& entity : _engine.getEcs()->getAllEntities()) {
+                const auto& [bitset, content] =
+                    _engine.getEntityInfos(components::GameComponents{}, entity);
+                w.bitsets.push_back(bitset);
+                w.entities.push_back(content);
+            }
+            broadcast(w);
+        }
     });
 }
 

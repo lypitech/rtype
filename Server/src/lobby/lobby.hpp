@@ -9,15 +9,16 @@
 #include "packets/server/destroy.hpp"
 #include "packets/server/join_ack.hpp"
 #include "packets/server/spawn.hpp"
+#include "packets/server/update_game_state.hpp"
 #include "packets/server/update_position.hpp"
+#include "packets/server/world_init.hpp"
 #include "rteng.hpp"
 #include "rtnt/core/session.hpp"
 #include "utils.hpp"
 
 namespace packet::server {
-
-using Variant = std::
-    variant<Destroy, Spawn, UpdatePosition, JoinAck /* TODO: Add the remaining packet types */>;
+// TODO: Add all packet types.
+using Variant = std::variant<Destroy, Spawn, UpdatePosition, JoinAck, UpdateGameState, WorldInit>;
 
 using SessionPtr = std::shared_ptr<rtnt::core::Session>;
 
@@ -126,8 +127,8 @@ public:
      * @param session The session triggering the creation (nullptr if none).
      */
     template <typename... Components>
-    void spawnEntity(Components&&... components,
-                     const packet::server::SessionPtr session = nullptr)
+    rtecs::types::EntityID spawnEntity(Components&&... components,
+                                       const packet::server::SessionPtr& session = nullptr)
     {
         const rtecs::types::EntityID id = _engine.registerEntity<std::decay_t<Components>...>(
             nullptr, std::forward<Components>(components)...);
@@ -137,6 +138,7 @@ public:
         const auto& [bitset, content] = _engine.getEntityInfos(components::GameComponents{}, id);
         packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
         broadcast(p);
+        return id;
     }
 
     /**
