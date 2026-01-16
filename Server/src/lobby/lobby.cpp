@@ -23,7 +23,7 @@ Lobby::Lobby(const lobby::Id id,
 
 lobby::Id Lobby::getRoomId() const { return _roomId; }
 
-const rtecs::OptionalRef<components::Position>& Lobby::getPlayerPosition(
+rtecs::types::OptionalRef<components::Position> Lobby::getPlayerPosition(
     const packet::server::SessionPtr& session)
 {
     if (!_players.contains(session)) {
