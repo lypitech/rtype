@@ -39,6 +39,7 @@ void handleSpawn(Spawn packet,
     using Bitset = rtecs::bitset::DynamicBitSet;
     toolbox.componentFactory.apply(*ecs, real, Bitset::deserialize(packet.bitmask), packet.content);
     addGraphicalComponents(real, toolbox);
+    LOG_TRACE_R2("Finished recomposing entity {}", real);
 }
 
 }  // namespace packet::handler
