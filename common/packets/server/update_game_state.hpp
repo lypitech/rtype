@@ -16,7 +16,7 @@ struct UpdateGameState
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "UPDATE_GAME_STATE";
 
-    uint8_t gameState;  ///< The current state of the game.
+    uint64_t gameState;  ///< The current state of the game.
 
     template <typename Archive>
     void serialize(Archive& ar)
