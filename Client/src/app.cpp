@@ -82,6 +82,11 @@ void App::registerAllCallbacks()
             _actions.push(
                 [p](HandlerToolbox& tb) { packet::handler::handleUpdateGameState(p, tb); });
         });
+    _client.getPacketDispatcher().bind<packet::UpdateHealth>(
+        [this](const SessionPtr&, const packet::UpdateHealth& p) {
+            _actions.push(
+                [p](const HandlerToolbox& tb) { packet::handler::handleUpdateHealth(p, tb); });
+        });
 }
 
 void App::stop()

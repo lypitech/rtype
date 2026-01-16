@@ -65,4 +65,12 @@ void handleJoinAck(JoinAck packet,
 void handleUpdateGameState(UpdateGameState packet,
                            client::HandlerToolbox& toolbox);
 
+/**
+ * @brief Updates the current game state.
+ * @param packet A copy of a UpdateGameState packet.
+ * @param toolbox A reference to the toolbox stored in the app.
+ */
+void handleUpdateHealth(UpdateHealth packet,
+                        const client::HandlerToolbox& toolbox);
+
 }  // namespace packet::handler
