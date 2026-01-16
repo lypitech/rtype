@@ -33,11 +33,11 @@ void handleSpawn(Spawn packet,
         LOG_TRACE_R3("Entity has already been created, ignoring...");
         return;
     }
-    const rtecs::types::EntityID real = 0;  // TODO: Wait for the ecs to enable empty entities.
+    const rtecs::types::EntityID real = toolbox.engine.getEcs()->preRegisterEntity();
     LOG_TRACE_R3("Spawning the server entity with id {}({})", packet.id, real);
     binding_map.emplace(packet.id, real);
-    // TODO: Wait for the DynamicBitset class to be able to be constructed using a std:vector<uint64_t>
-    toolbox.componentFactory.apply(*ecs, real, rtecs::bitset::DynamicBitSet(), packet.content);
+    using Bitset = rtecs::bitset::DynamicBitSet;
+    toolbox.componentFactory.apply(*ecs, real, Bitset::deserialize(packet.bitmask), packet.content);
     addGraphicalComponents(real, toolbox);
 }
 

@@ -8,10 +8,16 @@ namespace packet::handler {
 void handleUpdatePosition(UpdatePosition packet,
                           client::HandlerToolbox& toolbox)
 {
-    const rtecs::types::EntityID id = toolbox.serverToClient.at(packet.id);
+    auto& binding_map = toolbox.serverToClient;
+
+    if (!binding_map.contains(packet.id)) {
+        LOG_TRACE_R3("Entity {} does not exit, cannot update position", packet.id);
+        return;
+    }
+    const rtecs::types::EntityID id = binding_map.at(packet.id);
     auto positions = toolbox.engine.getEcs()->group<components::Position, components::TargetPos>();
-    auto posOpt = positions.getEntity<components::Position>(id);
-    auto targetOpt = positions.getEntity<components::TargetPos>(id);
+    const auto posOpt = positions.getEntity<components::Position>(id);
+    const auto targetOpt = positions.getEntity<components::TargetPos>(id);
 
     if (posOpt && targetOpt) {
         components::Position& pos = posOpt.value().get();
