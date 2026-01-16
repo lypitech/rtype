@@ -78,6 +78,7 @@ void Lobby::join(const packet::server::SessionPtr& session)
         send(session, j);
         if (id != 0) {
             packet::WorldInit w;
+            w.state = _engine.getGameState();
             for (const auto& entity : _engine.getEcs()->getAllEntities()) {
                 const auto& [bitset, content] =
                     _engine.getEntityInfos(components::GameComponents{}, entity);

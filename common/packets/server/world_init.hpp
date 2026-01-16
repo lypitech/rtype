@@ -16,7 +16,7 @@ struct WorldInit
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "WORLD_INIT";
 
-    uint16_t stage;                              ///< The current started stage.
+    uint8_t state;                               ///< The current state of the game.
     std::vector<std::vector<uint64_t>> bitsets;  ///< The bitsets of all the created entities.
     std::vector<rtecs::types::EntityID> ids;     ///< The ids of all the created entities.
     std::vector<std::vector<uint8_t>> entities;  ///< The content of all created entities.
@@ -24,7 +24,7 @@ struct WorldInit
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        ar & stage & bitsets & ids & entities;
+        ar & state & bitsets & ids & entities;
     }
 };
 
