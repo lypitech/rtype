@@ -56,6 +56,7 @@ public:
 
 private:
     bool _isContextRunning;
+    bool _shouldStop;
     utils::ConcurrentQueue<Callback> _actions;
     std::thread _ioThread;
     asio::io_context _context;

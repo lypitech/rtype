@@ -15,7 +15,8 @@ namespace client {
 
 App::App(const std::string& host,
          const short port)
-    : _client(_context),
+    : _shouldStop(false),
+      _client(_context),
       _toolbox({components::Factory(components::GameComponents{}),
                 rteng::GameEngine(components::GameComponents{}),
                 {}})
@@ -44,7 +45,7 @@ void App::registerAllSystems()
 {
     _toolbox.engine.getEcs()->registerSystem(
         std::make_unique<systems::Network>(_client, _networkService));
-    _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Renderer>());
+    _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Renderer>(_shouldStop));
     _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::IO>(_networkService));
     _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Interpolation>());
 }
@@ -110,7 +111,7 @@ void App::run()
 {
     Callback action;
     utils::LoopTimer loopTimer(TPS);
-    while (_isContextRunning) {
+    while (_isContextRunning && !_shouldStop) {
         while (_actions.pop(action)) {
             action(_toolbox);
         }

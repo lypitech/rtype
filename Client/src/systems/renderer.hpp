@@ -15,12 +15,12 @@ namespace systems {
 class Renderer final : public rtecs::systems::ASystem
 {
 public:
-    Renderer();
+    Renderer(bool& shouldStop);
 
     void apply(rtecs::ECS& entity) override;
 
 private:
-    bool _closing;
+    bool& _closing;
     AssetManager _assetManager;
 };
 
