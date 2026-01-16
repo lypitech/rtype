@@ -13,6 +13,7 @@
 #include "rect.hpp"
 #include "rteng.hpp"
 #include "rtnt/core/packet.hpp"
+#include "state.hpp"
 #include "type.hpp"
 #include "velocity.hpp"
 
@@ -27,7 +28,8 @@ using GameComponents = rteng::ComponentsList<Position,
                                              Velocity,
                                              Damage,
                                              Invulnerability,
-                                             Owner>;
+                                             Owner,
+                                             State>;
 
 class Factory
 {
