@@ -77,6 +77,11 @@ void App::registerAllCallbacks()
         [this](const SessionPtr&, const packet::JoinAck& p) {
             _actions.push([p](HandlerToolbox& tb) { packet::handler::handleJoinAck(p, tb); });
         });
+    _client.getPacketDispatcher().bind<packet::UpdateGameState>(
+        [this](const SessionPtr&, const packet::UpdateGameState& p) {
+            _actions.push(
+                [p](HandlerToolbox& tb) { packet::handler::handleUpdateGameState(p, tb); });
+        });
 }
 
 void App::stop()
