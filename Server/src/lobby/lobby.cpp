@@ -67,6 +67,9 @@ void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action);
 
 void Lobby::join(const packet::server::SessionPtr& session)
 {
+    if (_players.contains(session)) {
+        return;
+    }
     _actionQueue.push([this, session](Lobby&) {
         LOG_INFO("Joining lobby.");
         const rtecs::types::EntityID id = spawnEntity<components::Position, components::Type>(
