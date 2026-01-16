@@ -99,13 +99,6 @@ public:
     explicit DynamicBitSet(const std::vector<std::bitset<64>> &bitsets);
 
     /**
-     * @brief Construct a `DynamicBitSet` from a bit array of uint64_t.
-     *
-     * @param blocks The bit array of uint64_t.
-     */
-    explicit DynamicBitSet(const std::vector<uint64_t> &blocks);
-
-    /**
      * @brief Serialize the bitset to a byte array.
      * @return The indexes of the activated bits.
      */
