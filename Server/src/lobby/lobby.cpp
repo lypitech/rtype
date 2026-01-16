@@ -71,6 +71,9 @@ void Lobby::join(const packet::server::SessionPtr& session)
         return;
     }
     _actionQueue.push([this, session](Lobby&) {
+        if (_engine.getGameState() < game::state::GameLobby) {
+            changeGameState(game::state::GameLobby);
+        }
         LOG_INFO("Joining lobby.");
         const rtecs::types::EntityID id = spawnEntity<components::Position, components::Type>(
             {10, 10}, {entity::Type::kPlayer}, session);
