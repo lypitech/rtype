@@ -57,6 +57,8 @@ rteng::GameEngine& Lobby::getEngine() { return _engine; }
 
 void Lobby::changeGameState(const uint8_t& gameState) { _engine.setGameState(gameState); }
 
+void Lobby::restart() { _levelDirector.restart(); }
+
 void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action); }
 
 void Lobby::join(const packet::server::SessionPtr& session)

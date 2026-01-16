@@ -125,4 +125,12 @@ void Director::update(const float dt,
     }
 }
 
+void Director::restart()
+{
+    _activeWaves.clear();
+    _credits = 0;
+    _currentDifficulty = 0;
+    _gameTime = 0;
+}
+
 }  // namespace level
