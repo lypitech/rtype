@@ -9,16 +9,24 @@
 #include "packets/server/destroy.hpp"
 #include "packets/server/join_ack.hpp"
 #include "packets/server/spawn.hpp"
+#include "packets/server/update_entity_state.hpp"
 #include "packets/server/update_game_state.hpp"
+#include "packets/server/update_health.hpp"
 #include "packets/server/update_position.hpp"
 #include "packets/server/world_init.hpp"
 #include "rteng.hpp"
 #include "rtnt/core/session.hpp"
-#include "utils.hpp"
 
 namespace packet::server {
-// TODO: Add all packet types.
-using Variant = std::variant<Destroy, Spawn, UpdatePosition, JoinAck, UpdateGameState, WorldInit>;
+
+using Variant = std::variant<Destroy,
+                             JoinAck,
+                             Spawn,
+                             UpdateEntityState,
+                             UpdateGameState,
+                             UpdateHealth,
+                             UpdatePosition,
+                             WorldInit>;
 
 using SessionPtr = std::shared_ptr<rtnt::core::Session>;
 
