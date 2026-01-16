@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <ranges>
 #include <typeindex>
 
 #include "logger/Logger.h"
