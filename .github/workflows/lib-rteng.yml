@@ -37,7 +37,8 @@ jobs:
                     build-essential \
                     cmake \
                     ninja-build \
-                    pkg-config
+                    pkg-config  \
+                    g++-14
 
             - name: Install system dependencies (Mac)
               if: matrix.os == 'macos-latest'
