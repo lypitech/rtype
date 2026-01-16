@@ -15,7 +15,8 @@ struct JoinAck
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "JOIN_ACK";
 
-    uint32_t id;     ///< The id of the entity assigned to the player.
+    uint32_t id;  ///< The id of the entity assigned to the player.
+    uint64_t gameState;
     uint8_t status;  ///< The status of the request, a boolean.
 
     template <typename Archive>
