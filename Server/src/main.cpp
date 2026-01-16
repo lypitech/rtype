@@ -7,7 +7,8 @@
 int main(int argc,
          const char** argv)
 {
-    Logger::getInstance().addSink<logger::ConsoleSink>();
+    constexpr logger::sink::Settings sinkSettings{.showThreadId = false};
+    Logger::getInstance().addSink<logger::ConsoleSink>(true, sinkSettings);
     // Logger::getInstance().addSink<logger::LogFileSink>("logs/latest.log");
 
     Logger::initialize("R-Type Server", argc, argv, logger::BuildInfo::fromCMake());
