@@ -2,6 +2,9 @@
 
 namespace components {
 
+/**
+ * @brief This component might later be an alternative to a position component
+ */
 struct Transform
 {
     float x = 0;

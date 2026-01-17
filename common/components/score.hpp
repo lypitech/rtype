@@ -1,6 +1,9 @@
 #pragma once
 
 namespace components {
+/**
+ * @brief Specify the current score of a player
+ */
 struct Score
 {
     int playerScore;

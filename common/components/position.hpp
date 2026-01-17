@@ -2,6 +2,9 @@
 
 namespace components {
 
+/**
+ * @brief Specify the position of the entity
+ */
 struct Position
 {
     float x = 0.0f;

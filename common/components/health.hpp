@@ -4,6 +4,9 @@
 
 namespace components {
 
+/**
+ * @brief Specify the max and current health of the entity.
+ */
 struct Health
 {
     uint32_t hp = 100;
