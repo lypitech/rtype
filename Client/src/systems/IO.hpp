@@ -24,8 +24,8 @@ struct IOValue
     {
         float x = 0;
         float y = 0;
-        bool leftButton = false;
-        bool rightButton = false;
+        button::State leftButton;
+        button::State rightButton;
     };
     button::State up;
     button::State down;
