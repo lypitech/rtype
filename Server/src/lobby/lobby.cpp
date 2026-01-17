@@ -64,6 +64,17 @@ void Lobby::changeGameState(const uint64_t& gameState)
     broadcast(packet::UpdateGameState{gameState});
 }
 
+bool Lobby::hasPlayerAlive()
+{
+    if (_engine.getGameState() != game::state::GameRunning) {
+        return true;
+    }
+    return std::ranges::any_of(_players | std::views::values, [&](const auto& playerId) {
+        const auto& stateOpt = _engine.getEntityFromGroup<components::State>(playerId);
+        return stateOpt && stateOpt->get().state == player::state::PlayerAlive;
+    });
+}
+
 void Lobby::restart() { _levelDirector.restart(); }
 
 void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action); }
@@ -175,6 +186,9 @@ void Lobby::run()
         }
 
         while (lag >= server::TIME_PER_TICK) {
+            if (!hasPlayerAlive()) {
+                changeGameState(game::state::GameOver);
+            }
             _engine.runOnce(server::TIME_PER_TICK);
             if (_engine.getGameState() == game::state::GameRunning) {
                 _levelDirector.update(server::TIME_PER_TICK, *this);
