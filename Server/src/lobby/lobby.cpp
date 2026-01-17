@@ -81,10 +81,10 @@ void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action);
 
 void Lobby::join(const packet::server::SessionPtr& session)
 {
-    if (_players.contains(session)) {
-        return;
-    }
     _actionQueue.push([this, session](Lobby&) {
+        if (_players.contains(session)) {
+            return;
+        }
         if (_engine.getGameState() < game::state::GameLobby) {
             changeGameState(game::state::GameLobby);
         }
