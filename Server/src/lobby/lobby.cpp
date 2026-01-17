@@ -88,6 +88,7 @@ void Lobby::join(const packet::server::SessionPtr& session)
                     _engine.getEntityInfos(components::GameComponents{}, entity);
                 w.bitsets.push_back(bitset);
                 w.entities.push_back(content);
+                w.ids.push_back(id);
             }
             broadcast(w);
         }
