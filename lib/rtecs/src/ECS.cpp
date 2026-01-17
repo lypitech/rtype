@@ -24,14 +24,12 @@ types::EntityID ECS::preRegisterEntity()
 
 void ECS::registerSystem(const std::shared_ptr<systems::ISystem>& system)
 {
-    [&system]() { LOG_TRACE_R2("Registered lambda system \"{}\"", system->getName()); }();
     _systems.push_back(system);
 }
 
 void ECS::registerSystem(const std::function<void(ECS& ecs)>& applyFn,
                          const std::string& name = "UnknowSystem")
 {
-    [&name]() { LOG_TRACE_R2("Registered lambda system \"{}\"", name); }();
     registerSystem(std::make_shared<systems::SystemWrapper>(applyFn, name));
 }
 
