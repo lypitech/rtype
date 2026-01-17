@@ -8,8 +8,8 @@ void ECSFixture::SetUp()
     _ecs.registerComponents<Profile, Hitbox, Health>();
 
     // Systems
-    _ecs.registerSystem(std::make_unique<DamageOnCollideSystem>());
-    _ecs.registerSystem(std::make_unique<MoveToCenterSystem>());
+    _ecs.registerSystem(std::make_shared<DamageOnCollideSystem>());
+    _ecs.registerSystem(std::make_shared<MoveToCenterSystem>());
     _ecs.registerSystem(
         [](ECS& ecs) {
             sparse::SparseGroup<Profile, Health> view = ecs.group<Profile, Health>();
