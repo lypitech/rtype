@@ -7,12 +7,12 @@ namespace components {
  */
 struct Collision
 {
-    bool is_trigger = false;  // If true, we only detect collision but do not resolve it
+    bool isTriggered = false;  // If true, a collision has been detected.
 
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        ar & is_trigger;
+        ar & isTriggered;
     }
 };
 }  // namespace components
