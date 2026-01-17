@@ -137,6 +137,8 @@ private:
     std::map<packet::ChannelId, std::map<packet::OrderId, Packet>> _reorderBuffers;
     std::map<packet::SequenceId, SentPacketInfo> _sentPackets;
     std::deque<packet::AcknowledgeId> _oldPacketHistory;
+    std::vector<packet::SequenceId> _pendingRichAcks;
+    uint32_t _packetsSinceLastAck = 0;
     mutable std::mutex _mutex;
 
     bool _hasUnsentAck = false;

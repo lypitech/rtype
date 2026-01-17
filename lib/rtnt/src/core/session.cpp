@@ -81,10 +81,19 @@ std::vector<Packet> Session::handleIncoming(std::shared_ptr<ByteBuffer> rawData)
     if (isDuplicate) {
         LOG_WARN("Dropped duplicate packet #{}", header.sequenceId);
         ++_sessionMetrics.duplicateCount;
+        _pendingRichAcks.push_back(header.sequenceId);
+        _hasUnsentAck = true;
         return readyPackets;
     }
 
     updateAcknowledgeInfo(header.sequenceId);
+
+    _packetsSinceLastAck++;
+
+    // if we received enough packets to fill half our window, directly send ACK
+    if (_packetsSinceLastAck >= packet::ACK_PACKET_THRESHOLD) {
+        _internal_sendAck();
+    }
 
     if (header.messageId == static_cast<packet::Id>(packet::SystemMessageId::kRichAck)) {
         LOG_TRACE_R3("Received RICH_ACK packet");
@@ -186,6 +195,7 @@ void Session::rawSend(Packet& packet,
 
     if (_hasReceivedRemotePacket) {
         header.flags |= static_cast<uint8_t>(packet::Flag::kHasAck);
+        _packetsSinceLastAck = 0;
     }
 
     const auto rawBuffer = std::make_shared<ByteBuffer>();
@@ -271,8 +281,7 @@ void Session::update()
         ++it;
     }
 
-    if ((_hasUnsentAck && (now - _lastAckTime > packet::ACK_TIMEOUT)) ||
-        !_oldPacketHistory.empty()) {
+    if (_hasUnsentAck && (now - _lastAckTime > packet::ACK_TIMEOUT)) {
         _internal_sendAck();
     }
 }
@@ -285,24 +294,46 @@ void Session::disconnect()
 
 void Session::_internal_sendAck()
 {
-    Packet p;
-    uint32_t sequenceId = _localSequenceId++;
+    if (!_pendingRichAcks.empty()) {
+        size_t totalAcks = _pendingRichAcks.size();
+        size_t processed = 0;
+        size_t chunkN = 1;
 
-    if (!_oldPacketHistory.empty()) {
-        LOG_DEBUG("History contains things, so we're gonna send RICH_ACK lol");
-        packet::internal::RichAck ack{.oobAcks = _oldPacketHistory};
+        LOG_TRACE_R2("Flushing {} pending ACKs in chunks", totalAcks);
 
-        p = Packet(static_cast<packet::Id>(packet::SystemMessageId::kRichAck),
-                   packet::internal::RichAck::kFlag,
-                   packet::internal::RichAck::kChannel);
-        p << ack;
+        while (processed < totalAcks) {
+            LOG_TRACE_R2("Chunk {}, processed = {}", chunkN++, processed);
+
+            size_t chunkSize = std::min(packet::MAX_ACK_PER_PACKET, totalAcks - processed);
+
+            auto start = _pendingRichAcks.begin() + processed;
+            auto end = start + chunkSize;
+
+            std::deque<packet::SequenceId> acksToSerialize(start, end);
+            packet::internal::RichAck ack{.oobAcks = acksToSerialize};
+
+            Packet p(static_cast<packet::Id>(packet::SystemMessageId::kRichAck),
+                     packet::internal::RichAck::kFlag,
+                     packet::internal::RichAck::kChannel);
+            p << ack;
+
+            uint32_t sequenceId = _localSequenceId++;
+            rawSend(p, sequenceId, 0);
+
+            processed += chunkSize;
+        }
+
+        _pendingRichAcks.clear();
     } else {
-        LOG_DEBUG("Ahh it's empty, sending simple ACK...");
-        p = Packet(static_cast<packet::Id>(packet::SystemMessageId::kAck),
-                   packet::Flag::kUnreliable,
-                   packet::INTERNAL_CHANNEL_ID);
+        LOG_TRACE_R2("Ahh it's empty, sending simple ACK...");
+
+        Packet p(static_cast<packet::Id>(packet::SystemMessageId::kAck),
+                 packet::Flag::kUnreliable,
+                 packet::INTERNAL_CHANNEL_ID);
+        uint32_t sequenceId = _localSequenceId++;
+
+        rawSend(p, sequenceId, 0);
     }
-    rawSend(p, sequenceId, 0);
 }
 
 void Session::_internal_disconnect() { this->_shouldClose = true; }
@@ -323,16 +354,15 @@ void Session::updateAcknowledgeInfo(uint32_t sequenceId)
         uint32_t shift = sequenceId - _remoteAcknowledgeId;
 
         if (shift > 32) {
-            for (int i = 0; i < 32; ++i) {
+            for (size_t i = 0; i < 32; ++i) {
                 if (_remoteAcknowledgeBitfield & (1U << i)) {
                     _oldPacketHistory.push_back(_remoteAcknowledgeId - (i + 1));
                 }
             }
             _oldPacketHistory.push_back(_remoteAcknowledgeId);
-
             _remoteAcknowledgeBitfield = 0;
         } else {
-            for (int i = 32 - shift; i < 32; ++i) {
+            for (size_t i = 32 - shift; i < 32; ++i) {
                 if (_remoteAcknowledgeBitfield & (1U << i)) {
                     _oldPacketHistory.push_back(_remoteAcknowledgeId - (i + 1));
                 }
