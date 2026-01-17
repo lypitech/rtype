@@ -6,6 +6,18 @@
 #include "packets/server/update_position.hpp"
 #include "rteng.hpp"
 
+static void spawnBullet(const rtecs::types::EntityID& id,
+                        Lobby& lobby,
+                        const components::Position& pos,
+                        const packet::UserInput& packet)
+{
+    if (packet.input_mask & static_cast<uint8_t>(game::Input::kShoot)) {
+        using namespace components;
+        lobby.spawnEntity<Type, Position, Owner, Velocity>(
+            {entity::Type::kBullet}, {pos.x, pos.y}, {id}, {20, 0});
+    }
+}
+
 namespace packet::handler {
 
 void handleUserInput(const SessionPtr& session,
@@ -33,6 +45,7 @@ void handleUserInput(const SessionPtr& session,
             "This should not be happening, the session may have been removed during the process.");
         return;
     }
+    spawnBullet(id.value(), lobby, position.value().get(), packet);
     const UpdatePosition p = {static_cast<uint32_t>(id.value()),
                               static_cast<uint16_t>(x),
                               static_cast<uint16_t>(y),
