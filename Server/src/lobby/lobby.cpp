@@ -4,10 +4,13 @@
 
 #include "app.hpp"
 #include "components/factory.hpp"
+#include "components/hitbox.hpp"
 #include "components/position.hpp"
+#include "components/score.hpp"
 #include "components/type.hpp"
 #include "enums/entity_types.hpp"
 #include "enums/game_state.hpp"
+#include "enums/player_state.hpp"
 #include "logger/Thread.h"
 
 Lobby::Lobby(const lobby::Id id,
@@ -75,8 +78,18 @@ void Lobby::join(const packet::server::SessionPtr& session)
             changeGameState(game::state::GameLobby);
         }
         LOG_INFO("Joining lobby.");
-        const rtecs::types::EntityID id = spawnEntity<components::Position, components::Type>(
-            {10, 10}, {entity::Type::kPlayer}, session);
+        using namespace components;
+        const rtecs::types::EntityID id =
+            spawnEntity<Position, Velocity, Health, Type, Hitbox, Score, Collision, State>(
+                {200, 300},
+                {0, 0, 10, 10},
+                {100, 100},
+                {entity::Type::kPlayer},
+                {true, 150, 75},
+                {},
+                {},
+                {player::state::PlayerWaiting},
+                session);
         packet::JoinAck j = {
             static_cast<uint32_t>(_players.at(session)), _engine.getGameState(), true};
         send(session, j);

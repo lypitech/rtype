@@ -1,3 +1,4 @@
+#include "components/hitbox.hpp"
 #include "components/position.hpp"
 #include "enums/input.hpp"
 #include "handlers.hpp"
@@ -13,8 +14,8 @@ static void spawnBullet(const rtecs::types::EntityID& id,
 {
     if (packet.input_mask & static_cast<uint8_t>(game::Input::kShoot)) {
         using namespace components;
-        lobby.spawnEntity<Type, Position, Owner, Velocity>(
-            {entity::Type::kBullet}, {pos.x, pos.y}, {id}, {20, 0});
+        lobby.spawnEntity<Type, Position, Owner, Velocity, Hitbox, Collision>(
+            {entity::Type::kBullet}, {pos.x, pos.y}, {id}, {20, 0}, {true, 75, 35}, {});
     }
 }
 
