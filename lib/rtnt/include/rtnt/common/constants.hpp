@@ -50,9 +50,10 @@ static constexpr auto ACK_TIMEOUT = std::chrono::milliseconds(100);
 /// unacknowledged packet out of the window before its ACK is sent, triggering unnecessary
 /// retransmissions and transmissions of RICH_ACKs, which are really heavy in terms of bandwidth.
 ///
-/// So, setting this to 16 instead of 32 creates a safety margin, ensuring ACKs are sent well before
-/// the "cliff edge", keeping the connection stable during high throughput. This can be put to 24
-/// to save some bandwidth, but it is not recommended at all to go higher.
+/// So, setting this to 16 instead of 32 (half the bitfield size) creates a safety margin, ensuring
+/// ACKs are sent well before the "cliff edge", keeping the connection stable during high
+/// throughput. This can be set to 24 to save some bandwidth, but it is not recommended at all to go
+/// higher.
 static constexpr uint8_t ACK_PACKET_THRESHOLD = 16;
 
 /// @brief  Amount of time between each packet resend.
