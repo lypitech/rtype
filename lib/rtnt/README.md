@@ -35,10 +35,10 @@ developers to focus on game logic rather than raw socket management.
 
 ## Compatibility
 
-|        |       macOS (AppleClang)       | Linux (Clang) | Windows (MSVC) |
-|-------:|:------------------------------:|:-------------:|:--------------:|
-|  arm64 | ✅ (AppleClang 17.0.0.17000603) |      ☑️       |       ☑️       |
-| x86_64 |               ☑️               |   ✅ (Clang)   |    ✅ (MSVC)    |
+|        |        macOS (AppleClang)        | Linux (Clang) | Windows (MSVC) |
+|-------:|:--------------------------------:|:-------------:|:--------------:|
+|  arm64 | ✅ (`AppleClang 17.0.0.17000603`) |      ☑️       |       ☑️       |
+| x86_64 |                ☑️                |  ✅ (`Clang`)  |   ✅ (`MSVC`)   |
 
 ✅: Tested on real hardware  
 ☑️: Compiled but not physically tested
@@ -254,22 +254,24 @@ Full example (**PRONE TO CHANGE**):
 ```c++
 #include "rtnt/core/server.hpp"
 
+using SessionPtr = std::shared_ptr<rtnt::core::Session>;
+
 int main()
 {
     constexpr unsigned short port = 4242;
-    constexpr size_t TPS = 20;  // Number of time the server will refresh its state per second.
-                                // This doesn't affect the I/O operations, they will still run in real-time.
+    constexpr size_t TPS = 20;  ///< Number of time the server will refresh its state per second.
+                                ///  This doesn't affect the I/O operations, they will still run in real-time.
     
     asio::io_context ctx;
     std::thread ioThread;
 
     rtnt::core::Server server(ctx, port);
 
-    server.onConnect([](const std::shared_ptr<rtnt::core::Session>& session) {
+    server.onConnect([](const SessionPtr& session) {
         LOG_INFO("New client connected! ID: {}", session->getId());
     });
 
-    server.onDisconnect([](const std::shared_ptr<rtnt::core::Session>& session) {
+    server.onDisconnect([](const SessionPtr& session) {
         LOG_INFO("Client disconnected. ID: {}", session->getId());
     });
 
@@ -283,9 +285,13 @@ int main()
     auto start = std::chrono::steady_clock::now();
 
     while (true) {
-        server->update();   // This function can take quite some time, especially during heavy connections load.
-                            // Consider implementing a dynamic sleep, will be done in further versions.
-                            // You MUST call this function regularly. This handles packet reliability, ACKs and timeouts.
+        /**
+         * This function can take quite some time, especially during heavy connections load.
+         * Consider implementing a dynamic sleep, will be implemented in further versions.
+         * You MUST call this function regularly. This handles packet reliability, ACKs and timeouts.
+         * Not doing so would cause cryptic issues you don't want to debug.
+         */
+        server->update();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1000 / TPS));
     }
@@ -320,8 +326,8 @@ int main()
 {
     constexpr std::string_view ip = "127.0.0.1";
     constexpr unsigned short port = 4242;
-    constexpr size_t TPS = 20;  // Number of time the client will refresh its state per second.
-                                // This doesn't affect the I/O operations, they will still run in real-time.
+    constexpr size_t TPS = 20;  ///< Number of time the client will refresh its state per second.
+                                ///  This doesn't affect the I/O operations, they will still run in real-time.
 
     asio::io_context ctx;
     std::thread ioThread;
@@ -346,9 +352,13 @@ int main()
     auto start = std::chrono::steady_clock::now();
 
     while (true) {
-        client->update();   // This function can take quite some time, especially during heavy connections load.
-                            // Consider implementing a dynamic sleep, will be done in further versions.
-                            // You MUST call this function regularly. This handles packet reliability, ACKs and timeouts.
+        /**
+         * This function can take quite some time, especially during heavy connections load.
+         * Consider implementing a dynamic sleep, will be implemented in further versions.
+         * You MUST call this function regularly. This handles packet reliability, ACKs and timeouts.
+         * Not doing so would cause cryptic issues you don't want to debug.
+         */
+        client->update();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1000 / TPS));
     }
@@ -370,12 +380,14 @@ There are two ways of handling packets.
 
 Either by having an integrated callback inside the packet structure:
 ```c++
+using SessionPtr = std::shared_ptr<rtnt::core::Session>;
+
 struct Example
 {
     static constexpr rtnt::core::packet::Id   kId   = 2204;
     static constexpr rtnt::core::packet::Name kName = "HERAS";
 
-    static void onReceive(const std::shared_ptr<rtnt::core::Session>& session, const Example& packet)
+    static void onReceive(const SessionPtr& session, const Example& packet)
     {
         // Your callback code goes here
     }
@@ -386,6 +398,8 @@ Dispatcher#bind<Example>(); // Automatically detects the onReceive function insi
 
 ...or by manually binding a packet type to a given callback (with a lambda function):
 ```c++
+using SessionPtr = std::shared_ptr<rtnt::core::Session>;
+
 struct Example
 {
     static constexpr rtnt::core::packet::Id   kId   = 2204;
@@ -395,7 +409,7 @@ struct Example
 Dispatcher#bind<Example>(
     [/* You can put whatever you want in the inject scope, like 'this' to inject the current class in the lambda */]
     (
-        const std::shared_ptr<rtnt::core::Session>& session, 
+        const SessionPtr& session, 
         const Example& packet
     )
     {
