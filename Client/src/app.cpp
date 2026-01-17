@@ -10,6 +10,7 @@
 #include "systems/interpolation.hpp"
 #include "systems/network.hpp"
 #include "systems/renderer.hpp"
+#include "utils.hpp"
 
 namespace client {
 

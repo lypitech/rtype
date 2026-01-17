@@ -8,7 +8,7 @@ namespace components {
 
 struct Owner
 {
-    rtecs::types::EntityID id = 0;
+    rtecs::types::EntityID id;
 
     template <typename Archive>
     void serialize(Archive& ar)
