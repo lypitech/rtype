@@ -55,7 +55,7 @@ void App::registerAllSystems()
     _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::IO>(_networkService));
     _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::Renderer>(_shouldStop));
     _toolbox.engine.getEcs()->registerSystem(
-        std::make_shared<systems::MenuRenderer>(_networkService, _toolbox.engine));
+        std::make_shared<systems::MenuRenderer>(_lobbies, _networkService, _toolbox.engine));
     _toolbox.engine.getEcs()->registerSystem(
         std::make_shared<systems::Network>(_client, _networkService));
 }

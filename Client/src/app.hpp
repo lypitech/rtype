@@ -13,6 +13,13 @@ constexpr size_t TPS = 60;
 
 namespace client {
 
+struct Lobby
+{
+    std::vector<uint32_t> roomIds;
+    uint32_t page;
+    uint32_t maxPage;
+};
+
 /**
  * @brief A toolbox for the packet handler functions that contain everything they might need.
  */
@@ -58,6 +65,7 @@ private:
     bool _isContextRunning;
     bool _shouldStop;
     utils::ConcurrentQueue<Callback> _actions;
+    Lobby _lobbies;
     std::thread _ioThread;
     asio::io_context _context;
     rtnt::core::Client _client;
