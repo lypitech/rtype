@@ -52,7 +52,7 @@ void App::registerAllSystems()
 
 void App::registerAllCallbacks()
 {
-    _client.onConnect([this]() {
+    _client.onConnect([]() {
         LOG_INFO("Connected.");
         // packet::Join joinPacket;
         // joinPacket.username = "test";
