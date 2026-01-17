@@ -25,8 +25,8 @@ void handleUserInput(const SessionPtr& session,
                      Lobby& lobby,
                      const UserInput& packet)
 {
-    // const rtecs::types::OptionalRef<components::Position>& position =
-    //     lobby.getPlayerPosition(session);
+    const rtecs::types::OptionalRef<components::Position>& position =
+        lobby.getPlayerPosition(session);
 
     const rtecs::types::OptionalRef<components::Velocity>& velocity =
         lobby.getPlayerComponent<components::Velocity>(session);
@@ -37,14 +37,19 @@ void handleUserInput(const SessionPtr& session,
             "entity presence.");
         return;
     }
-    auto& [vx, vy] = velocity.value().get();
+    auto& [vx, vy, max_vx, max_vy] = velocity.value().get();
 
+    const std::optional<rtecs::types::EntityID>& id = lobby.getPlayerId(session);
+    if (!id) {
+        LOG_WARN(
+            "This should not be happening, the session may have been removed during the process.");
+        return;
+    }
+    spawnBullet(id.value(), lobby, position.value().get(), packet);
     vx = (packet.input_mask & static_cast<uint8_t>(game::Input::kRight)) ? 10.0f : 0.0f;
-    vx = (packet.input_mask & static_cast<uint8_t>(game::Input::kLeft)) ? 10.0f : 0.0f;
+    vx += (packet.input_mask & static_cast<uint8_t>(game::Input::kLeft)) ? -10.0f : 0.0f;
     vy = (packet.input_mask & static_cast<uint8_t>(game::Input::kDown)) ? 10.0f : 0.0f;
-    vy = (packet.input_mask & static_cast<uint8_t>(game::Input::kUp)) ? 10.0f : 0.0f;
-
-    // The system will update the position from the velocity
+    vy += (packet.input_mask & static_cast<uint8_t>(game::Input::kUp)) ? -10.0f : 0.0f;
 }
 
 }  // namespace packet::handler
