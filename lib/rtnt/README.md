@@ -47,6 +47,8 @@ add_subdirectory(<rtnt_dir> rtnt)
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         rtnt
+    PUBLIC
+        asio::asio
 )
 ```
 
