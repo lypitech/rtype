@@ -44,15 +44,21 @@ void App::registerAllComponents()
 void App::registerAllSystems()
 {
     _toolbox.engine.getEcs()->registerSystem(
-        std::make_unique<systems::Network>(_client, _networkService));
-    _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Renderer>(_shouldStop));
-    _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::IO>(_networkService));
-    _toolbox.engine.getEcs()->registerSystem(std::make_unique<systems::Interpolation>());
+        std::make_shared<systems::Network>(_client, _networkService));
+    _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::Renderer>(_shouldStop));
+    _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::IO>(_networkService));
+    _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::Interpolation>());
 }
 
 void App::registerAllCallbacks()
 {
-    _client.onConnect([]() { LOG_INFO("Connected."); });
+    _client.onConnect([this]() {
+        LOG_INFO("Connected.");
+        packet::Join joinPacket;
+        joinPacket.username = "test";
+        joinPacket.room_id = 0;
+        _actions.push([this, joinPacket](HandlerToolbox&) { _client.send(joinPacket); });
+    });
     _client.onMessage(
         [](const rtnt::core::Packet& p) { LOG_DEBUG("Received a message (#{})", p.getId()); });
     _client.onDisconnect([]() { LOG_INFO("Disconnected."); });

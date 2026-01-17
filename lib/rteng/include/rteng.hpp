@@ -133,7 +133,7 @@ public:
     }
 
     template <typename System>
-    void registerSystem(const std::unique_ptr<System>& sys)
+    void registerSystem(const std::shared_ptr<System>& sys)
     {
         _ecs->registerSystem(std::move(sys));
     }
