@@ -120,6 +120,20 @@ public:
         const packet::server::SessionPtr& session);
 
     /**
+     * @brief Get a component of a player through its session pointer.
+     * @param session A pointer to the session to retrieve the position from.
+     * @return An optional reference to the position of the player connected t the session.
+     */
+    template <typename T>
+    rtecs::types::OptionalRef<T> getPlayerComponent(const packet::server::SessionPtr& session)
+    {
+        if (!_players.contains(session)) {
+            return std::nullopt;
+        }
+        return _engine.getEcs()->group<T>().template getEntity<T>(_players.at(session));
+    }
+
+    /**
      * @brief Send a packet to a specific session.
      * @param session The session to send the packet to.
      * @param packet The packet to send.
