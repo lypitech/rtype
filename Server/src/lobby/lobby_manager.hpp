@@ -50,6 +50,20 @@ public:
      */
     Id createLobby();
 
+    /**
+     * @brief Get a range of 20 opened lobbies at the specified page.
+     *
+     * @param page The page number
+     * @return The list of opened lobbies' id from (page * 20) to (page * 20) + 20
+     */
+    std::vector<Id> getLobbiesId(uint32_t page) const;
+
+    /**
+     * @brief Get the max page of lobbies.
+     * @return The max page of lobbies.
+     */
+    uint32_t getLobbiesMaxPage() const;
+
 private:
     mutable std::mutex _mutex;
     packet::server::OutGoingQueue& _outGoing;
