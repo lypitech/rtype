@@ -15,9 +15,9 @@ namespace rtecs::tests::fixture {
 class SparseFixture : public ComponentFixture
 {
 protected:
-    std::unique_ptr<sparse::SparseSet<Profile>> _profilesSet;
-    std::unique_ptr<sparse::SparseSet<Health>> _healthSet;
-    std::unique_ptr<sparse::SparseSet<Hitbox>> _hitboxSet;
+    std::shared_ptr<sparse::SparseSet<Profile>> _profilesSet;
+    std::shared_ptr<sparse::SparseSet<Health>> _healthSet;
+    std::shared_ptr<sparse::SparseSet<Hitbox>> _hitboxSet;
 
     explicit SparseFixture();
 
