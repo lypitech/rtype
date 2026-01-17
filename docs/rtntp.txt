@@ -54,45 +54,45 @@ Status of This Memo
 
    The fields are arranged sequentially as follows:
 
-   Protocol ID (2 bytes):
+   Protocol ID (2 bytes, u16):
       Magic number fixed at 0x2204. Used to identify valid rtntp traffic and
       reject random noise.
 
-   Protocol Version (2 bytes):
+   Protocol Version (2 bytes, u16):
       Version identifier, currently 0x0002.
 
-   Sequence ID (4 bytes):
+   Sequence ID (4 bytes, u32):
       Unique, incrementing ID for this packet. Used for loss detection and
       acknowledgments.
 
-   Channel ID (1 byte):
+   Channel ID (1 byte, u8):
       The virtual channel (0-255) this packet belongs to. Channel 0 is reserved
       for internal system messages.
 
-   Order ID (4 bytes):
+   Order ID (4 bytes, u32):
       Incrementing ID for ordered packets on a specific channel. Set to 0 if
       the packet is unordered.
 
-   Acknowledge ID (4 bytes):
+   Acknowledge ID (4 bytes, u32):
       The highest valid Sequence ID received from the remote peer.
 
-   Acknowledge Bitfield (4 bytes):
+   Acknowledge Bitfield (4 bytes, u32):
       A bitmask representing the reception status of the 32 packets immediately
       preceding the Acknowledge ID.
 
-   Message ID (2 bytes):
+   Message ID (2 bytes, u16):
       Identifies the type of payload (Command). IDs 0-127 are reserved for
       internal use.
 
-   Flags (1 byte):
+   Flags (1 byte, u8):
       Bitmask defining packet behavior (Reliability, Ordering).
 
-   Payload Size (2 bytes):
+   Payload Size (2 bytes, u16):
       Length of the user data following the header (in bytes).
 
 2.2.  Flags
 
-   The Flags field is a bitmask defined as follows:
+   The Flags field is a bitmask (encoded on 1 byte, u8) defined as follows:
 
    Bit 0 (0x01) - kUnreliable:
       Fire and forget delivery.
@@ -110,7 +110,8 @@ Status of This Memo
 
 3.  System Messages
 
-   Packet IDs 0-127 are reserved for internal rtnt packets.
+   Packet IDs (encoded on 2 bytes, u16) 0-127 are reserved for internal rtnt
+   packets.
 
    ID      Name            Desc
    -------------------------------------------------------------------
@@ -194,6 +195,8 @@ Status of This Memo
    - Max Packet Size: 65,535 bytes (limited by u16 size field).
    - Max String, Vector, Deque size: 65,535 bytes.
    - Max Channel Count: 256 (255 for user-defined channels).
+   - Max User-defined Packets: 65,407 (first 128 are reserved for internal rtnt
+     packets)
 
 8.  IANA Considerations
 
