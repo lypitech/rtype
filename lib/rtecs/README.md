@@ -181,7 +181,7 @@ public:
 rtecs::ECS ecs;
 
 // This is the proper way to register a system
-ecs.registerSystem(std::make_unique<DamageOnArrowCollision>());
+ecs.registerSystem(std::make_shared<DamageOnArrowCollision>());
 
 // It is also possible to register a system from a lambda
 ecs.registerSystem([](ECS &ecs) {
@@ -189,7 +189,7 @@ ecs.registerSystem([](ECS &ecs) {
 });
 
 // DO NOT REGISTER SYSTEMS LIKE THAT
-auto system = std::make_unique<DamageOnArrowCollision>();
+auto system = std::make_shared<DamageOnArrowCollision>();
 ecs.registerSystem(std::move(system));
 ```
 
