@@ -5,7 +5,9 @@
 #include "logger/Logger.h"
 #include "logger/Thread.h"
 #include "packets/client/join.hpp"
+#include "packets/client/lobby_list.hpp"
 #include "packets/client/start.hpp"
+#include "packets/server/lobby_list_ack.hpp"
 #include "utils.hpp"
 
 namespace server {
@@ -75,6 +77,16 @@ void App::registerCallbacks()
                 lobby.changeGameState(game::state::GameRunning);
                 lobby.restart();
             });
+        });
+
+    _server.getPacketDispatcher().bind<packet::LobbyList>(
+        [this](const SessionPtr& s, const packet::LobbyList& packet) {
+            packet::LobbyListAck packetAck;
+
+            packetAck.roomIds = _lobbyManager.getLobbiesId(packet.page);
+            packetAck.page = packet.page;
+            packetAck.maxPage = _lobbyManager.getLobbiesMaxPage();
+            _server.sendTo(s, packetAck);
         });
 }
 
