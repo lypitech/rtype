@@ -1,5 +1,7 @@
 #pragma once
 
+namespace components {
+
 struct Hitbox
 {
     bool shown = false;
@@ -18,3 +20,5 @@ struct Hitbox
         ar & y;
     }
 };
+
+}  // namespace components

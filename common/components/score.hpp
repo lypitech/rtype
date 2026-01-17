@@ -1,5 +1,6 @@
 #pragma once
 
+namespace components {
 struct Score
 {
     int playerScore;
@@ -10,3 +11,4 @@ struct Score
         ar & playerScore;
     }
 };
+}  // namespace components
