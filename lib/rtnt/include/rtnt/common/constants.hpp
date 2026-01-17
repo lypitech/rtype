@@ -15,9 +15,7 @@ static constexpr uint16_t PROTOCOL_ID = 0x2204;
 
 /// @brief      Version of the protocol (@code rtntp@endcode).
 /// @warning    Changing this is considered as a breaking change.
-///
-/// todo: Prone to change
-static constexpr uint16_t PROTOCOL_VER = 0x0002;
+static constexpr uint16_t PROTOCOL_VER = 0x0003;
 
 /// @brief  Maximum number of times a client will attempt a connection to a remote server. After
 /// reaching that number, it will just give up.
