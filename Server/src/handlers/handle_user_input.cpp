@@ -39,18 +39,24 @@ void handleUserInput(const SessionPtr& session,
     x -= (packet.input_mask & static_cast<uint8_t>(game::Input::kLeft)) ? 10.0f : 0.0f;
     y += (packet.input_mask & static_cast<uint8_t>(game::Input::kDown)) ? 10.0f : 0.0f;
     y -= (packet.input_mask & static_cast<uint8_t>(game::Input::kUp)) ? 10.0f : 0.0f;
+    if (y <= 0) {
+        y = 0;
+    }
+    if (x <= 0) {
+        x = 0;
+    }
     const std::optional<rtecs::types::EntityID>& id = lobby.getPlayerId(session);
     if (!id) {
         LOG_WARN(
             "This should not be happening, the session may have been removed during the process.");
         return;
     }
-    spawnBullet(id.value(), lobby, position.value().get(), packet);
     const UpdatePosition p = {static_cast<uint32_t>(id.value()),
                               static_cast<uint16_t>(x),
                               static_cast<uint16_t>(y),
                               0,
                               0};
+    spawnBullet(id.value(), lobby, position.value().get(), packet);
     lobby.broadcast(p);
 }
 
