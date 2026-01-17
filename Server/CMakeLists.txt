@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
 
-include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+option(USE_CONAN "Use Conan for dependencies" ON)
+
+if(USE_CONAN)
+    include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+endif()
 
 project(r-type_server
     VERSION 0.0.1
@@ -37,13 +41,24 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
 )
 
-find_package(asio REQUIRED)
+if(USE_CONAN)
+    find_package(asio REQUIRED)
+    if(TARGET asio::asio)
+        set(ASIO_TARGET asio::asio)
+    else()
+        set(ASIO_TARGET asio)
+    endif()
+else()
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(ASIO REQUIRED IMPORTED_TARGET asio)
+    set(ASIO_TARGET PkgConfig::ASIO)
+endif()
 find_package(nlohmann_json 3.12.0 REQUIRED)
 
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME} PRIVATE
     nlohmann_json::nlohmann_json
-    asio::asio
+    ${ASIO_TARGET}
     rtnt
     rteng
     cli_parser

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 
-if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+option(USE_CONAN "Use Conan for dependencies" ON)
+
+if(USE_CONAN AND EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
     include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 endif()
 

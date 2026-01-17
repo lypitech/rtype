@@ -8,9 +8,10 @@ project(r-type
 )
 
 option(BUILD_TEST "Build the unit tests" OFF)
+option(USE_CONAN "Use Conan for dependencies" ON)
 
 # --- Dependencies ---
-if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+if(USE_CONAN AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
         include("${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
         set(USING_CONAN TRUE)
