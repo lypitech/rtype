@@ -7,6 +7,7 @@ namespace packet::handler {
 void handleUpdateEntityState(const UpdateEntityState packet,
                              const client::HandlerToolbox& toolbox)
 {
+    LOG_TRACE_R2("Handling UpdateEntityState packet...");
     auto& binding_map = toolbox.serverToClient;
 
     if (!binding_map.contains(packet.id)) {
