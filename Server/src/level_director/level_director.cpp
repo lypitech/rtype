@@ -2,6 +2,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "components/hitbox.hpp"
 #include "components/type.hpp"
 #include "enums/entity_types.hpp"
 #include "lobby/lobby.hpp"
@@ -107,8 +108,14 @@ void Director::update(const float dt,
                      wave.archetype->enemies.size(),
                      x,
                      y);
-        lobby.spawnEntity<components::Position, components::Type>(
-            {xDist(_rng), yDist(_rng)}, {group.type});
+        using namespace components;
+        lobby.spawnEntity<Position, Type, Hitbox, Velocity, Collision, Value>(
+            {xDist(_rng), yDist(_rng)},
+            {group.type},
+            typeToHitbox(group.type),
+            typeToVelocity(group.type),
+            {},
+            typeToValue(group.type));
 
         wave.spawnedInGroup++;
 
