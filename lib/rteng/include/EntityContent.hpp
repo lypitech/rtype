@@ -1,9 +1,35 @@
 #pragma once
 
+#include <algorithm>
+#include <bit>
 #include <limits>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+/**
+ * @brief   Swaps bytes from/to big/little endian.
+ * @tparam  T       Data type
+ * @param   value   Data to swap
+ * @return  Swapped data
+ */
+template <typename T>
+T swap(T value)
+{
+    if constexpr (sizeof(T) == 1) {  // 1-byte types don't need swapping (what do you wanna swap)
+        return value;
+    }
+
+    // no need to swap if already big endian
+    if constexpr (std::endian::native == std::endian::big) {
+        return value;
+    }
+
+    // reverse bytes
+    auto bytes = std::bit_cast<std::array<uint8_t, sizeof(T)>>(value);
+    std::ranges::reverse(bytes);
+    return std::bit_cast<T>(bytes);
+}
 
 class EntityContent
 {
@@ -20,7 +46,8 @@ public:
                      EntityContent&>
     operator<<(const T& data)
     {
-        append(&data, sizeof(T));
+        T nData = swap(data);
+        append(&nData, sizeof(T));
         return *this;
     }
 
