@@ -1,8 +1,11 @@
 #include "app.hpp"
 
+#include "components/animations.hpp"
 #include "components/me.hpp"
+#include "components/sound.hpp"
 #include "components/sprite.hpp"
 #include "components/target_pos.hpp"
+#include "components/zindex.hpp"
 #include "handlers/handlers.hpp"
 #include "logger/Thread.h"
 #include "packets/server/spawn.hpp"
@@ -39,16 +42,17 @@ App::~App() { stop(); }
 void App::registerAllComponents()
 {
     using namespace components;
-    _toolbox.engine.getEcs()->registerComponents<Sprite, Me, TargetPos>();
+    _toolbox.engine.getEcs()
+        ->registerComponents<Animation, Me, components::Sound, Sprite, TargetPos, ZIndex>();
 }
 
 void App::registerAllSystems()
 {
+    _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::Interpolation>());
+    _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::IO>(_networkService));
     _toolbox.engine.getEcs()->registerSystem(
         std::make_shared<systems::Network>(_client, _networkService));
     _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::Renderer>(_shouldStop));
-    _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::IO>(_networkService));
-    _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::Interpolation>());
 }
 
 void App::registerAllCallbacks()
