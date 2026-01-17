@@ -45,6 +45,18 @@ static constexpr std::string_view UNKNOWN_PACKET_NAME = "__rtnt_UNKNOWN";
 /// todo: Prone to change
 static constexpr auto ACK_TIMEOUT = std::chrono::milliseconds(100);
 
+/// @brief  Number of unacknowledged packets received before forcing an immediate ACK.
+///
+/// To briefly explain, headers contain a 32-bit bitfield. If we waited for the window to fill
+/// completely (32 packets), a race condition could occur where the 33rd packet pushes the 1st
+/// unacknowledged packet out of the window before its ACK is sent, triggering unnecessary
+/// retransmissions and transmissions of RICH_ACKs, which are really heavy in terms of bandwidth.
+///
+/// So, setting this to 16 instead of 32 creates a safety margin, ensuring ACKs are sent well before
+/// the "cliff edge", keeping the connection stable during high throughput. This can be put to 24
+/// to save some bandwidth, but it is not recommended at all to go higher.
+static constexpr uint8_t ACK_PACKET_THRESHOLD = 16;
+
 /// @brief  Amount of time between each packet resend.
 static constexpr auto RESEND_TIMEOUT = std::chrono::milliseconds(200);
 
@@ -62,6 +74,10 @@ static constexpr uint8_t MAX_RESEND_ATTEMPTS =
 /// addition to acknowledge bitfield).
 static constexpr size_t MAX_PACKET_HISTORY_SIZE =
     1 << 15;  /// Should be 1 << 6 (64), but we needa pass 80% packet loss
+
+/// @brief  Maximum number of packet IDs that can be stored in a single RICH_ACK packet (to avoid
+/// exceeding MTU).
+static constexpr size_t MAX_ACK_PER_PACKET = 1 << 8;
 
 /**
  * @brief   Internal packet IDs
