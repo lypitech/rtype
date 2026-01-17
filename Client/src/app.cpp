@@ -6,10 +6,13 @@
 #include "components/sprite.hpp"
 #include "components/target_pos.hpp"
 #include "components/zindex.hpp"
+#include "enums/game_state.hpp"
+#include "enums/menu_state.hpp"
 #include "handlers/handlers.hpp"
 #include "logger/Thread.h"
 #include "packets/server/spawn.hpp"
 #include "systems/IO.hpp"
+#include "systems/Menus.hpp"
 #include "systems/interpolation.hpp"
 #include "systems/network.hpp"
 #include "systems/renderer.hpp"
@@ -50,9 +53,11 @@ void App::registerAllSystems()
 {
     _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::Interpolation>());
     _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::IO>(_networkService));
+    _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::Renderer>(_shouldStop));
+    _toolbox.engine.getEcs()->registerSystem(
+        std::make_shared<systems::MenuRenderer>(_networkService, _toolbox.engine));
     _toolbox.engine.getEcs()->registerSystem(
         std::make_shared<systems::Network>(_client, _networkService));
-    _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::Renderer>(_shouldStop));
 }
 
 void App::registerAllCallbacks()
@@ -121,6 +126,8 @@ void App::stop()
 void App::run()
 {
     Callback action;
+    _toolbox.engine.setGameState(game::state::GameMenu);
+    _toolbox.engine.setMenuState(menu::state::MenuHome);
     utils::LoopTimer loopTimer(TPS);
     while (_isContextRunning && !_shouldStop) {
         while (_actions.pop(action)) {
