@@ -45,19 +45,6 @@ void handleUserInput(const SessionPtr& session,
     vy = (packet.input_mask & static_cast<uint8_t>(game::Input::kUp)) ? 10.0f : 0.0f;
 
     // The system will update the position from the velocity
-
-    // const std::optional<rtecs::types::EntityID>& id = lobby.getPlayerId(session);
-    // if (!id) {
-    //     LOG_WARN(
-    //         "This should not be happening, the session may have been removed during the process.");
-    //     return;
-    // }
-    // const UpdatePosition p = {static_cast<uint32_t>(id.value()),
-    //                           static_cast<uint16_t>(x),
-    //                           static_cast<uint16_t>(y),
-    //                           0,
-    //                           0};
-    // lobby.broadcast(p);
 }
 
 }  // namespace packet::handler
