@@ -4,6 +4,9 @@
 
 namespace components {
 
+/**
+ * @brief Specifies the type of the entity
+ */
 struct Type
 {
     entity::Type type;

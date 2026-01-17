@@ -2,6 +2,9 @@
 
 namespace components {
 
+/**
+ * @brief Specifies the current state of an entity.
+ */
 struct State
 {
     size_t state;

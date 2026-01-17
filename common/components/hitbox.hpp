@@ -2,6 +2,9 @@
 
 namespace components {
 
+/**
+ * @brief Contains a bool whether it has to be shown to user along with the size of the hitbox.
+ */
 struct Hitbox
 {
     bool shown = false;

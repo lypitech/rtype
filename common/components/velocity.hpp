@@ -2,6 +2,9 @@
 
 namespace components {
 
+/**
+ * @brief Specifies the max (potential) velocity and the current one (0 when not moving)
+ */
 struct Velocity
 {
     float vx = 0.0f;
