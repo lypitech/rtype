@@ -35,10 +35,10 @@ developers to focus on game logic rather than raw socket management.
 
 ## Compatibility
 
-|        |                macOS (AppleClang)                |            Linux (G++)            |                 Windows (MSVC)                  |
-|-------:|:------------------------------------------------:|:---------------------------------:|:-----------------------------------------------:|
-|  arm64 | ✅<br/>(`AppleClang 17.0.0.17000603 CMake 4.1.2`) |                ☑️                 |                       ☑️                        |
-| x86_64 |                        ☑️                        | ✅<br/>(`GNU 15.2.0 CMake 3.31.6`) | ✅<br/>(`MSVC 19.50.35718.0 CMake 4.11.1-msvc1`) |
+|        |                    macOS (AppleClang)                    |                Linux (G++)                |                      Windows (MSVC)                     |
+|-------:|:--------------------------------------------------------:|:-----------------------------------------:|:-------------------------------------------------------:|
+|  arm64 | ✅<br/>- `AppleClang 17.0.0.17000603`<br/>- `CMake 4.1.2` |                    ☑️                     |                            ☑️                           |
+| x86_64 |                            ☑️                            | ✅<br/>- `GNU 15.2.0`<br/>- `CMake 3.31.6` | ✅<br/>- `MSVC 19.50.35718.0`<br/>- `CMake 4.11.1-msvc1` |
 
 ✅: Tested on real hardware  
 ☑️: Compiled but not physically tested
