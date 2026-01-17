@@ -6,6 +6,7 @@ namespace packet::handler {
 void handleUpdateHealth(UpdateHealth packet,
                         const client::HandlerToolbox& toolbox)
 {
+    LOG_TRACE_R2("Handling UpdateHealth packet...");
     auto& binding_map = toolbox.serverToClient;
 
     if (!binding_map.contains(packet.id)) {

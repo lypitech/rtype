@@ -26,6 +26,7 @@ namespace packet::handler {
 void handleSpawn(Spawn packet,
                  client::HandlerToolbox& toolbox)
 {
+    LOG_TRACE_R2("Handling Spawn packet...");
     auto& binding_map = toolbox.serverToClient;
     const std::unique_ptr<rtecs::ECS>& ecs = toolbox.engine.getEcs();
 

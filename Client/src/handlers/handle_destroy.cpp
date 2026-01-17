@@ -6,6 +6,7 @@ namespace packet::handler {
 void handleDestroy(const Destroy packet,
                    client::HandlerToolbox& toolbox)
 {
+    LOG_TRACE_R2("Handling Destroy packet...");
     auto& binding_map = toolbox.serverToClient;
 
     if (!binding_map.contains(packet.id)) {
