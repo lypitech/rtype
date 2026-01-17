@@ -10,6 +10,7 @@
 #include "enums/menu_state.hpp"
 #include "handlers/handlers.hpp"
 #include "logger/Thread.h"
+#include "packets/server/lobby_list_ack.hpp"
 #include "packets/server/spawn.hpp"
 #include "systems/IO.hpp"
 #include "systems/Menus.hpp"
@@ -80,6 +81,18 @@ void App::registerAllCallbacks()
     _client.getPacketDispatcher().bind<packet::JoinAck>(
         [this](const SessionPtr&, const packet::JoinAck& p) {
             _actions.push([p](HandlerToolbox& tb) { packet::handler::handleJoinAck(p, tb); });
+        });
+    _client.getPacketDispatcher().bind<packet::LobbyListAck>(
+        [this](const SessionPtr&, const packet::LobbyListAck& p) {
+            LOG_TRACE_R2("Handling LobbyListAck...");
+            _actions.push([this, p](HandlerToolbox&) {
+                _lobbies.roomIds.clear();
+                for (const auto room_id : p.roomIds) {
+                    _lobbies.roomIds.push_back(room_id);
+                }
+                _lobbies.page = p.page;
+                _lobbies.maxPage = p.maxPage;
+            });
         });
     _client.getPacketDispatcher().bind<packet::Spawn>(
         [this](const SessionPtr&, const packet::Spawn& p) {
