@@ -20,6 +20,27 @@ Id Manager::createLobby()
     return nbLobbies++;
 }
 
+std::vector<Id> Manager::getLobbiesId(const uint32_t page) const
+{
+    std::vector<Id> roomIds;
+    const uint32_t offset = page * 20;
+    uint32_t i = 0;
+
+    for (auto& lobby : _lobbies | std::views::keys) {
+        if (i < offset) {
+            i++;
+            continue;
+        }
+        roomIds.push_back(lobby);
+        if (roomIds.size() == 20) {
+            break;
+        }
+    }
+    return roomIds;
+}
+
+uint32_t Manager::getLobbiesMaxPage() const { return _lobbies.size() / 20 + 1; }
+
 Manager::~Manager() { stopAll(); }
 
 void Manager::stopAll() const
