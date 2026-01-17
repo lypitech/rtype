@@ -1,0 +1,222 @@
+EPITECH Internal Papers                                            L. Boursette
+Request for Comments: 2204                                              EPITECH
+Category: Experimental                                         January 16, 2026
+
+                            R-Type Network Protocol
+                                   (rtntp)
+
+Abstract
+
+   This document specifies the R-Type Network Protocol (rtntp), a UDP-based
+   application-layer protocol designed for low-latency real-time applications
+   such as multiplayer games. The protocol provides connection-oriented
+   features over connectionless UDP, including session management, optional
+   reliability and strict ordering.
+
+Status of This Memo
+
+   This document does not specify an Internet standard of any kind.
+   Distribution of this memo is unlimited.
+
+1.  Introduction
+
+   rtntp is designed to provide a lightweight abstraction over User Datagram
+   Protocol (UDP) [RFC768], offering configurable reliability and ordering
+   guarantees per packet. It employs a header-based framing mechanism to manage
+   sequence numbers, acknowledgments, and channel separation.
+
+   The protocol is designed to be resistant to packet loss, duplication, and
+   reordering, making it suitable for unstable network conditions.
+
+1.1.  Terminology
+
+   Peer:         An endpoint participating in the connection (Client or Server)
+
+   Session:      A logical connection state established between two Peers
+
+   Sequence ID:  An increasing identifier for every packet sent
+
+   Order ID:     An increasing identifier for packets within a specific ordered
+                 channel
+
+   ACK:          Acknowledgment of a received packet
+
+2.  Packet Structure
+
+   All rtntp packets share a common fixed-size header followed by a
+   variable-length payload. Multi-byte integer are transmitted in Network Byte
+   Order (Big Endian).
+
+2.1.  Header Format
+
+   The header is exactly 26 bytes long and is packed (1-byte alignment, no
+   padding).
+
+   The fields are arranged sequentially as follows:
+
+   Protocol ID (2 bytes):
+      Magic number fixed at 0x2204. Used to identify valid rtntp traffic and
+      reject random noise.
+
+   Protocol Version (2 bytes):
+      Version identifier, currently 0x0002.
+
+   Sequence ID (4 bytes):
+      Unique, incrementing ID for this packet. Used for loss detection and
+      acknowledgments.
+
+   Channel ID (1 byte):
+      The virtual channel (0-255) this packet belongs to. Channel 0 is reserved
+      for internal system messages.
+
+   Order ID (4 bytes):
+      Incrementing ID for ordered packets on a specific channel. Set to 0 if
+      the packet is unordered.
+
+   Acknowledge ID (4 bytes):
+      The highest valid Sequence ID received from the remote peer.
+
+   Acknowledge Bitfield (4 bytes):
+      A bitmask representing the reception status of the 32 packets immediately
+      preceding the Acknowledge ID.
+
+   Message ID (2 bytes):
+      Identifies the type of payload (Command). IDs 0-127 are reserved for
+      internal use.
+
+   Flags (1 byte):
+      Bitmask defining packet behavior (Reliability, Ordering).
+
+   Payload Size (2 bytes):
+      Length of the user data following the header (in bytes).
+
+2.2.  Flags
+
+   The Flags field is a bitmask defined as follows:
+
+   Bit 0 (0x01) - kUnreliable:
+      Fire and forget delivery.
+
+   Bit 1 (0x02) - kReliable:
+      Guaranteed delivery. The sender will retransmit this packet until
+      acknowledged.
+
+   Bit 2 (0x04) - kOrdered:
+      Guaranteed order. The receiver will buffer out-of-order packets to ensure
+      they are processed in sequence.
+
+   Bit 3 (0x08) - kHasAck:
+      Indicates that the Acknowledge ID and Bitfield contain valid data.
+
+3.  System Messages
+
+   Packet IDs 0-127 are reserved for internal rtnt packets.
+
+   ID      Name            Desc
+   -------------------------------------------------------------------
+   0x00    ACK             Header-only acknowledgment
+   0x01    RICH_ACK        Contains out-of-band ACKs (old packets history)
+   0x02    CONNECT         Client -> Server handshake initiation
+   0x03    CONNECT_ACK     Server -> Client handshake completion
+   0x04    DISCONNECT      Session termination
+                           If received by the Client, the Client considers
+                           itself as kicked by the server, and closes the
+                           connection.
+                           If received by the Server, the Server closes the
+                           connection.
+
+  
+
+4.  Protocol Operation
+
+4.1.  Handshake
+
+   1. The Client sends a CONNECT (0x02) packet to the Server.
+   2. The Server receives the packet, creates a Session, and replies
+      with a CONNECT_ACK (0x03) containing the assigned Session ID.
+   3. When client receives CONNECT_ACK, it marks the connection as
+      established.
+
+4.2.  Reliability and Acknowledgment
+
+   rtntp uses a selective acknowledgment system piggybacked on every
+   outgoing packet.
+
+   - Piggybacking: Every packet header carries the Acknowledge ID (highest
+     received ID) and a bitfield covering the previous 32 packets.
+
+   - Retransmission: Packets marked kReliable are buffered by the sender.
+     If not acknowledged within RESEND_TIMEOUT (default is 200ms), they are
+     retransmitted up to MAX_RESEND_ATTEMPTS times (default is 8).
+
+   - Rich ACKs: If a packet is received that is too old to fit in the 32-bit
+     bitfield (out-of-band), the receiver queues it and sends a RICH_ACK (0x01)
+     packet containing the list of these old IDs.
+     Note: This feature can cause heavy bandwidth usage when the client is
+     lagging bad.
+
+
+4.3.  Ordering
+
+   Sequence IDs are global per session, but Order IDs are local per Channel.
+   This prevents a dropped packet on Channel 1 from blocking traffic on Channel
+   2.
+
+   - If a received packet's Order ID > Next Expected, it is buffered.
+   - If Order ID == Next Expected, it is processed, and the expected
+     counter is incremented. Buffer is then processed in order (if there is
+     another gap, then wait again).
+
+5.  Serialization
+
+   Payloads are serialized sequentially without padding.
+
+   - Primitive types are converted to Network Byte Order.
+   - Strings (std::string) are prefixed with a 2-byte length.
+   - Vectors (std::vector) and Deques (std::deque) are prefixed with a 2-byte
+     element count.
+
+6.  Security considerations
+
+   - Magic Number: Packets not starting with 0x2204 are dropped.
+   - Protocol Version: Protocol version contained in packet is checked and
+       rejected if incompatible with local version.
+   - Payload size: Packet is dropped if contained packet size doesn't match
+       actual payload size.
+   - Checksum (not implemented yet): Packets are dropped if checksum doesn't
+       match locally computed checksum.
+   - Future Work: Version 2.0.0 is scheduled to introduce a dedicated
+       security layer including packet encryption and certificate-based
+       authentication.
+
+7.  Limits
+
+   - Max Packet Size: 65,535 bytes (limited by u16 size field).
+   - Max String, Vector, Deque size: 65,535 bytes.
+   - Max Channel Count: 256 (255 for user-defined channels).
+
+8.  IANA Considerations
+
+   This document has no actions for IANA.
+
+9.  References
+
+9.1.  Normative References
+
+   [RFC768]   Postel, J., "User Datagram Protocol", STD 6, RFC 768, DOI
+              10.17487/RFC0768, August 1980,
+              <https://www.rfc-editor.org/info/rfc768>.
+
+9.2.  Informative References
+
+   [rtnt]  Boursette, L., "rtnt: A C++ cross-platform network library",
+           EPITECH, 2026.
+
+Author's Address
+
+   Lysandre Boursette
+   EPITECH
+   Rennes, Brittany
+   France
+
+   Email: lysandre.boursette@epitech.eu
