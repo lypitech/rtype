@@ -32,6 +32,8 @@ enum class Server : rtnt::core::packet::Id
     kUpdateHealth,       ///< Update the health of an entity.
     kUpdateGameState,    ///< Update the state of the game.
     kWorldInit,          ///< Init the world content.
+    kLobbyList,          ///< Ask the server for a list of lobby.
+    kLobbyListAck,       ///< The response of the packet LobbyList.
 };
 
 }  // namespace packet::type
