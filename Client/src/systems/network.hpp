@@ -2,6 +2,7 @@
 #include <variant>
 
 #include "packets/client/join.hpp"
+#include "packets/client/lobby_list.hpp"
 #include "packets/client/start.hpp"
 #include "packets/client/user_input.hpp"
 #include "rtecs/systems/ASystem.hpp"
@@ -9,7 +10,7 @@
 
 namespace packet {
 
-using Variant = std::variant<Join, Start, UserInput>;
+using Variant = std::variant<Join, Start, UserInput, LobbyList>;
 
 }
 

@@ -11,7 +11,7 @@ namespace packet {
  */
 struct LobbyListAck
 {
-    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Server::kDestroy);
+    static constexpr auto kId = static_cast<rtnt::core::packet::Id>(type::Server::kLobbyListAck);
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "LOBBY_LIST_ACK";
 
