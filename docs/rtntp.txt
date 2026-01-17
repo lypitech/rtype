@@ -140,22 +140,56 @@ Status of This Memo
 
 4.2.  Reliability and Acknowledgment
 
-   rtntp uses a selective acknowledgment system piggybacked on every
-   outgoing packet.
+   rtntp uses a hybrid acknowledgment mechanism combining piggybacked
+   bitfields for high-efficiency scenarios and explicit Rich ACKs for high
+   packet-loss conditions.
 
-   - Piggybacking: Every packet header carries the Acknowledge ID (highest
-     received ID) and a bitfield covering the previous 32 packets.
+4.2.1. Standard Acknowledgement
 
-   - Retransmission: Packets marked kReliable are buffered by the sender.
-     If not acknowledged within RESEND_TIMEOUT (default is 200ms), they are
-     retransmitted up to MAX_RESEND_ATTEMPTS times (default is 8).
+   Every packet header carries acknowledgment information:
+   - Acknowledge ID: The highest Sequence ID received from the remote peer.
+   - Bitfield: A 32-bit mask representing the reception status of the 32 packets
+     immediately preceding the Acknowledge ID.
 
-   - Rich ACKs: If a packet is received that is too old to fit in the 32-bit
-     bitfield (out-of-band), the receiver queues it and sends a RICH_ACK (0x01)
-     packet containing the list of these old IDs.
-     Note: This feature can cause heavy bandwidth usage when the client is
-     lagging bad.
+   To ensure timely acknowledgments and prevent "window sliding" race
+   conditions, an implementation MUST enforce an acknowledgment threshold.
+   If a peer receives 16 (half the bitfield size) unacknowledged packets
+   without having sent any packets, it MUST immediately generate and transmit an
+   explicit ACK (System Message 0x00).
+   It is possible to increase the threshold to 24, but it is strongly
+   disrecommended to go higher, for stability reasons.
 
+   This safety buffer prevents the 33rd received packet from pushing the 1st
+   unacknowledged packet out of the bitfield window before an ACK can be
+   generated.
+
+4.2.2. Retransmission
+
+   Packets marked with the kReliable (0x02) or kOrdered (0x04) flag are buffered
+   by the sender. If a reliable packet is not acknowledged within RESEND_TIMEOUT
+   (default: 200ms), it is retransmitted. This process repeats up to
+   MAX_RESEND_ATTEMPTS times (default: 8) before the connection is considered
+   dead.
+
+4.2.3. Extended Recovery
+
+   In high packet-loss scenarios, the standard 32-bit window may be insufficient
+   to represent all missing packets. To handle this, rtntp implements a
+   reactive acknowledgment strategy:
+
+   1. Duplicate Detection: If a receiver processes a packet that has already
+      been acknowledged, it indicates that the sender is unaware of the
+      acknowledgment (likely due to ACK loss).
+   2. Rich ACK Generation: When detecting such a duplicate or an "out-of-band"
+      packet, the receiver MUST queue the packet's ID for explicit
+      acknowledgment.
+   3. Transmission: These IDs are aggregated into a `RICH_ACK` (0x01) system
+      packet. This packet contains a list of specific Sequence IDs that are
+      outside the standard bitfield window but have been successfully received.
+
+   Note: Implementations SHOULD fragment RICH_ACK payloads to respect the
+   network MTU, as a single RICH_ACK may contain hundreds of IDs in extreme loss
+   scenarios.
 
 4.3.  Ordering
 
