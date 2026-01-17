@@ -18,8 +18,8 @@ MenuRenderer::MenuRenderer(service::Network& service,
     constexpr float buttonScale = 1;
     constexpr float bWidth = 500 * buttonScale;
     constexpr float bHeight = 150 * buttonScale;
-    constexpr float x = 1920 / 2 - bWidth / 2;
-    constexpr float y = 1080 / 2 - bHeight / 2;
+    constexpr float x = 1920.0 / 2 - bWidth / 2;
+    constexpr float y = 1080.0 / 2 - bHeight / 2;
     _buttons.emplace_back(
         PLAY_TEXTURE_FILEPATH.data(), Rectangle{x, y - bHeight * 1.5, bWidth, bHeight});
     _buttons.emplace_back(START_TEXTURE_FILEPATH.data(), Rectangle{x, y, bWidth, bHeight});
