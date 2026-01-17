@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
-include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+    include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+endif()
 
 project(rtnt
     VERSION 1.4.1

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 
-include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+    include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+endif()
 
 project(rteng
     VERSION 1.0.0

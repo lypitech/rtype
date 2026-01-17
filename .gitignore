@@ -75,3 +75,9 @@ $RECYCLE.BIN/
 *.app
 r-type_server
 r-type_client
+
+#nix
+result
+.direnv/
+.envrc
+.pre-commit-config.yaml
