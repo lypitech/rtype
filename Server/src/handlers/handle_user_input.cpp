@@ -25,8 +25,8 @@ void handleUserInput(const SessionPtr& session,
                      Lobby& lobby,
                      const UserInput& packet)
 {
-    const rtecs::types::OptionalRef<components::Position>& position =
-        lobby.getPlayerPosition(session);
+    // const rtecs::types::OptionalRef<components::Position>& position =
+    //     lobby.getPlayerPosition(session);
 
     const rtecs::types::OptionalRef<components::Velocity>& velocity =
         lobby.getPlayerComponent<components::Velocity>(session);
