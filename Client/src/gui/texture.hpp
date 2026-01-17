@@ -2,6 +2,7 @@
 #include <raylib.h>
 
 #include <string_view>
+
 #include "logger/Logger.h"
 
 namespace gui {
