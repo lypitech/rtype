@@ -17,7 +17,7 @@ struct Join
     static constexpr rtnt::core::packet::Name kName = "JOIN";
 
     std::string username;  ///< The username of the joining player.
-    uint8_t room_id;       ///< The id of the room to join. 0 for any.
+    uint32_t room_id;      ///< The id of the room to join. 0 for any.
 
     template <typename Archive>
     void serialize(Archive& ar)
