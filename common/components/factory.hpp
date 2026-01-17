@@ -5,27 +5,50 @@
 
 #include "Transform.hpp"
 #include "collision.hpp"
+#include "damage.hpp"
 #include "health.hpp"
+#include "hitbox.hpp"
 #include "invulnerability.hpp"
 #include "owner.hpp"
 #include "position.hpp"
 #include "rteng.hpp"
 #include "rtnt/core/packet.hpp"
+#include "score.hpp"
 #include "state.hpp"
 #include "type.hpp"
+#include "value.hpp"
 #include "velocity.hpp"
 
 namespace components {
 
-using GameComponents = rteng::ComponentsList<Position,
-                                             Transform,
-                                             Type,
+using GameComponents = rteng::ComponentsList<Collision,
+                                             Damage,
                                              Health,
-                                             Collision,
-                                             Velocity,
+                                             Hitbox,
                                              Invulnerability,
                                              Owner,
-                                             State>;
+                                             Position,
+                                             Score,
+                                             State,
+                                             Transform,
+                                             Type,
+                                             Value,
+                                             Velocity>;
+
+static const std::unordered_map<entity::Type, Hitbox> entityTypeToHitbox = {
+    {entity::Type::kEnemy, {true, 150, 75}}};
+
+static const std::unordered_map<entity::Type, Velocity> entityTypeToVelocity = {
+    {entity::Type::kEnemy, {0, 0, 15, 15}}};
+
+static const std::unordered_map<entity::Type, Value> entityTypeToValue = {
+    {entity::Type::kEnemy, {15}}};
+
+inline Hitbox typeToHitbox(const entity::Type& type) { return entityTypeToHitbox.at(type); }
+
+inline Velocity typeToVelocity(const entity::Type& type) { return entityTypeToVelocity.at(type); }
+
+inline Value typeToValue(const entity::Type& type) { return entityTypeToValue.at(type); }
 
 class Factory
 {
