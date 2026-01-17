@@ -11,7 +11,7 @@ Button::Button(const char* filepath,
     Image img = LoadImage(filepath);
     Image mask = GenImageColor(img.width, img.height, BLANK);
 
-    int radius = std::min(img.width, img.height) * 0.17;
+    const int radius = std::min(img.width, img.height) * 0.17;
 
     ImageDrawRectangle(&mask, radius, 0, img.width - (radius * 2), img.height, WHITE);
     ImageDrawRectangle(&mask, 0, radius, img.width, img.height - (radius * 2), WHITE);
