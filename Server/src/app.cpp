@@ -19,12 +19,11 @@ App::App(const unsigned short port,
 {
     registerCallbacks();
     _server.onConnect(
-        [](std::shared_ptr<rtnt::core::Session>) { LOG_INFO("Accepting new connection"); });
-    _server.onDisconnect(
-        [](std::shared_ptr<rtnt::core::Session> s) { LOG_INFO("Disconnected {}", s->getId()); });
-    _server.onMessage([](std::shared_ptr<rtnt::core::Session> s, rtnt::core::Packet& p) {
-        LOG_INFO("Client {} sent a packet of type {}", s->getId(), p.getId());
+        [](const std::shared_ptr<rtnt::core::Session>&) { LOG_INFO("Accepting new connection"); });
+    _server.onDisconnect([](const std::shared_ptr<rtnt::core::Session>& s) {
+        LOG_INFO("Disconnected {}", s->getId());
     });
+    _server.onMessage([](const std::shared_ptr<rtnt::core::Session>&, rtnt::core::Packet&) {});
     _lobbyManager.createLobby();
 }
 
