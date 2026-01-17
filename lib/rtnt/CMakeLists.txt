@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
-if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+option(USE_CONAN "Use Conan for dependencies" ON)
+
+if(USE_CONAN AND EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
     include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 endif()
 
@@ -24,7 +26,18 @@ if(PROJECT_IS_TOP_LEVEL)
 endif()
 
 # --- Dependencies ---
-find_package(asio REQUIRED)
+if(USE_CONAN)
+    find_package(asio REQUIRED)
+    if(TARGET asio::asio)
+        set(ASIO_TARGET asio::asio)
+    else()
+        set(ASIO_TARGET asio)
+    endif()
+else()
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(ASIO REQUIRED IMPORTED_TARGET asio)
+    set(ASIO_TARGET PkgConfig::ASIO)
+endif()
 
 # --- Sources / Headers ---
 add_library(${PROJECT_NAME} STATIC
@@ -48,7 +61,7 @@ target_include_directories(${PROJECT_NAME}
 
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE asio::asio
+    PRIVATE ${ASIO_TARGET}
     PUBLIC shuvlog
 )
 

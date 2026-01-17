@@ -40,13 +40,20 @@ target_include_directories(rtnt_tests PRIVATE
 
 # --- Dependencies ---
 find_package(GTest REQUIRED)
-find_package(asio REQUIRED)
+if(USE_CONAN)
+    find_package(asio REQUIRED)
+    set(ASIO_TARGET asio::asio)
+else()
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(ASIO REQUIRED IMPORTED_TARGET asio)
+    set(ASIO_TARGET PkgConfig::ASIO)
+endif()
 
 target_link_libraries(rtnt_tests
     PRIVATE
     GTest::gtest
     GTest::gtest_main
-    asio::asio
+    ${ASIO_TARGET}
     rtnt
 )
 

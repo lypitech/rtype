@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
 
-include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+option(USE_CONAN "Use Conan for dependencies" ON)
+
+if(USE_CONAN)
+    include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
+endif()
 
 project(r-type_client
     VERSION 0.0.1
@@ -22,7 +26,18 @@ endif()
 # --- Dependencies ---
 
 find_package(raylib REQUIRED)
-find_package(asio REQUIRED)
+if(USE_CONAN)
+    find_package(asio REQUIRED)
+    if(TARGET asio::asio)
+        set(ASIO_TARGET asio::asio)
+    else()
+        set(ASIO_TARGET asio)
+    endif()
+else()
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(ASIO REQUIRED IMPORTED_TARGET asio)
+    set(ASIO_TARGET PkgConfig::ASIO)
+endif()
 find_package(imgui REQUIRED)
 
 # --- Sources / Headers ---
@@ -38,7 +53,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 # --- Libraries ---
 target_link_libraries(${PROJECT_NAME} PRIVATE
     raylib
-    asio::asio
+    ${ASIO_TARGET}
     rteng
     rtnt
     cli_parser
