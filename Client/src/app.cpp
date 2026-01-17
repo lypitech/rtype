@@ -54,10 +54,10 @@ void App::registerAllCallbacks()
 {
     _client.onConnect([this]() {
         LOG_INFO("Connected.");
-        packet::Join joinPacket;
-        joinPacket.username = "test";
-        joinPacket.room_id = 0;
-        _actions.push([this, joinPacket](HandlerToolbox&) { _client.send(joinPacket); });
+        // packet::Join joinPacket;
+        // joinPacket.username = "test";
+        // joinPacket.room_id = 0;
+        // _actions.push([this, joinPacket](HandlerToolbox&) { _client.send(joinPacket); });
     });
     _client.onMessage(
         [](const rtnt::core::Packet& p) { LOG_DEBUG("Received a message (#{})", p.getId()); });
