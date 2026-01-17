@@ -60,7 +60,8 @@ static constexpr uint8_t MAX_RESEND_ATTEMPTS =
 
 /// @brief  Maximum number of packet IDs that can be stored in the missing packet history (in
 /// addition to acknowledge bitfield).
-static constexpr size_t MAX_PACKET_HISTORY_SIZE = 1 << 6;
+static constexpr size_t MAX_PACKET_HISTORY_SIZE =
+    1 << 15;  /// Should be 1 << 6 (64), but we needa pass 80% packet loss
 
 /**
  * @brief   Internal packet IDs
