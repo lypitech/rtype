@@ -161,6 +161,8 @@ public:
      */
     void changeGameState(const uint64_t& gameState);
 
+    bool hasPlayerAlive();
+
     void restart();
 
 private:
