@@ -12,6 +12,8 @@
 #include "enums/game_state.hpp"
 #include "enums/player_state.hpp"
 #include "logger/Thread.h"
+#include "systems/apply_movement.hpp"
+#include "systems/broadcast_updated_movements.hpp"
 
 Lobby::Lobby(const lobby::Id id,
              packet::server::OutGoingQueue& outGoing)
@@ -21,7 +23,14 @@ Lobby::Lobby(const lobby::Id id,
       _isRunning(false),
       _levelDirector()
 {
+    registerAllSystems();
     LOG_INFO("Creating new lobby.");
+}
+
+void Lobby::registerAllSystems()
+{
+    _engine.registerSystem(std::make_shared<server::systems::ApplyMovement>());
+    _engine.registerSystem(std::make_shared<server::systems::BroadcastUpdatedMovements>(*this));
 }
 
 lobby::Id Lobby::getRoomId() const { return _roomId; }

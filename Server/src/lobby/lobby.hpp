@@ -63,6 +63,11 @@ public:
                    packet::server::OutGoingQueue& outGoing);
 
     /**
+     * @brief Register all the systems.
+     */
+    void registerAllSystems();
+
+    /**
      * @brief Tries to join this lobby.
      * @param session The pointer to the session trying to join.
      * @return A boolean representing the status of the request.
