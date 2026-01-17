@@ -27,6 +27,8 @@ add_executable(${PROJECT_NAME}
     src/level_director/level_director_utils.cpp
     src/handlers/handle_user_input.cpp
     src/app.cpp
+    src/systems/apply_movement.cpp
+    src/systems/broadcast_movement.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
