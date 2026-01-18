@@ -2,6 +2,11 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
+    nixgl = {
+      url = "github:guibou/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     shuvlog = {
       url = "github:lypitech/shuvlog/0a81e259e91b9679e22714635b77e04b1d16aa1f";
       flake = false;
@@ -15,6 +20,7 @@
   outputs = {
     self,
     nixpkgs,
+    nixgl,
     shuvlog,
     yml-parser,
     ...
@@ -22,10 +28,13 @@
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
 
-    # Define common build inputs once
-    nativeBuildInputs = with pkgs; [cmake pkg-config];
+    # SELECT YOUR DRIVER HERE IF "Default" FAILS:
+    # Use `nixGLIntel` for Intel integrated graphics
+    # Use `nixGLNvidia` for proprietary Nvidia drivers
+    # Use `nixGLDefault` for Mesa/AMD (Standard)
+    nixGL = nixgl.packages.${system}.nixGLDefault;
 
-    # Common runtime libraries
+    nativeBuildInputs = with pkgs; [cmake pkg-config];
     buildInputs = with pkgs; [
       asio
       nlohmann_json
@@ -39,12 +48,11 @@
       xorg.libXinerama
     ];
 
-    commonSrc = ./.; # Or use builtins.path if you want to filter files
   in {
     packages.${system} = {
       r-type_client = pkgs.gcc15Stdenv.mkDerivation {
         name = "r-type_client";
-        src = commonSrc;
+        src = ./.;
 
         inherit nativeBuildInputs buildInputs;
 
@@ -57,24 +65,31 @@
 
         cmakeFlags = [
           "-DCMAKE_BUILD_TYPE=Release"
-          "-DUSE_CONAN=OFF" # Pass this if you updated CMakeLists.txt
-          "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE" # Let CMake keep RPATHs so Nix can fix them
+          "-DUSE_CONAN=OFF"
+          "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE" # nix RPATH handling
         ];
 
         buildPhase = ''
           cmake --build . --parallel --target r-type_client
         '';
 
+        # Wrap the binary with nixGL to ensure proper OpenGL driver usage
         installPhase = ''
           mkdir -p $out/bin
-          cp Client/r-type_client $out/bin/
-        '';
+          cp Client/r-type_client $out/bin/.r-type_client-real
 
+          cat > $out/bin/r-type_client <<EOF
+          #!/bin/sh
+          exec ${nixGL}/bin/nixGL $out/bin/.r-type_client-real "\$@"
+          EOF
+
+          chmod +x $out/bin/r-type_client
+        '';
       };
 
       r-type_server = pkgs.gcc15Stdenv.mkDerivation {
         name = "r-type_server";
-        src = commonSrc;
+        src = ./.;
 
         inherit nativeBuildInputs buildInputs;
 
@@ -101,8 +116,16 @@
       };
     };
 
-    devShells.${system}.default = pkgs.mkShell {
-      packages = nativeBuildInputs ++ buildInputs ++ [pkgs.gcc15];
+    apps.${system} = {
+      default = self.apps.${system}.r-type_client;
+      r-type_client = {
+        type = "app";
+        program = "${self.packages.${system}.r-type_client}/bin/r-type_client";
+      };
+      r-type_server = {
+        type = "app";
+        program = "${self.packages.${system}.r-type_server}/bin/r-type_server";
+      };
     };
 
     formatter.${system} = pkgs.alejandra;
