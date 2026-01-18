@@ -80,7 +80,7 @@ It has been strictly tested and validated on the following environments:
 
 2. Install dependencies:
     ```sh
-    conan install . --output-folder=build/ --build=missing -s compiler.cppstd=23
+    conan install . --output-folder=build/ --build=missing -s compiler.cppstd=23 -s build_type=Release
     ```
 
 3. Compile the project using CMake:
@@ -89,7 +89,7 @@ It has been strictly tested and validated on the following environments:
     cmake -B build/ -DCMAKE_BUILD_TYPE=Release
     
     # Build (use --parallel for faster compilation)
-    cmake --build build/ --parallel
+    cmake --build build/ --config Release --parallel
     ```
 
 Server and client binaries will respectively be stored in 
