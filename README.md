@@ -2,7 +2,6 @@
   <img src="md/assets/R-Type_Logo_2048.png" alt="R-Type Logo" height="120">
 
 # CPP-500 ‒ `R-Type`
-###### An [<img src="https://newsroom.ionis-group.com/wp-content/uploads/2023/09/epitech-2023-logo-m.png" alt="Epitech" height=10/>](https://www.epitech.eu/) project
 
 **A multithreaded networked ECS-based Game Engine & R-Type recreation.**
 
@@ -168,3 +167,7 @@ See the [LICENSE](/LICENSE.md) file for details.
 |                             <img src="https://avatars.githubusercontent.com/u/146085057?v=4" width=92>                             |                            <img src="https://avatars.githubusercontent.com/u/123988037?v=4" width=92>                            |                     <img src="https://avatars.githubusercontent.com/u/83085376?v=4" width=92>                     |                     <img src="https://avatars.githubusercontent.com/u/122123024?v=4" width=92>                      |                                   <img src="https://avatars.githubusercontent.com/u/146708962?v=4" width=92>                                    |
 |:----------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------:|
 | [**Pierre MARGUERIE**](https://github.com/PierreMarguerie)<br/>[*pierre.marguerie@epitech.eu*](mailto:pierre.marguerie@epitech.eu) | [**Lysandre BOURSETTE**](https://github.com/Shuvlyy)<br/>[*lysandre.boursette@epitech.eu*](mailto:lysandre.boursette@epitech.eu) | [**Nathan JEANNOT**](https://github.com/nl1x)<br/>[*nathan.jeannot@epitech.eu*](mailto:nathan.jeannot@epitech.eu) | [**Louis PERSIN**](https://github.com/electroniciv)<br/>[*louis.persin@epitech.eu*](mailto:louis.persin@epitech.eu) | [**Esteban BOUYAULT-YVANEZ**](https://github.com/Babouye)<br/>[*esteban.bouyault-yvanez@epitech.eu*](mailto:esteban.bouyault-yvanez@epitech.eu) |
+
+<div align="right">
+###### An [<img src="https://newsroom.ionis-group.com/wp-content/uploads/2023/09/epitech-2023-logo-m.png" alt="Epitech" height=10/>](https://www.epitech.eu/) project
+</div>
