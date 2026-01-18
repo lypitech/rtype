@@ -94,7 +94,7 @@ jobs:
 
             - name: Build Project
               shell: bash
-              run: cmake --build lib/rtnt/build --config Release --parallel
+              run: cmake --build lib/rtnt/build --config Release
 
             - name: Run Tests
               working-directory: lib/rtnt/build
