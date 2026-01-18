@@ -10,7 +10,7 @@ struct Animation
     int current_frame;
     float frame_time;
     float elapsed_time;
-    int frame_with;
+    int frame_width;
     int frame_height;
 };
 }  // namespace components
