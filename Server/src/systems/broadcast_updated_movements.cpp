@@ -18,11 +18,7 @@ void BroadcastUpdatedMovements::apply(rtecs::ECS& ecs)
 
     group.apply([&](const rtecs::types::EntityID id, Position& pos) {
         if (pos.isUpdated) {
-            const packet::UpdatePosition packet = {static_cast<uint32_t>(id),
-                                                   static_cast<uint16_t>(pos.x),
-                                                   static_cast<uint16_t>(pos.y),
-                                                   0,
-                                                   0};
+            const packet::UpdatePosition packet = {id, pos.x, pos.y, 0, 0};
 
             _lobby.broadcast(packet);
             pos.isUpdated = false;

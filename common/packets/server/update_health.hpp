@@ -15,7 +15,7 @@ struct UpdateHealth
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr rtnt::core::packet::Name kName = "UPDATE_HEALTH";
 
-    uint32_t id;
+    rtecs::types::EntityID id;
     uint32_t health;
 
     template <typename Archive>

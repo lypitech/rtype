@@ -16,8 +16,8 @@ struct UpdateEntityState
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "UPDATE_ENTITY_STATE";
 
-    uint32_t id;    ///< The id of the entity to update.
-    uint8_t state;  ///< The current state of the entity.
+    rtecs::types::EntityID id;  ///< The id of the entity to update.
+    uint8_t state;              ///< The current state of the entity.
 
     template <typename Archive>
     void serialize(Archive& ar)
