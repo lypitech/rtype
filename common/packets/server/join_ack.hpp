@@ -24,7 +24,7 @@ struct JoinAck
     template <typename Archive>
     void serialize(Archive& ar)
     {
-        ar & id & gameState & status;
+        ar & id & roomId & gameState & status;
     }
 };
 
