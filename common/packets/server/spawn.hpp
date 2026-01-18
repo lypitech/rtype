@@ -15,7 +15,7 @@ struct Spawn
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "SPAWN";
 
-    uint32_t id;                    ///< The id of the entity for future reference
+    rtecs::types::EntityID id;      ///< The id of the entity for future reference
     std::vector<uint64_t> bitmask;  ///< The index of the activated bytes.
     std::vector<uint8_t> content;   ///< The content of the components.
 
