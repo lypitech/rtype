@@ -32,18 +32,24 @@ struct AnimationConfig
     float frameTime;
     int frameWidth;
     int frameHeight;
+    bool loop;
 };
 
 static const std::unordered_map<entity::Type, AnimationConfig> entityTypeToAnimation = {
     {entity::Type::kPlayer,
-     {5, 0.1f, 33, 15}},  // {Number of frames, Time per frame, Frame width, Frame height}
-    {entity::Type::kEnemy, {8, 0.15f, 32, 32}},
-    {entity::Type::kBullet, {3, 0.0f, 18, 14}}};
+     {5,
+      0.15f,
+      33,
+      15,
+      true}},  // {Number of frames, Time per frame, Frame width, Frame height, Loop}
+    {entity::Type::kEnemy, {8, 0.15f, 32, 32, true}},
+    {entity::Type::kBullet, {3, 0.15f, 18, 14, false}},
+};
 
 inline AnimationConfig typeToAnimation(const entity::Type& type)
 {
     if (!entityTypeToAnimation.contains(type)) {
-        return {1, 0.0f, 0, 0};
+        return {1, 0.0f, 0, 0, false};
     }
     return entityTypeToAnimation.at(type);
 }
