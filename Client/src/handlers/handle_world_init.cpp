@@ -11,19 +11,14 @@ void handleWorldInit(WorldInit packet,
 {
     LOG_TRACE_R2("Handling WorldInit packet.");
     toolbox.engine.setGameState(packet.state);
+    const auto& binding_map = toolbox.serverToClient;
     for (size_t i = 0; i < packet.bitsets.size(); i++) {
-        auto& binding_map = toolbox.serverToClient;
-        const std::unique_ptr<rtecs::ECS>& ecs = toolbox.engine.getEcs();
-
         if (binding_map.contains(packet.ids[i])) {
-            return;
+            LOG_TRACE_R1("Entity {} already exists.", packet.ids[i]);
+            continue;
         }
-        LOG_TRACE_R1("Creating new entity.");
-        const rtecs::types::EntityID real = ecs->preRegisterEntity();
-        binding_map.emplace(packet.ids[i], real);
-        using Bitset = rtecs::bitset::DynamicBitSet;
-        toolbox.componentFactory.apply(
-            *ecs, real, Bitset::deserialize(packet.bitsets[i]), packet.entities[i]);
+        const Spawn s{packet.ids[i], packet.bitsets[i], packet.entities[i]};
+        handleSpawn(s, toolbox);
     }
 }
 
