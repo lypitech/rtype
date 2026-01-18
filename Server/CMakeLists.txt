@@ -34,6 +34,7 @@ add_executable(${PROJECT_NAME}
     src/systems/apply_movement.cpp
     src/systems/apply_enemy_movement.cpp
     src/systems/broadcast_updated_movements.cpp
+    src/systems/apply_bullet_movement.cpp
     src/systems/broadcast_dead_entities.cpp
 )
 

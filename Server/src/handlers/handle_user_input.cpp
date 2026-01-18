@@ -8,21 +8,20 @@
 #include "packets/server/update_position.hpp"
 #include "rteng.hpp"
 
-static void spawnBullet(const rtecs::types::EntityID& id,
+static void spawnBullet(const rtecs::types::EntityID,
                         Lobby& lobby,
-                        const components::Position& pos,
-                        const packet::UserInput& packet)
+                        const components::Position pos,
+                        const packet::UserInput packet)
 {
     if (packet.input_mask & static_cast<uint8_t>(game::Input::kShoot)) {
         using namespace components;
-        lobby.spawnEntity<Type, Position, Owner, Velocity, Hitbox, State, Collision>(
+        lobby.spawnEntity<Type, Position, Owner, Hitbox, Collision, State>(
             {entity::Type::kBullet},
-            {pos.x, pos.y},
-            {id},
-            {20, 0},
+            {pos.x + 100, pos.y + 20, false},
+            {214},
             {true, 75, 35},
-            {entity::state::EntityAlive},
-            {});
+            {false},
+            {entity::state::EntityAlive});
     }
 }
 

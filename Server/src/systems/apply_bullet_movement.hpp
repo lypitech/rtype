@@ -1,14 +1,18 @@
 #pragma once
 
+#include "lobby/lobby.hpp"
 #include "rtecs/systems/ASystem.hpp"
 
 namespace server::systems {
 
-class ApplyEnemyMovement final : public rtecs::systems::ASystem
+class ApplyBulletMovement final : public rtecs::systems::ASystem
 {
 public:
-    explicit ApplyEnemyMovement();
+    explicit ApplyBulletMovement(Lobby& lobby);
     void apply(rtecs::ECS& ecs) override;
+
+private:
+    Lobby& _lobby;
 };
 
 }  // namespace server::systems

@@ -163,7 +163,7 @@ public:
             _players[session] = id;
         }
         const auto& [bitset, content] = _engine.getEntityInfos(components::GameComponents{}, id);
-        packet::Spawn p = {static_cast<uint32_t>(id), bitset, content};
+        packet::Spawn p = {id, bitset, content};
         broadcast(p);
         return id;
     }
