@@ -92,7 +92,7 @@ void Manager::joinRoom(const packet::server::SessionPtr& session,
             _outGoing.push({{session}, packet::JoinAck{0, 0, game::state::GameMenu, false}});
             return;
         }
-        roomId = lobbyId - 1;
+        roomId = lobbyId;
     }
     std::unique_lock lock(_mutex);
     if (_lobbies.contains(roomId)) {
