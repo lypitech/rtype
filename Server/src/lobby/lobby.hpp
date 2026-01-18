@@ -180,6 +180,8 @@ public:
      */
     void changeGameState(const uint64_t& gameState);
 
+    std::vector<components::Position> getPlayerPositions();
+
     bool hasPlayerAlive();
 
     void restart();
