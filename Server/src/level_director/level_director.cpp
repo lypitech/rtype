@@ -115,7 +115,7 @@ void Director::update(const float dt,
                      x,
                      y);
         using namespace components;
-        lobby.spawnEntity<Position, Type, Hitbox, Velocity, Collision, Value, MoveSet>(
+        lobby.spawnEntity<Position, Type, Hitbox, Velocity, Collision, Value, State, MoveSet>(
             {x, y},
             {group.type},
             typeToHitbox(group.type),
