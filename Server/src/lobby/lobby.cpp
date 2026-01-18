@@ -22,6 +22,7 @@ Lobby::Lobby(const lobby::Id id,
       _levelDirector()
 {
     LOG_INFO("Creating new lobby.");
+    _engine.setGameState(game::state::GameWaiting);
 }
 
 lobby::Id Lobby::getRoomId() const { return _roomId; }
