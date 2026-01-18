@@ -12,6 +12,7 @@ static constexpr std::string_view BULLET_TEXTURE_PATH = "Client/assets/sprites/b
 
 void gui::AssetManager::init()
 {
+    _background = std::make_unique<gui::Texture>(BACKGROUND_TEXTURE_FILEPATH.data());
     size_t entityCount = static_cast<size_t>(entity::Type::kBullet) + 1;
     _textures.reserve(entityCount);
 
@@ -36,6 +37,14 @@ const gui::Texture& gui::AssetManager::getTexture(entity::Type id) const
         return _textures[0];
     }
     return _textures[index];
+}
+
+const Texture2D& gui::AssetManager::getBackground() const
+{
+    if (!_background) {
+        return _textures.back().getTexture();
+    }
+    return _background->getTexture();
 }
 
 const gui::Texture& gui::AssetManager::getUITexture(gui::UIAsset id) const

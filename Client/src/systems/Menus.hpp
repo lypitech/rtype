@@ -119,7 +119,6 @@ private:
     std::shared_ptr<Font> _basicFont;
     std::shared_ptr<Font> _dyslexicFont;
     rteng::GameEngine& _engine;
-    gui::Texture _texture;
     std::vector<gui::Button> _buttons;
 };
 

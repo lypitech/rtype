@@ -49,8 +49,7 @@ MenuRenderer::MenuRenderer(client::Lobby& lobby,
     : ASystem("MenuRenderer"),
       _service(service),
       _lobby(lobby),
-      _engine(engine),
-      _texture(BACKGROUND_TEXTURE_FILEPATH.data())
+      _engine(engine)
 {
     _buttons.reserve(5);
 
@@ -125,8 +124,6 @@ void MenuRenderer::apply(rtecs::ECS&)
     BeginDrawing();
 
     ClearBackground(GREEN);
-    DrawTexture(_texture.getTexture(), 0, 0, WHITE);
-
     if (menuState == menu::state::MenuLobby) {
         renderPreGameMenu();
     }
