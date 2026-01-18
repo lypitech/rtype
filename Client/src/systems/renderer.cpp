@@ -9,11 +9,9 @@
 
 namespace systems {
 
-Renderer::Renderer(bool& shouldStop,
-                   rteng::GameEngine& engine)
+Renderer::Renderer(bool& shouldStop)
     : ASystem("Renderer"),
-      _closing(shouldStop),
-      _engine(engine)
+      _closing(shouldStop)
 {
     SetTraceLogLevel(LOG_NONE);
     InitWindow(1920, 1080, "Renderer");
