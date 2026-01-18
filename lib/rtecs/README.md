@@ -1,12 +1,34 @@
 # `rtecs`
 
-`rtecs` is a library that implement an optimised Entity Component System for C++.
+`rtecs` is a library that implement an optimized Entity Component System for 
+C++.
+
+It provides a flexible architecture to decouple data (Components) from logic 
+(Systems), allowing for high-performance game development.
 
 ## Features
-- Register entities and its components using a bitmask.
-- Register components and systems.
-- Apply all systems
-- Apply specific system from its ID.
+- **Sparse set storage:** High-performance component storage ensuring data locality 
+  and O(1) lookups.
+- **Dynamic bitsets:** Efficient bitmasking to handle entity-component associations 
+  dynamically.
+- **Flexible systems:** Register and run logic systems globally or individually by 
+  ID.
+- **Group views:** Create SparseGroups to iterate efficiently over entities 
+  possessing specific subsets of components.
+- **Safe architecture:** Automatic validation of entity existence and component 
+  integrity.
+
+## Compatibility
+
+|        |                    macOS (AppleClang)                    |                Linux (G++)                |                      Windows (MSVC)                     |
+|-------:|:--------------------------------------------------------:|:-----------------------------------------:|:-------------------------------------------------------:|
+|  arm64 | ✅<br/>- `AppleClang 17.0.0.17000603`<br/>- `CMake 4.1.2` |                    ☑️                     |                            ☑️                           |
+| x86_64 |                            ☑️                            | ✅<br/>- `GNU 15.2.0`<br/>- `CMake 3.31.6` | ✅<br/>- `MSVC 19.50.35718.0`<br/>- `CMake 4.11.1-msvc1` |
+
+✅: Tested on real hardware  
+☑️: Compiled but not physically tested
+
+The indicated versions are 100% functional. Any older version MIGHT NOT work.
 
 ## Installation
 
@@ -14,7 +36,7 @@
 
 - C++ Compiler that supports C++23 (Clang 10+, GCC 10+, MSVC 19.28+)
 - [CMake](https://cmake.org) version 3.20 or higher
-- [Conan](https://conan.io) package manager
+- [Conan](https://conan.io) package manager version 2.22.2
 
 ### Using the library in your project
 
@@ -27,6 +49,35 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
         rtecs
 )
+```
+
+### Building tests
+
+`rtecs` comes with a suite of unit tests (that uses
+[GTest](https://github.com/google/googletest)).  
+You can build them by following these steps:
+
+1. Fetch dependencies with Conan
+```sh
+conan install . --output-folder=build/ --build=missing -s build_type=Debug
+```
+
+2. Configure the project
+```sh
+cmake -S . -B build/ \
+    -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DRECS_BUILD_TESTS=ON
+```
+
+3. Build the library
+```sh
+cmake --build build/ # --parallel for faster compilation
+```
+
+4. Run the unit tests suite
+```sh
+ctest --test-dir build/ --output-on-failure
 ```
 
 ## How to use
