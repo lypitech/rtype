@@ -43,11 +43,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 if(USE_CONAN)
     find_package(asio REQUIRED)
-    if(TARGET asio::asio)
-        set(ASIO_TARGET asio::asio)
-    else()
-        set(ASIO_TARGET asio)
-    endif()
+    set(ASIO_TARGET asio::asio)
 else()
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(ASIO REQUIRED IMPORTED_TARGET asio)
