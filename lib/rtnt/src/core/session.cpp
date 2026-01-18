@@ -354,7 +354,7 @@ void Session::updateAcknowledgeInfo(uint32_t sequenceId)
         uint32_t shift = sequenceId - _remoteAcknowledgeId;
 
         if (shift > 32) {
-            for (size_t i = 0; i < 32; ++i) {
+            for (uint32_t i = 0; i < 32; ++i) {
                 if (_remoteAcknowledgeBitfield & (1U << i)) {
                     _oldPacketHistory.push_back(_remoteAcknowledgeId - (i + 1));
                 }
@@ -362,7 +362,7 @@ void Session::updateAcknowledgeInfo(uint32_t sequenceId)
             _oldPacketHistory.push_back(_remoteAcknowledgeId);
             _remoteAcknowledgeBitfield = 0;
         } else {
-            for (size_t i = 32 - shift; i < 32; ++i) {
+            for (uint32_t i = 32 - shift; i < 32; ++i) {
                 if (_remoteAcknowledgeBitfield & (1U << i)) {
                     _oldPacketHistory.push_back(_remoteAcknowledgeId - (i + 1));
                 }

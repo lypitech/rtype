@@ -126,7 +126,7 @@ private:
     bool _hasReceivedRemotePacket = false;
 
     packet::SequenceId _localSequenceId = 0;
-    packet::SequenceId _remoteSequenceId = 0;
+    // packet::SequenceId _remoteSequenceId = 0;
 
     packet::AcknowledgeId _remoteAcknowledgeId = 0;
     packet::AcknowledgeBitfield _remoteAcknowledgeBitfield = 0;
