@@ -10,38 +10,35 @@ static constexpr std::string_view BULLET_TEXTURE_PATH = "Client/assets/sprites/b
 // static constexpr std::string_view UI_MENU_BG_PATH = "../../Client/assets/ui/MenuBackground.png";
 // static constexpr std::string_view UI_PAUSE_BTN_PATH = "../../Client/assets/ui/PauseButton.png";
 
-void AssetManager::init()
+void gui::AssetManager::init()
 {
     size_t entityCount = static_cast<size_t>(entity::Type::kBullet) + 1;
     _textures.reserve(entityCount);
 
-    _textures.emplace_back(gui::PLAYER_TEXTURE_FILEPATH.data(), 0.2f);
-
-    _textures.emplace_back(ENEMY_TEXTURE_PATH.data(), 0.15f);
-
-    _textures.emplace_back(BULLET_TEXTURE_PATH.data(), 0.1f);
-
-    // _uiTextures[gui::UIAsset::kMenuBackground] =
-    //     std::make_unique<gui::Texture>(UI_MENU_BG_PATH.data(), 1.0f);
-    // _uiTextures[gui::UIAsset::kPauseButton] =
-    //     std::make_unique<gui::Texture>(UI_PAUSE_BTN_PATH.data(), 0.5f);
+    _textures.emplace_back(gui::PLAYER_TEXTURE_FILEPATH.data(), 1.0f);
+    _textures.emplace_back(ENEMY_TEXTURE_PATH.data(), 1.0f);
+    _textures.emplace_back(BULLET_TEXTURE_PATH.data(), 1.0f);
 
     LOG_INFO("AssetManager: Loaded {} game textures and {} UI textures",
              _textures.size(),
              _uiTextures.size());
+    // _uiTextures[gui::UIAsset::kMenuBackground] =
+    //     std::make_unique<gui::Texture>(UI_MENU_BG_PATH.data(), 1.0f);
+    // _uiTextures[gui::UIAsset::kPauseButton] =
+    //     std::make_unique<gui::Texture>(UI_PAUSE_BTN_PATH.data(), 0.5f);
 }
 
-const gui::Texture& AssetManager::getTexture(entity::Type id) const
+const gui::Texture& gui::AssetManager::getTexture(entity::Type id) const
 {
     size_t index = static_cast<size_t>(id);
     if (index >= _textures.size()) {
         LOG_ERR("AssetManager: Attempting to access unknown game texture index {}", index);
-        return _textures[0];  // Return player texture as fallback
+        return _textures[0];
     }
     return _textures[index];
 }
 
-const gui::Texture& AssetManager::getUITexture(gui::UIAsset id) const
+const gui::Texture& gui::AssetManager::getUITexture(gui::UIAsset id) const
 {
     auto it = _uiTextures.find(id);
     if (it == _uiTextures.end()) {
