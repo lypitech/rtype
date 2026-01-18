@@ -40,7 +40,7 @@ class Lobby;
 
 namespace lobby {
 
-using Id = uint32_t;
+using Id = uint16_t;
 using Callback = std::function<void(Lobby&)>;
 
 }  // namespace lobby

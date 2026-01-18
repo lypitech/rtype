@@ -1,4 +1,5 @@
 #pragma once
+
 #include "enums/packets.hpp"
 #include "rtnt/core/packet.hpp"
 
@@ -16,8 +17,9 @@ struct JoinAck
     static constexpr rtnt::core::packet::Name kName = "JOIN_ACK";
 
     rtecs::types::EntityID id;  ///< The id of the entity assigned to the player.
-    uint64_t gameState;         ///< The current state of the game.
-    uint8_t status;             ///< The status of the request, a boolean.
+    uint16_t roomId;
+    uint64_t gameState;  ///< The current state of the game.
+    uint8_t status;      ///< The status of the request, a boolean.
 
     template <typename Archive>
     void serialize(Archive& ar)
