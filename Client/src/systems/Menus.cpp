@@ -117,13 +117,13 @@ void MenuRenderer::renderPreGameMenu()
 void MenuRenderer::apply(rtecs::ECS&)
 {
     if (_engine.getGameState() == game::state::GameRunning || WindowShouldClose()) {
+        if (!WindowShouldClose()) {
+            EndDrawing();
+        }
         return;
     }
     const size_t menuState = _engine.getMenuState();
 
-    BeginDrawing();
-
-    ClearBackground(GREEN);
     if (menuState == menu::state::MenuLobby) {
         renderPreGameMenu();
     }
