@@ -12,5 +12,6 @@ struct Animation
     float elapsed_time;
     int frame_width;
     int frame_height;
+    bool loop;
 };
 }  // namespace components
