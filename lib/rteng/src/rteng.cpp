@@ -10,6 +10,15 @@ void GameEngine::setGameState(const uint64_t& newState) { _gameState = newState;
 
 uint64_t GameEngine::getGameState() const { return _gameState; }
 
+std::vector<rtecs::types::EntityID> GameEngine::clearEcs() const
+{
+    const std::vector<rtecs::types::EntityID> ids = _ecs->getAllEntities();
+    for (const auto& id : ids) {
+        _ecs->destroyEntity(id);
+    }
+    return ids;
+}
+
 void GameEngine::setMenuState(const uint64_t& newState) { _menuState = newState; }
 
 uint64_t GameEngine::getMenuState() const { return _menuState; }
