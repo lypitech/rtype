@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "components/hitbox.hpp"
 #include "enums/input.hpp"
 #include "packets/client/user_input.hpp"
 #include "raylib.h"
@@ -53,14 +54,16 @@ static button::State updateMouseButtonState(const MouseButton key,
     return static_cast<button::State>(out);
 }
 
-void IO::apply(rtecs::ECS&)
+void IO::apply(rtecs::ECS& ecs)
 {
+    static bool show = false;
     _input.up = updateButtonState(KEY_UP, _input.up);
     _input.down = updateButtonState(KEY_DOWN, _input.down);
     _input.left = updateButtonState(KEY_LEFT, _input.left);
     _input.right = updateButtonState(KEY_RIGHT, _input.right);
     _input.action1 = updateButtonState(KEY_SPACE, _input.action1);
     _input.action2 = updateButtonState(KEY_R, _input.action2);
+    _input.hitbox = updateButtonState(KEY_H, _input.hitbox);
     _input.mouse.x = GetMouseX();
     _input.mouse.y = GetMouseY();
     _input.mouse.leftButton = updateMouseButtonState(MOUSE_LEFT_BUTTON, _input.mouse.leftButton);
@@ -78,11 +81,13 @@ void IO::apply(rtecs::ECS&)
     if (_input.right == button::State::DOWN || _input.right == button::State::PRESSED) {
         input.input_mask |= static_cast<uint8_t>(game::Input::kRight);
     }
-    if (_input.mouse.rightButton == button::State::PRESSED) {
+    if (_input.action1 == button::State::PRESSED) {
         input.input_mask |= static_cast<uint8_t>(game::Input::kShoot);
     }
-    if (_input.action1 == button::State::PRESSED) {
-        _service.send(packet::Join{"A new player", 0});
+    if (_input.hitbox == button::State::PRESSED) {
+        show = !show;
+        ecs.group<components::Hitbox>().apply(
+            [](const rtecs::types::EntityID&, components::Hitbox& h) { h.shown = show; });
     }
     if (input.input_mask == 0) {
         return;
@@ -91,4 +96,3 @@ void IO::apply(rtecs::ECS&)
 }
 
 }  // namespace systems
-

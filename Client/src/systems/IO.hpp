@@ -33,6 +33,7 @@ struct IOValue
     button::State right;
     button::State action1;
     button::State action2;
+    button::State hitbox;
     Mouse mouse;
 };
 

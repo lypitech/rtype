@@ -58,6 +58,9 @@ void Renderer::apply(rtecs::ECS& ecs)
 
             if (hitboxOpt.has_value()) {
                 const auto& hb = hitboxOpt.value().get();
+                if (hb.shown) {
+                    DrawRectangleLinesEx(Rectangle{pos.x, pos.y, hb.width, hb.height}, 5, RED);
+                }
                 if (sourceRec.width != 0) {
                     scaleX = hb.width / sourceRec.width;
                 }
