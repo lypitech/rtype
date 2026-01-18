@@ -14,14 +14,12 @@ struct Lobby;
 
 #define SHARE_FONT(s) std::make_shared<Font>(LoadFontEx(s, FONT_SIZE, nullptr, 250));
 
-static constexpr std::string_view START_BUTTON_FILEPATH = "../../Client/assets/buttons/start.png";
-static constexpr std::string_view PLAY_BUTTON_FILEPATH = "../../Client/assets/buttons/play.png";
-static constexpr std::string_view CREDITS_BUTTON_FILEPATH =
-    "../../Client/assets/buttons/credits.png";
-static constexpr std::string_view BACKGROUND_TEXTURE_FILEPATH =
-    "../../Client/assets/background.png";
-static constexpr std::string_view BASIC_FONT = "../../Client/assets/basic.ttf";
-static constexpr std::string_view DYSLEXIC_FONT = "../../Client/assets/dyslexic.ttf";
+static constexpr std::string_view START_BUTTON_FILEPATH = "Client/assets/buttons/start.png";
+static constexpr std::string_view PLAY_BUTTON_FILEPATH = "Client/assets/buttons/play.png";
+static constexpr std::string_view CREDITS_BUTTON_FILEPATH = "Client/assets/buttons/credits.png";
+static constexpr std::string_view BACKGROUND_TEXTURE_FILEPATH = "Client/assets/background.png";
+static constexpr std::string_view BASIC_FONT = "Client/assets/basic.ttf";
+static constexpr std::string_view DYSLEXIC_FONT = "Client/assets/dyslexic.ttf";
 
 static constexpr Color SEMI_WHITE = {255, 255, 255, 255 / 2};
 
