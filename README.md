@@ -1,168 +1,167 @@
-<div align="center"><img src="md/assets/R-Type_Banner.png" alt="R-Type banner"></div>
+<div align="center">
+  <img src="md/assets/R-Type_Logo_2048.png" alt="R-Type Logo" height="120">
 
 # CPP-500 ‒ `R-Type`
-
 ###### An [<img src="https://newsroom.ionis-group.com/wp-content/uploads/2023/09/epitech-2023-logo-m.png" alt="Epitech" height=10/>](https://www.epitech.eu/) project
 
-## Project Purpose
+**A multithreaded networked ECS-based Game Engine & R-Type recreation.**
 
-This project is developed as part of the EPITECH Advanced C++ curriculum.  
-Its primary objective is to design and implement an ECS-based game engine built on a client–server architecture.  
-The engine is intended to provide a solid foundation for real-time gameplay, efficient communication between components,
-and scalable system design.
+[![C++ Standard](https://img.shields.io/badge/C%2B%2B-23-blue.svg?style=flat-square&logo=c%2B%2B)](https://en.cppreference.com/w/cpp/23)
+[![License](https://img.shields.io/badge/license-Zlib-green.svg?style=flat-square)](LICENSE.md)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/lypitech/rtype/ci-cd.yml?branch=main&style=flat-square)](https://github.com/lypitech/rtype/actions)
 
-To showcase and validate the engine’s features, the project includes a full recreation of the classic 1987 game
-[_R-Type_](https://en.wikipedia.org/wiki/R-Type).  
-This recreation serves both as a technical demonstration and as a practical benchmark, ensuring that the engine supports
-entity management, networking, rendering, event handling, and other core gameplay mechanics.
+  <p>
+    <a href="#about">About</a> •
+    <a href="#compatibility">Compatibility</a> •
+    <a href="#getting-started">Getting Started</a> •
+    <a href="#documentation">Documentation</a> •
+    <a href="#team">Team</a>
+  </p>
+</div>
 
-## Dependencies / Requirements / Supported platforms
+---
 
-Make sure to clone the repository and its submodules:
+## About
 
-```sh
-git clone --recurse-submodules https://github.com/lypitech/rtype.git
+This project is developed as part of the [Epitech](https://www.epitech.eu/) 
+Advanced C++ curriculum (Year 3).  
+
+The primary goal of it is to design and implement a robust game engine 
+featuring:
+- **An ECS (`rtecs`)**: A high-performance Entity Component System for 
+  modular game logic.
+- **High level network library (`rtnt`)**: A cross-platform, asynchronous
+  network library built on [Asio](https://think-async.com/Asio/) providing 
+  reliable UDP communication.
+- **Multithreading**: Decoupled game logic, rendering, and network I/O.
+- **Cross-platform support**: Can run on macOS, Linux and Windows on `arm64` and 
+  `x86_64` CPU architectures.
+
+To demonstrate the engine, we have recreated the mechanics of the classic 1987 
+arcade game [R-Type](https://en.wikipedia.org/wiki/R-Type), serving as a 
+benchmark for real-time multiplayer performance.
+
+## Compatibility
+
+This project is developed using **C++23**.  
+It has been strictly tested and validated on the following environments:
+
+| Platform                                       | Compiler / Toolchain         | CMake          | Status |
+|:-----------------------------------------------|:-----------------------------|:---------------|:------:|
+| macOS (`arm64`) 26.2 Tahoe                     | AppleClang `17.0.0.17000603` | `4.1.2`        |   ✅    |
+| Linux (`x86_64`) Xubuntu 25.10                 | GNU `15.2.0`                 | `3.31.6`       |   ✅    |
+| Windows (`x86_64`) 10 IoT Enterprise LTSC 2024 | MSVC `19.50.35718.0`         | `4.11.1-msvc1` |   ✅    |
+
+> [!WARNING]
+> While other configurations might work, they are not officially supported.
+> Ensure your environment matches the C++23 requirements.
+
+## Getting started
+
+### Prerequisites
+
+- [Git](https://git-scm.com)
+- C++ compiler supporting C++23 ([GCC](https://gcc.gnu.org) 10+, [Clang](https://clang.llvm.org) 10+, [MSVC](https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B) 19.28+)
+- [CMake](https://cmake.org) 3.20+
+- [Conan](https://conan.io/) 2.0+
+
+### Installation & Build
+
+1. Clone the repository along with its submodules:
+    ```sh
+    git clone --recurse-submodules https://github.com/lypitech/rtype.git
+    cd rtype
+    ```
+
+2. Install dependencies:
+    ```sh
+    conan install . --output-folder=build/ --build=missing -s compiler.cppstd=23
+    ```
+    > [!NOTE]
+    > Make sure to properly [setup Conan](docs/setup_conan.md) on your machine 
+    > before.
+
+3. Compile the project using CMake:
+    ```shell
+    # Generate build files
+    cmake -B build/ -DCMAKE_BUILD_TYPE=Release
+    
+    # Build (use --parallel for faster compilation)
+    cmake --build build/ --parallel
+    ```
+
+Server and client binaries will respectively be stored in 
+`./build/Server/r-type_server` and `./build/Client/r-type_client`.
+
+### Using Nix
+
+If you are a Nix user, you can run the project directly:
+```shell
+nix run "github:lypitech/rtype#r-type_server" -- ...
+nix run "github:lypitech/rtype#r-type_client" --impure -- ...
 ```
 
-This project uses [`Conan`](https://conan.io/) as its package manager.  
-You can read how to setup `Conan` in [docs/setup_conan.md](/docs/setup_conan.md).
-
-## Build
-
-This project uses **CMake** as its build system.
-
-### Build & Run
-
-```sh
-# Configure and generate build files
-conan install . --output-folder=build/ --build=missing -s compiler.cppstd=23
-cmake -B build/
-
-# Compile the project
-cmake --build build/
-```
-
-If you want the build to be faster (to use all of your CPU cores), simply add `--parallel` to the options!
-
-### Other Targets
-
-You can use the following custom build targets:
-
-| Target  | Description                                                    |
-| ------- | -------------------------------------------------------------- |
-| `re`    | Rebuilds the project from scratch.                             |
-| `debug` | Builds the project with debugging symbols and logging enabled. |
-
-Usage example:
-
-```sh
-cmake --build build --target clean
-cmake --build build --target debug
-```
-
-### nix
-
-You can also run the project via [nix](https://nixos.org/download/#download-nix):
-```
-nix run "github:lypitech/rtype#r-type_client" --impure -- -h 127.0.0.1 -p 4242
-nix run "github:lypitech/rtype#r-type_server" -- -p 4242 --config waveConfig.json
-```
 > [!NOTE]
-> Please note the `--impure` flag as it is necessary in order to run in a non-NixOS graphical environement.
+> Please note the `--impure` flag as it is necessary in order to run in a 
+> non-NixOS graphical environement.
 
-### Testing
+### Usage
 
-You can run tests by running:
+This project follows a Client-Server architecture.  
+You MUST start the Server before any Clients.
+
+1. Start the server
+    ```shell
+    # Usage: ./r-type_server -p <PORT> --config <CONFIG PATH>
+    ./build/Server/r-type_server -p 4242 --config waveConfig.json
+    ```
+
+2. Start a client
+    ```shell
+    # Usage: ./r-type_client -h <SERVER_IP> -p <SERVER_PORT>
+    ./build/Client/r-type_client -h 127.0.0.1 -p 4242
+    ```
+
+### Controls
+
+| Action | Input                                               |
+|--------|-----------------------------------------------------|
+| Move   | <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> |
+| Shoot  | <kbd>Space</kbd>                                    |
+| Exit   | <kbd>Esc</kbd>                                      |
+
+## Testing
+You can run the unit tests suite by running:
 
 ```sh
 cmake --build build/ --target test
 cd build/
+
 ctest --output-on-failure
 ```
 
-## Usage instructions
+## Documentation
 
-To play the game, you must launch the **Server** first, followed by one or more **Clients**.
+For deeper technical details regarding the engine's modules and research, please 
+refer to our internal documentation or the Wiki.
 
-> [!IMPORTANT]
-> The command-line flags defined below are **mandatory**. Failing to provide them will cause the application to crash.
-
-### 1. Starting the Server
-
-The server requires a listening port to be specified using the `-p` flag.
-
-```sh
-# Syntax
-./build/Server/r-type_server -p <port>
-
-# Example: Start server on port 4242
-./build/Server/r-type_server -p 4242
-```
-
-### 2. Starting the Client
-
-The client requires both the target host IP (-h) and the target port (-p) to be specified.
-
-```sh
-# Syntax
-./build/Client/r-type_client -h <ip_address> -p <port>
-
-# Example: Connect to localhost on port 4242
-./build/Client/r-type_client -h 127.0.0.1 -p 4242
-
-# Example: Connect to a remote server
-./build/Client/r-type_client -h 192.168.1.50 -p 4242
-```
-
-### Controls
-
-Once in the game, use the following keys to pilote your ship:
-| Action | Key (Keyboard) |
-| :--- | :--- |
-| Move | Arrow Keys |
-| Exit | Escape |
-
-## Quick-start information
-
-Want to play immediately? Follow these steps to build and run a local game.
-
-**1. Build the project:**
-Open a terminal in the project root and run:
-
-```sh
-git clone --recurse-submodules https://github.com/lypitech/rtype.git
-cd rtype
-conan install . --output-folder=build/ --build=missing -s compiler.cppstd=23
-cmake -B build/ -DCMAKE_BUILD_TYPE=Release
-cmake --build build/ --parallel
-```
-
-**2. Run the Server**
-Open a **new terminal** inside the project root and run this:
-
-```sh
-./build/Server/r-type_server -p 4242
-```
-
-**3. Run the Client**
-Open another **new terminal** inside the project root and run this:
-
-```sh
-./build/Client/r-type_client -h 127.0.0.1 -p 4242
-```
-
-> Note: You can open multiple terminal to run multiple clients at the same time !
-
-## Useful links
+- [Research papers](docs/researches)
+- Network library (`rtnt`):
+  - [Library README](lib/rtnt/README.md)
+  - [Protocol RFC (`rtntp`)](docs/rtntp.txt)
+- Entity Component System (`rtecs`):
+  - [Library README](lib/rtecs/README.md)
+- General:
+  - [Subject PDF](docs/B-CPP-500_rtype.pdf)
+  - [Appendix PDF](docs/B-CPP-500_rtype_apendix.pdf)
 
 ## License
 
-See [LICENSE](/LICENSE.md).
+This project is licensed under the zlib/libpng License. 
+See the [LICENSE](/LICENSE.md) file for details.
 
-## Authors / contacts
+## Team
 
-louis.persin@epitech.eu  
-lysandre.boursette@epitech.eu  
-nathan.jeannot@epitech.eu  
-pierre.marguerie@epitech.eu  
-esteban.bouyault-yvanez@epitech.eu
+|                          <img src="https://avatars.githubusercontent.com/u/146085057?v=4" width=92>                           |                             <img src="https://avatars.githubusercontent.com/u/123988037?v=4" width=92>                             |                      <img src="https://avatars.githubusercontent.com/u/83085376?v=4" width=92>                      |                      <img src="https://avatars.githubusercontent.com/u/122123024?v=4" width=92>                       |                                    <img src="https://avatars.githubusercontent.com/u/146708962?v=4" width=92>                                     |
+|:-----------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------:|
+| [**Pierre MARGUERIE**](https://github.com/PierreMarguerie)<br/>[*pierre.marguerie@epitech.eu*]("pierre.marguerie@epitech.eu") | [**Lysandre BOURSETTE**](https://github.com/Shuvlyy)<br/>[*lysandre.boursette@epitech.eu*]("mailto:lysandre.boursette@epitech.eu") | [**Nathan JEANNOT**](https://github.com/nl1x)<br/>[*nathan.jeannot@epitech.eu*]("mailto:nathan.jeannot@epitech.eu") | [**Louis PERSIN**](https://github.com/electroniciv)<br/>[*louis.persin@epitech.eu*]("mailto:louis.persin@epitech.eu") | [**Esteban BOUYAULT-YVANEZ**](https://github.com/Babouye)<br/>[*esteban.bouyault-yvanez@epitech.eu*]("mailto:esteban.bouyault-yvanez@epitech.eu") |
