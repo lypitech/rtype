@@ -22,7 +22,8 @@ App::App(const unsigned short port,
     registerCallbacks();
     _server.onConnect(
         [](const std::shared_ptr<rtnt::core::Session>&) { LOG_INFO("Accepting new connection"); });
-    _server.onDisconnect([](const std::shared_ptr<rtnt::core::Session>& s) {
+    _server.onDisconnect([this](const std::shared_ptr<rtnt::core::Session>& s) {
+        _lobbyManager.leaveRoom(s);
         LOG_INFO("Disconnected {}", s->getId());
     });
     _server.onMessage([](const std::shared_ptr<rtnt::core::Session>&, rtnt::core::Packet&) {});
