@@ -13,13 +13,13 @@ void handleJoinAck(const JoinAck packet,
     const auto& binding_map = toolbox.serverToClient;
     const rtecs::types::EntityID real = binding_map.at(packet.id);
 
+    toolbox.engine.setGameState(packet.gameState);
+    toolbox.engine.setMenuState(menu::state::MenuLobby);
     if (!binding_map.contains(packet.id)) {
         LOG_TRACE_R3("entity {} cannot try to join, entity not created.", packet.id);
         return;
     }
     toolbox.engine.getEcs()->addEntityComponents<components::Me>(real, {});
-    toolbox.engine.setGameState(packet.gameState);
-    toolbox.engine.setMenuState(menu::state::MenuLobby);
 }
 
 }  // namespace packet::handler
