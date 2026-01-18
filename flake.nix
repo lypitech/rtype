@@ -75,6 +75,29 @@
       ]
       ++ x11Libs;
   in {
+    devShells.${system} = {
+      default =
+        pkgs.mkShell.override {
+          stdenv = pkgs.gcc15Stdenv;
+        } {
+          inputsFrom = [
+            self.packages.${system}.r-type_client
+            self.packages.${system}.r-type_server
+          ];
+          buildInputs = with pkgs;
+            [
+              stdenv.cc.cc.lib
+              cmake
+              conan
+              util-linux
+            ]
+            ++ x11Libs;
+          shellHook = ''
+            export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath ([pkgs.stdenv.cc.cc.lib pkgs.util-linux pkgs.gtest] ++ x11Libs)}:$LD_LIBRARY_PATH"
+          '';
+        };
+    };
+
     packages.${system} = {
       r-type_client = pkgs.gcc15Stdenv.mkDerivation {
         name = "r-type_client";
