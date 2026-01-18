@@ -1,7 +1,7 @@
 # **Why Our R-Type Project Should Use Conan Instead of vcpkg or CPM.cmake**
 
 ## **Overview**
-Our R-Type project depends on **raylib**, and **ASIO**, and needs a dependency manager that is reliable across platforms, works well in CMake, and keeps our builds predictable for every developer. After evaluating **Conan**, **vcpkg**, and **CPM.cmake**, Conan provides the strongest overall workflow for this type of project.
+Our R-Type project depends on **raylib**, **nlohmannjson**, and **ASIO**, and needs a dependency manager that is reliable across platforms, works well in CMake, and keeps our builds predictable for every developer. After evaluating **Conan**, **vcpkg**, and **CPM.cmake**, Conan provides the strongest overall workflow for this type of project.
 
 # **Conan: Key Advantages**
 
