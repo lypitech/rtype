@@ -30,12 +30,12 @@ jobs:
                     pkg-config  \
                     g++-15
 
-            - name: Set GCC 14 as default compiler (Linux)
-              if: matrix.os == 'ubuntu-latest'
-              shell: bash
-              run: |
-                  echo "CC=gcc-15" >> $GITHUB_ENV
-                  echo "CXX=g++-15" >> $GITHUB_ENV
+#            - name: Set GCC 14 as default compiler (Linux)
+#              if: matrix.os == 'ubuntu-latest'
+#              shell: bash
+#              run: |
+#                  echo "CC=gcc-15" >> $GITHUB_ENV
+#                  echo "CXX=g++-15" >> $GITHUB_ENV
 
             - name: Install system dependencies (Mac)
               if: matrix.os == 'macos-latest'
