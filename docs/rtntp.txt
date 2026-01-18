@@ -126,8 +126,6 @@ Status of This Memo
                            If received by the Server, the Server closes the
                            connection.
 
-  
-
 4.  Protocol Operation
 
 4.1.  Handshake
@@ -144,7 +142,7 @@ Status of This Memo
    bitfields for high-efficiency scenarios and explicit Rich ACKs for high
    packet-loss conditions.
 
-4.2.1. Standard Acknowledgement
+4.2.1.  Standard Acknowledgement
 
    Every packet header carries acknowledgment information:
    - Acknowledge ID: The highest Sequence ID received from the remote peer.
@@ -163,7 +161,7 @@ Status of This Memo
    unacknowledged packet out of the bitfield window before an ACK can be
    generated.
 
-4.2.2. Retransmission
+4.2.2.  Retransmission
 
    Packets marked with the kReliable (0x02) or kOrdered (0x04) flag are buffered
    by the sender. If a reliable packet is not acknowledged within RESEND_TIMEOUT
@@ -171,7 +169,7 @@ Status of This Memo
    MAX_RESEND_ATTEMPTS times (default: 8) before the connection is considered
    dead.
 
-4.2.3. Extended Recovery
+4.2.3.  Extended Recovery
 
    In high packet-loss scenarios, the standard 32-bit window may be insufficient
    to represent all missing packets. To handle this, rtntp implements a
