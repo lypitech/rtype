@@ -1,7 +1,7 @@
 # **Why Our R-Type Project Should Use Conan Instead of vcpkg or CPM.cmake**
 
 ## **Overview**
-Our R-Type project depends on **raylib**, **ImGui**, and **ASIO**, and needs a dependency manager that is reliable across platforms, works well in CMake, and keeps our builds predictable for every developer. After evaluating **Conan**, **vcpkg**, and **CPM.cmake**, Conan provides the strongest overall workflow for this type of project.
+Our R-Type project depends on **raylib**, and **ASIO**, and needs a dependency manager that is reliable across platforms, works well in CMake, and keeps our builds predictable for every developer. After evaluating **Conan**, **vcpkg**, and **CPM.cmake**, Conan provides the strongest overall workflow for this type of project.
 
 # **Conan: Key Advantages**
 
@@ -9,10 +9,10 @@ Our R-Type project depends on **raylib**, **ImGui**, and **ASIO**, and needs a d
 Conan uses **profiles** and **lockfiles** to ensure that all developers and CI pipelines use the same compiler settings, dependency versions, and configurations. This prevents inconsistent builds and avoids environment-related bugs.
 
 ### **Efficient CMake Integration**
-Conan's CMake integration is straightforward and modern, allowing us to simply call `find_package()` for raylib, ImGui, and ASIO without manual FetchContent setups or custom build scripts.
+Conan's CMake integration is straightforward and modern, allowing us to simply call `find_package()` for raylib, and ASIO without manual FetchContent setups or custom build scripts.
 
 ### **Binary Caching for Faster Builds**
-Conan can download or locally build dependencies once and reuse them, reducing build times significantly-especially important for raylib and ImGui.
+Conan can download or locally build dependencies once and reuse them, reducing build times significantly-especially important for raylib.
 
 
 # **Why Not vcpkg?**
@@ -45,7 +45,7 @@ CPM is lightweight but insufficient for a real project like R-Type.
 CPM.cmake fetches dependencies using `FetchContent`.
 This means:
 
-- Every developer compiles raylib, ImGui, and ASIO from scratch
+- Every developer compiles raylib and ASIO from scratch
 - No caching
 - Slower builds
 - No central binary management
