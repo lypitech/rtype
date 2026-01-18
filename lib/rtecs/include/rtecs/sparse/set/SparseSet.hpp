@@ -243,12 +243,20 @@ void SparseSet<T>::remove(const size_t id) noexcept
     T &lastComponent = _dense.back();
     size_t &lastEntity = _entities.back();
 
+    size_t movedEntityId = lastEntity;
+
     std::swap(lastComponent, targetComponent);
     std::swap(lastEntity, targetEntity);
 
     _dense.pop_back();
     _entities.pop_back();
     _sparsePages[targetPage].at(targetSparseIndex) = kNullSparseElement;
+
+    if (targetIndex < _dense.size()) {
+        const size_t movedPage = PAGE_OF(movedEntityId, kPageSize);
+        const size_t movedSparseIndex = PAGE_INDEX_OF(movedEntityId, kPageSize);
+        _sparsePages[movedPage][movedSparseIndex] = targetIndex;
+    }
 }
 
 template <typename T>
