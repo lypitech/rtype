@@ -14,78 +14,96 @@ ApplyMovement::ApplyMovement()
 {
 }
 
-void ApplyMovement::apply(rtecs::ECS &ecs)
+void ApplyMovement::apply(rtecs::ECS& ecs)
 {
     using namespace components;
     auto movable = ecs.group<Velocity, Position, Hitbox>();
     auto colliders = ecs.group<Position, Hitbox>();
 
     movable.apply(
-        [&](const rtecs::types::EntityID id, Velocity &vel, Position &pos, const Hitbox &box) {
-            std::optional<std::pair<Position, Hitbox>> collider = std::nullopt;
-
-            pos.isUpdated = true;
-            colliders.apply([&](const rtecs::types::EntityID otherId,
-                                const Position &otherPos,
-                                const Hitbox &otherBox) {
-                if (id == otherId || collider.has_value()) {
-                    return;
-                }
-
-                const Position newRefPos = {pos.x + vel.vx, pos.y + vel.vy};
-                bool isColliding = collide(newRefPos.x, box.width, otherPos.x, otherBox.width);
-                isColliding &= collide(newRefPos.y, box.height, otherPos.y, otherBox.height);
-
-                if (isColliding) {
-                    collider = {otherPos, otherBox};
-                }
-            });
-            applyHorizontalMovement(pos, vel, box, collider);
-            applyVerticalMovement(pos, vel, box, collider);
+        [&](const rtecs::types::EntityID id, Velocity& vel, Position& pos, const Hitbox& box) {
+            handleHorizontalMovement(id, pos, vel, box, colliders);
+            handleVerticalMovement(id, pos, vel, box, colliders);
+            vel.vx = 0;
+            vel.vy = 0;
         });
 }
 
-void ApplyMovement::applyHorizontalMovement(Position &pos,
-                                            Velocity &vel,
-                                            const Hitbox &box,
-                                            const std::optional<std::pair<Position,
-                                                                          Hitbox>> &collider)
+void ApplyMovement::handleHorizontalMovement(const rtecs::types::EntityID id,
+                                             Position& pos,
+                                             const Velocity& vel,
+                                             const Hitbox& box,
+                                             rtecs::sparse::SparseGroup<Position,
+                                                                        Hitbox>& colliders)
 {
-    if (vel.vx != 0 && collider.has_value()) {
-        if (vel.vx > 0) {  // Going right
-            pos.x = collider.value().first.x - box.width;
-        } else {  // Going left
-            pos.x = collider.value().first.x + collider.value().second.width;
+    const Position nextPos = {pos.x + vel.vx, pos.y};
+    bool isCollisionDetected = false;
+
+    colliders.apply([&](const rtecs::types::EntityID colliderId,
+                        const Position& colliderPos,
+                        const Hitbox& colliderBox) {
+        if (colliderId == id || isCollisionDetected) {
+            return;
         }
-    } else {
-        pos.x += vel.vx;
+
+        if (collide(nextPos, box, colliderPos, colliderBox)) {
+            isCollisionDetected = true;
+            if (vel.vx > 0) {  // Right
+                pos.isUpdated = true;
+                pos.x = colliderPos.x - box.width;
+            } else if (vel.vx < 0) {  // Left
+                pos.isUpdated = true;
+                pos.x = colliderPos.x + colliderBox.width;
+            }
+        }
+    });
+
+    if (!isCollisionDetected) {
+        pos.isUpdated = true;
+        pos.x = nextPos.x;
     }
-    vel.vx = 0;
 }
 
-void ApplyMovement::applyVerticalMovement(Position &pos,
-                                          Velocity &vel,
-                                          const Hitbox &box,
-                                          const std::optional<std::pair<Position,
-                                                                        Hitbox>> &collider)
+void ApplyMovement::handleVerticalMovement(const rtecs::types::EntityID id,
+                                           Position& pos,
+                                           const Velocity& vel,
+                                           const Hitbox& box,
+                                           rtecs::sparse::SparseGroup<Position,
+                                                                      Hitbox>& colliders)
 {
-    if (vel.vy != 0 && collider.has_value()) {
-        if (vel.vy > 0) {  // Going down
-            pos.y = collider.value().first.y - box.height;
-        } else {  // Going up
-            pos.y = collider.value().first.y + collider.value().second.height;
+    const Position nextPos = {pos.x, pos.y + vel.vy};
+    bool isCollisionDetected = false;
+
+    colliders.apply([&](const rtecs::types::EntityID colliderId,
+                        const Position& colliderPos,
+                        const Hitbox& colliderBox) {
+        if (colliderId == id || isCollisionDetected) {
+            return;
         }
-    } else {
-        pos.y += vel.vy;
+
+        if (collide(nextPos, box, colliderPos, colliderBox)) {
+            isCollisionDetected = true;
+            if (vel.vy > 0) {  // Down
+                pos.isUpdated = true;
+                pos.y = colliderPos.y - box.height;
+            } else if (vel.vy < 0) {  // Up
+                pos.isUpdated = true;
+                pos.y = colliderPos.y + colliderBox.height;
+            }
+        }
+    });
+
+    if (!isCollisionDetected) {
+        pos.isUpdated = true;
+        pos.y = nextPos.y;
     }
-    vel.vy = 0;
 }
 
-bool ApplyMovement::collide(const float refPos,
-                            const float refSize,
-                            const float otherPos,
-                            const float otherSize)
+bool ApplyMovement::collide(const Position& refPos,
+                            const Hitbox& refBox,
+                            const Position& otherPos,
+                            const Hitbox& otherBox)
 {
-    return (refPos >= otherPos && refPos < (otherPos + otherSize)) ||
-           (refPos + refSize > otherPos && refPos + refSize <= otherPos + otherSize);
+    return (refPos.x < otherPos.x + otherBox.width && refPos.x + refBox.width > otherPos.x &&
+            refPos.y < otherPos.y + otherBox.height && refPos.y + refBox.height > otherPos.y);
 }
