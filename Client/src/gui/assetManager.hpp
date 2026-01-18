@@ -38,7 +38,7 @@ static const std::unordered_map<entity::Type, AnimationConfig> entityTypeToAnima
     {entity::Type::kPlayer,
      {5, 0.1f, 33, 15}},  // {Number of frames, Time per frame, Frame width, Frame height}
     {entity::Type::kEnemy, {8, 0.15f, 32, 32}},
-    {entity::Type::kBullet, {1, 0.0f, 16, 16}}};
+    {entity::Type::kBullet, {3, 0.0f, 18, 14}}};
 
 inline AnimationConfig typeToAnimation(const entity::Type& type)
 {

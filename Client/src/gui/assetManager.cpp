@@ -5,7 +5,7 @@
 #include "logger/Logger.h"
 
 static constexpr std::string_view ENEMY_TEXTURE_PATH = "Client/assets/sprites/enemyAerial.gif";
-static constexpr std::string_view BULLET_TEXTURE_PATH = "Client/assets/sprites/bullets.gif";
+static constexpr std::string_view BULLET_TEXTURE_PATH = "Client/assets/sprites/bullet.gif";
 
 // static constexpr std::string_view UI_MENU_BG_PATH = "../../Client/assets/ui/MenuBackground.png";
 // static constexpr std::string_view UI_PAUSE_BTN_PATH = "../../Client/assets/ui/PauseButton.png";
