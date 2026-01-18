@@ -11,6 +11,8 @@ struct Type
 {
     entity::Type type;
 
+    auto operator<=>(const Type&) const = default;
+
     template <typename Archive>
     void serialize(Archive& ar)
     {

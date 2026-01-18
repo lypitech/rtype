@@ -123,6 +123,12 @@ void Lobby::restart()
         _engine.getEntityFromGroup<components::State>(playerId).value().get().state =
             entity::state::EntityAlive;
     }
+    for (const auto& entityId : _engine.removeAllOf<Type>({entity::Type::kEnemy})) {
+        broadcast(packet::Destroy{entityId, 0});
+    }
+    for (const auto& entityId : _engine.removeAllOf<Type>({entity::Type::kBullet})) {
+        broadcast(packet::Destroy{entityId, 0});
+    }
 }
 
 void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action); }
@@ -245,6 +251,7 @@ void Lobby::run()
         while (lag >= server::TIME_PER_TICK) {
             if (!hasPlayerAlive()) {
                 changeGameState(game::state::GameOver);
+                restart();
             }
             _engine.runOnce(server::TIME_PER_TICK);
             if (_engine.getGameState() == game::state::GameRunning) {

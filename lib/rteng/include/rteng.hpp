@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 #include "EntityContent.hpp"
@@ -182,6 +183,32 @@ public:
      */
     void setMenuState(const uint64_t& newState);
     uint64_t getMenuState() const;
+
+    /**
+     * @brief Removes all entities with corresponding component of type T.
+     * @tparam Component The type of component to search for.
+     * @param equal The value of the component to remove.
+     */
+    template <std::equality_comparable Component>
+    std::vector<rtecs::types::EntityID> removeAllOf(const Component& equal)
+    {
+        std::vector<rtecs::types::EntityID> toDestroy;
+
+        for (const auto& entity : _ecs->getAllEntities()) {
+            const auto refOpt = getEntityFromGroup<Component>(entity);
+
+            if (refOpt) {
+                if (refOpt.value().get() == equal) {
+                    toDestroy.push_back(entity);
+                }
+            }
+        }
+
+        for (const auto& entity : toDestroy) {
+            destroyEntity(entity);
+        }
+        return toDestroy;
+    }
 
 private:
     std::unique_ptr<rtecs::ECS> _ecs;
