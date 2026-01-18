@@ -34,6 +34,33 @@ static void wave(const components::Position& pos,
     velocity.vy = slope * velocity.vx;
 }
 
+static void zigzag(const rtecs::types::EntityID& id,
+                   const components::Position& pos,
+                   components::Velocity& velocity)
+{
+    const float phaseOffset = id * 777;
+    constexpr std::array frequAmp = {
+        std::make_pair<float, float>(.005, 400),
+        std::make_pair<float, float>(.008, 150),
+        std::make_pair<float, float>(0.03, 20),
+    };
+
+    float totalSlope = 0;
+    for (const auto& [f, a] : frequAmp) {
+        totalSlope += a * f * std::cos((pos.x + phaseOffset) * f);
+    }
+
+    if (velocity.vx == 0) {
+        velocity.vx = -velocity.max_vx / 2;
+    }
+    velocity.vy = totalSlope * velocity.vx;
+    if (pos.y < 50.0f) {
+        velocity.vy += 20.0f;
+    } else if (pos.y > 900.0f) {
+        velocity.vy -= 20.0f;
+    }
+}
+
 namespace server::systems {
 
 ApplyEnemyMovement::ApplyEnemyMovement()
@@ -45,7 +72,7 @@ void ApplyEnemyMovement::apply(rtecs::ECS& ecs)
 {
     auto entities = ecs.group<components::Position, components::Velocity, components::MoveSet>();
 
-    entities.apply([](const rtecs::types::EntityID&,
+    entities.apply([](const rtecs::types::EntityID& id,
                       const components::Position& position,
                       components::Velocity& velocity,
                       const components::MoveSet& moveSet) {
@@ -54,6 +81,9 @@ void ApplyEnemyMovement::apply(rtecs::ECS& ecs)
         }
         if (moveSet.set == static_cast<uint8_t>(move::Set::kWave)) {
             return wave(position, velocity);
+        }
+        if (moveSet.set == static_cast<uint8_t>(move::Set::kZigZag)) {
+            return zigzag(id, position, velocity);
         }
     });
 }
