@@ -6,9 +6,11 @@
 #include "Transform.hpp"
 #include "collision.hpp"
 #include "damage.hpp"
+#include "enums/move_set.hpp"
 #include "health.hpp"
 #include "hitbox.hpp"
 #include "invulnerability.hpp"
+#include "move_set.hpp"
 #include "owner.hpp"
 #include "position.hpp"
 #include "rteng.hpp"
@@ -26,6 +28,7 @@ using GameComponents = rteng::ComponentsList<Collision,
                                              Health,
                                              Hitbox,
                                              Invulnerability,
+                                             MoveSet,
                                              Owner,
                                              Position,
                                              Score,
@@ -49,6 +52,11 @@ inline Hitbox typeToHitbox(const entity::Type& type) { return entityTypeToHitbox
 inline Velocity typeToVelocity(const entity::Type& type) { return entityTypeToVelocity.at(type); }
 
 inline Value typeToValue(const entity::Type& type) { return entityTypeToValue.at(type); }
+
+inline uint8_t nameToMoveSet(const std::string& name)
+{
+    return static_cast<uint8_t>(move::StringToMoveSet.at(name));
+}
 
 class Factory
 {

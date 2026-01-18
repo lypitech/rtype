@@ -109,13 +109,14 @@ void Director::update(const float dt,
                      x,
                      y);
         using namespace components;
-        lobby.spawnEntity<Position, Type, Hitbox, Velocity, Collision, Value>(
+        lobby.spawnEntity<Position, Type, Hitbox, Velocity, Collision, Value, MoveSet>(
             {xDist(_rng), yDist(_rng)},
             {group.type},
             typeToHitbox(group.type),
             typeToVelocity(group.type),
             {},
-            typeToValue(group.type));
+            typeToValue(group.type),
+            {nameToMoveSet(group.patternName)});
 
         wave.spawnedInGroup++;
 

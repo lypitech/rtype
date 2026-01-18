@@ -5,9 +5,9 @@
       "difficultyCost": 5,
       "weight": 50,
       "spawnInterval": 0.2,
-      "postWaveDelay": 2.0,
+      "postWaveDelay": 5.0,
       "enemies": [
-        { "type": "Enemy", "pattern": "zigzag", "count": 5 }
+        { "type": "Enemy", "pattern": "straight_slow", "count": 1 }
       ]
     },
     {
@@ -17,7 +17,7 @@
       "spawnInterval": 0.0,
       "postWaveDelay": 4.0,
       "enemies": [
-        { "type": "Enemy", "pattern": "straight_slow", "count": 1 },
+        { "type": "Enemy", "pattern": "zigzag", "count": 1 },
         { "type": "Enemy", "pattern": "straight_slow", "count": 1 },
         { "type": "Enemy", "pattern": "straight_slow", "count": 1 }
       ]
@@ -30,7 +30,7 @@
       "postWaveDelay": 10.0,
       "enemies": [
         { "type": "Enemy", "pattern": "hover", "count": 1 },
-        { "type": "Enemy", "pattern": "orbit", "count": 4 }
+        { "type": "Enemy", "pattern": "wave", "count": 4 }
       ]
     }
   ]
