@@ -170,6 +170,13 @@ public:
     uint64_t getGameState() const;
 
     /**
+     * @brief Clear the ecs of all the current entities.
+     *
+     * @return A vector of entityIDs corresponding to then previously contained entities;
+     */
+    std::vector<rtecs::types::EntityID> clearEcs() const;
+
+    /**
      * @brief Set the current state of the menus.
      * @param newState The new menu state.
      */
