@@ -67,17 +67,63 @@ jobs:
                   restore-keys: |
                       conan-${{ matrix.os }}-
 
-            - name: Install all dependencies with conan
-              shell: bash
+            - name: Setup MSVC environment (Windows)
+              if: matrix.os == 'windows-latest'
+              shell: powershell
               run: |
-                  conan install lib/rtnt                            \
-                    --output-folder=lib/rtnt/build                  \
-                    --build=missing                                 \
-                    -s build_type=Release                           \
-                    -s compiler.version=15                          \
-                    -s compiler.cppstd=23                           \
-                    -c tools.system.package_manager:mode=install    \
-                    -c tools.system.package_manager:sudo=True
+                # Find latest VS installation and run the Dev Cmd script so cl.exe is on PATH
+                $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+                if (-not $vsPath) { throw "vswhere/Visual Studio not found" }
+                & "$vsPath\Common7\Tools\VsDevCmd.bat" -arch=amd64
+
+            - name: Install all dependencies with conan (Linux)
+              if: matrix.os == 'ubuntu-latest'
+              shell: bash
+              env:
+                CC: gcc-15
+                CXX: g++-15
+              run: |
+                conan install lib/rtnt                            \
+                  --output-folder=lib/rtnt/build                  \
+                  --build=missing                                 \
+                  -s build_type=Release                           \
+                  -s compiler=gcc                                 \
+                  -s compiler.version=15                          \
+                  -s compiler.cppstd=23                           \
+                  -s compiler.libcxx=libstdc++11                  \
+                  -c tools.system.package_manager:mode=install    \
+                  -c tools.system.package_manager:sudo=True
+
+            - name: Install all dependencies with conan (macOS)
+              if: matrix.os == 'macos-latest'
+              shell: bash
+              env:
+                CC: clang
+                CXX: clang++
+              run: |
+                conan install lib/rtnt                            \
+                  --output-folder=lib/rtnt/build                  \
+                  --build=missing                                 \
+                  -s build_type=Release                           \
+                  -s compiler=apple-clang                         \
+                  -s compiler.cppstd=23                           \
+                  -s compiler.libcxx=libc++                       \
+                  -c tools.system.package_manager:mode=install    \
+                  -c tools.system.package_manager:sudo=True
+
+            - name: Install all dependencies with conan (Windows / MSVC)
+              if: matrix.os == 'windows-latest'
+              shell: cmd
+              run: |
+                conan install lib/rtnt                            ^
+                  --output-folder=lib/rtnt/build                  ^
+                  --build=missing                                 ^
+                  -s build_type=Release                           ^
+                  -s compiler=msvc                                ^
+                  -s compiler.version=14.3                        ^
+                  -s compiler.cppstd=23                           ^
+                  -c tools.system.package_manager:mode=install    ^
+                  -c tools.system.package_manager:sudo=True
 
             - name: Configure CMake
               shell: bash
