@@ -76,6 +76,18 @@ void Lobby::changeGameState(const uint64_t& gameState)
     broadcast(packet::UpdateGameState{gameState});
 }
 
+std::vector<components::Position> Lobby::getPlayerPositions()
+{
+    std::vector<components::Position> positions;
+    for (const auto& playerSess : _players | std::views::keys) {
+        const auto& posOpt = getPlayerPosition(playerSess);
+        if (posOpt) {
+            positions.push_back(posOpt.value().get());
+        }
+    }
+    return positions;
+}
+
 bool Lobby::hasPlayerAlive()
 {
     if (_engine.getGameState() != game::state::GameRunning) {

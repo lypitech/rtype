@@ -1,10 +1,12 @@
 #include "level_director.hpp"
 
+#include <algorithm>
 #include <nlohmann/json.hpp>
 
 #include "components/hitbox.hpp"
 #include "components/type.hpp"
 #include "enums/entity_types.hpp"
+#include "enums/player_state.hpp"
 #include "lobby/lobby.hpp"
 
 std::vector<level::Enemy> parseEnemies(const nlohmann::json& data)
@@ -74,6 +76,11 @@ void Director::update(const float dt,
         LOG_TRACE_R2("No wave picked, Skipping frame...");
         return;
     }
+    std::vector<components::Position> playerPos = lobby.getPlayerPositions();
+    std::ranges::sort(playerPos, [](const components::Position& a, const components::Position& b) {
+        return a.x < b.x;
+    });
+    const float minOffsetX = playerPos.back().x + 400;
     for (int i = _activeWaves.size() - 1; i >= 0; --i) {
         wave::Active& wave = _activeWaves[i];
 
@@ -95,10 +102,9 @@ void Director::update(const float dt,
 
         const auto& group = wave.archetype->enemies[wave.currentGroupIndex];
 
-        // TODO: Make the entities spawn off screen.
         std::uniform_real_distribution yDist(200.0f, 950.0f);
         std::uniform_real_distribution xDist(150.0f, 1200.0f);
-        float x = xDist(_rng);
+        float x = minOffsetX + xDist(_rng);
         float y = yDist(_rng);
         LOG_TRACE_R2("Spawning {} {}/{} from group {}/{} at ({}, {})",
                      entity::TypeToString.at(group.type),
@@ -110,7 +116,7 @@ void Director::update(const float dt,
                      y);
         using namespace components;
         lobby.spawnEntity<Position, Type, Hitbox, Velocity, Collision, Value, MoveSet>(
-            {xDist(_rng), yDist(_rng)},
+            {x, y},
             {group.type},
             typeToHitbox(group.type),
             typeToVelocity(group.type),
