@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <optional>
+
 #include "network_fixture.hpp"
 
 namespace {
