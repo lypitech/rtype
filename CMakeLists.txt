@@ -42,12 +42,9 @@ if(NOT USING_CONAN)
     pkg_check_modules(ASIO REQUIRED asio)
     find_package(raylib REQUIRED)
     find_package(nlohmann_json REQUIRED)
-    # ImGui is header-only, just need include path
-    find_path(IMGUI_INCLUDE_DIR imgui.h REQUIRED)
 else()
     find_package(asio REQUIRED)
     find_package(raylib REQUIRED)
-    find_package(imgui REQUIRED)
     find_package(nlohmann_json REQUIRED)
 endif()
 

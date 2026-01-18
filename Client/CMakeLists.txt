@@ -34,7 +34,6 @@ else()
     pkg_check_modules(ASIO REQUIRED IMPORTED_TARGET asio)
     set(ASIO_TARGET PkgConfig::ASIO)
 endif()
-find_package(imgui REQUIRED)
 
 # --- Sources / Headers ---
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp")
