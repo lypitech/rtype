@@ -60,6 +60,16 @@ cmake --build build --target clean
 cmake --build build --target debug
 ```
 
+### nix
+
+You can also run the project via [nix](https://nixos.org/download/#download-nix):
+```
+nix run "github:lypitech/rtype#r-type_client" --impure -- -h 127.0.0.1 -p 4242
+nix run "github:lypitech/rtype#r-type_server" -- -p 4242 --config waveConfig.json
+```
+> [!NOTE]
+> Please note the `--impure` flag as it is necessary in order to run in a non-NixOS graphical environement.
+
 ### Testing
 
 You can run tests by running:
