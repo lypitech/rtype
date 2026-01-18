@@ -1,6 +1,7 @@
 #include "renderer.hpp"
 
 #include "components/animations.hpp"
+#include "components/hitbox.hpp"
 #include "components/position.hpp"
 #include "components/sprite.hpp"
 #include "enums/entity_types.hpp"
@@ -50,10 +51,23 @@ void Renderer::apply(rtecs::ECS& ecs)
                 sourceRec.height = (float)anim.frame_height;
             }
 
-            Rectangle destRec = {pos.x,
-                                 pos.y,
-                                 sourceRec.width * (float)tex.getScale(),
-                                 sourceRec.height * (float)tex.getScale()};
+            float scaleX = (float)tex.getScale();
+            float scaleY = (float)tex.getScale();
+
+            const auto hitboxOpt =
+                ecs.group<components::Hitbox>().getEntity<components::Hitbox>(id);
+
+            if (hitboxOpt.has_value()) {
+                const auto& hb = hitboxOpt.value().get();
+                if (sourceRec.width != 0) {
+                    scaleX = hb.width / sourceRec.width;
+                }
+                if (sourceRec.height != 0) {
+                    scaleY = hb.height / sourceRec.height;
+                }
+            }
+
+            Rectangle destRec = {pos.x, pos.y, sourceRec.width * scaleX, sourceRec.height * scaleY};
 
             DrawTexturePro(rawTex, sourceRec, destRec, {0, 0}, 0.0f, WHITE);
         });
