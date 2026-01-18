@@ -13,9 +13,12 @@ BroadcastDeadEntities::BroadcastDeadEntities(Lobby& lobby)
 
 void BroadcastDeadEntities::apply(rtecs::ECS& ecs)
 {
-    auto group = ecs.group<State>();
+    auto group = ecs.group<State, Type>();
 
-    group.apply([&](const rtecs::types::EntityID id, const State& state) {
+    group.apply([&](const rtecs::types::EntityID id, const State& state, const Type& type) {
+        if (type.type == entity::Type::kPlayer) {
+            return;
+        }
         if (state.state == entity::state::EntityDead) {
             LOG_INFO("Killing entity {}.", id);
             _lobby.killEntity(id);
