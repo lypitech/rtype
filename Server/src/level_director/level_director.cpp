@@ -123,6 +123,7 @@ void Director::update(const float dt,
             {},
             typeToValue(group.type),
             {nameToMoveSet(group.patternName)});
+            {entity::state::EntityAlive});
 
         wave.spawnedInGroup++;
 
