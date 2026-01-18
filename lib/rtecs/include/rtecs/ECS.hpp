@@ -273,6 +273,24 @@ public:
     }
 
     /**
+     * @brief Get the component's instance of an entity.
+     *
+     * @tparam T The component type
+     * @param entityId The entity's ID
+     * @return An optional reference of the component instance.
+     */
+    template <typename T>
+    types::OptionalRef<T> getEntityComponent(const types::EntityID entityId)
+    {
+        types::OptionalRef<sparse::SparseSet<T>> optSet = getComponent<T>();
+
+        if (!optSet) {
+            return std::nullopt;
+        }
+        return optSet.value().get().get(entityId);
+    }
+
+    /**
      * @brief Update multiple components instances of an entity.
      *
      * @warning If one of the components has not been registered, a warning will be logged and `false` will be returned.
