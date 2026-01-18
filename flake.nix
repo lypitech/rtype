@@ -35,19 +35,45 @@
     nixGL = nixgl.packages.${system}.nixGLDefault;
 
     nativeBuildInputs = with pkgs; [cmake pkg-config];
-    buildInputs = with pkgs; [
-      asio
-      nlohmann_json
-      imgui
-      raylib
-      libGL
+
+    x11Libs = with pkgs; [
+      xorg.libxcb
+      xorg.libICE
+      xorg.libSM
       xorg.libX11
-      xorg.libXi
-      xorg.libXcursor
+      xorg.libXext
       xorg.libXrandr
+      xorg.libXcursor
+      xorg.libXi
       xorg.libXinerama
+      xorg.xcbutilwm
+      xorg.xcbutilimage
+      xorg.xcbutilkeysyms
+      xorg.xcbutilrenderutil
+      xorg.xcbutil
+      xorg.xcbutilcursor
+      libxaw
+      libxcomposite
+      libxdamage
+      libxdmcp
+      libxkbfile
+      libxpm
+      libxres
+      libxscrnsaver
+      libxtst
+      libxv
+      libxxf86vm
+      libfontenc
     ];
 
+    buildInputs = with pkgs;
+      [
+        asio
+        nlohmann_json
+        imgui
+        raylib
+      ]
+      ++ x11Libs;
   in {
     packages.${system} = {
       r-type_client = pkgs.gcc15Stdenv.mkDerivation {
