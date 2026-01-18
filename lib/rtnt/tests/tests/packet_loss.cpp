@@ -64,7 +64,8 @@ TEST_F(NetworkTest,
     ASSERT_TRUE(finished) << "Timeout: Only received " << receivedIndices.size() << "/"
                           << packetAmount << " packets.";
 
-    LOG_INFO("Final list: {}", receivedIndices);
+    // fixme: doesnt work on g++-14, removing because flemme
+    // LOG_INFO("Final list: {}", receivedIndices);
     LOG_INFO("Took {}", after - before);
 
     std::ranges::sort(receivedIndices);

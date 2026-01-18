@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <optional>
 #include <ranges>
 #include <vector>
 
@@ -12,18 +13,18 @@ struct Example
     static constexpr rtnt::core::packet::Id kId = 1001;
     static constexpr rtnt::core::packet::Name kName = "EXAMPLE";
 
-    uint8_t u8;
-    uint16_t u16;
-    uint32_t u32;
-    uint64_t u64;
+    uint8_t u8{};
+    uint16_t u16{};
+    uint32_t u32{};
+    uint64_t u64{};
 
-    int8_t s8;
-    int16_t s16;
-    int32_t s32;
-    int64_t s64;
+    int8_t s8{};
+    int16_t s16{};
+    int32_t s32{};
+    int64_t s64{};
 
-    float f;
-    double d;
+    float f{};
+    double d{};
 
     std::string s;
 
@@ -46,62 +47,63 @@ struct Example
 
     void dump()
     {
-        LOG_TRACE_R3(
-            "u8: {}\n"
-            "u16: {}\n"
-            "u32: {}\n"
-            "u64: {}\n"
-            "s8: {}\n"
-            "s16: {}\n"
-            "s32: {}\n"
-            "s64: {}\n"
-            "f: {}\n"
-            "d: {}\n"
-            "s: {}\n"
-            "v_u8: {} (size: {})\n"
-            "v_u16: {} (size: {})\n"
-            "v_u32: {} (size: {})\n"
-            "v_u64: {} (size: {})\n"
-            "v_s8: {} (size: {})\n"
-            "v_s16: {} (size: {})\n"
-            "v_s32: {} (size: {})\n"
-            "v_s64: {} (size: {})\n"
-            "v_f: {} (size: {})\n"
-            "v_d: {} (size: {})\n"
-            "v_s: {} (size: {})",
-            u8,
-            u16,
-            u32,
-            u64,
-            s8,
-            s16,
-            s32,
-            s64,
-            f,
-            d,
-            s,
-            v_u8,
-            v_u8.size(),
-            v_u16,
-            v_u16.size(),
-            v_u32,
-            v_u32.size(),
-            v_u64,
-            v_u64.size(),
-            v_s8,
-            v_s8.size(),
-            v_s16,
-            v_s16.size(),
-            v_s32,
-            v_s32.size(),
-            v_s64,
-            v_s64.size(),
-            v_f,
-            v_f.size(),
-            v_d,
-            v_d.size(),
-            v_s,
-            v_s.size());
+        // fixme: doesnt work on g++-14, removing because flemme
+        // LOG_TRACE_R3(
+        //     "u8: {}\n"
+        //     "u16: {}\n"
+        //     "u32: {}\n"
+        //     "u64: {}\n"
+        //     "s8: {}\n"
+        //     "s16: {}\n"
+        //     "s32: {}\n"
+        //     "s64: {}\n"
+        //     "f: {}\n"
+        //     "d: {}\n"
+        //     "s: {}\n"
+        //     "v_u8: {} (size: {})\n"
+        //     "v_u16: {} (size: {})\n"
+        //     "v_u32: {} (size: {})\n"
+        //     "v_u64: {} (size: {})\n"
+        //     "v_s8: {} (size: {})\n"
+        //     "v_s16: {} (size: {})\n"
+        //     "v_s32: {} (size: {})\n"
+        //     "v_s64: {} (size: {})\n"
+        //     "v_f: {} (size: {})\n"
+        //     "v_d: {} (size: {})\n"
+        //     "v_s: {} (size: {})",
+        //     u8,
+        //     u16,
+        //     u32,
+        //     u64,
+        //     s8,
+        //     s16,
+        //     s32,
+        //     s64,
+        //     f,
+        //     d,
+        //     s,
+        //     v_u8,
+        //     v_u8.size(),
+        //     v_u16,
+        //     v_u16.size(),
+        //     v_u32,
+        //     v_u32.size(),
+        //     v_u64,
+        //     v_u64.size(),
+        //     v_s8,
+        //     v_s8.size(),
+        //     v_s16,
+        //     v_s16.size(),
+        //     v_s32,
+        //     v_s32.size(),
+        //     v_s64,
+        //     v_s64.size(),
+        //     v_f,
+        //     v_f.size(),
+        //     v_d,
+        //     v_d.size(),
+        //     v_s,
+        //     v_s.size());
     }
 
     template <typename Archive>
