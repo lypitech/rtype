@@ -17,6 +17,7 @@ struct Lobby;
 static constexpr std::string_view START_BUTTON_FILEPATH = "Client/assets/buttons/start.png";
 static constexpr std::string_view PLAY_BUTTON_FILEPATH = "Client/assets/buttons/play.png";
 static constexpr std::string_view CREDITS_BUTTON_FILEPATH = "Client/assets/buttons/credits.png";
+static constexpr std::string_view CREATE_BUTTON_FILEPATH = "Client/assets/buttons/create.png";
 static constexpr std::string_view BACKGROUND_TEXTURE_FILEPATH = "Client/assets/background.png";
 static constexpr std::string_view BASIC_FONT = "Client/assets/basic.ttf";
 static constexpr std::string_view DYSLEXIC_FONT = "Client/assets/dyslexic.ttf";
@@ -63,20 +64,24 @@ static constexpr int LOBBY_PER_LINE = 5;
     Rectangle { X, Y + BUTTON_HEIGHT * 1.5, BUTTON_WIDTH, BUTTON_HEIGHT }
 #define CREDITS_BUTTON CREDITS_BUTTON_FILEPATH.data(), CREDITS_POS
 
+#define CREATE_POS \
+    Rectangle { BOX_X + BOX_WIDTH + 70, BOX_Y, BUTTON_WIDTH, BUTTON_HEIGHT }
+#define CREATE_BUTTON CREATE_BUTTON_FILEPATH.data(), CREATE_POS
+
 namespace gui {
 
 class LobbyButton
 {
 public:
-    LobbyButton(const uint32_t& roomId,
+    LobbyButton(const uint16_t& roomId,
                 Rectangle bounds,
                 const std::shared_ptr<Font>& font);
 
     [[nodiscard]] bool render() const;
-    uint32_t getRoomId() const { return _roomId; }
+    uint16_t getRoomId() const { return _roomId; }
 
 private:
-    uint32_t _roomId;
+    uint16_t _roomId;
     Vector2 _pos;
     std::shared_ptr<Font> _font;
     int _fontSize;

@@ -2,6 +2,8 @@
 
 #include <ranges>
 
+#include "enums/game_state.hpp"
+
 namespace lobby {
 
 Manager::Manager(packet::server::OutGoingQueue& outGoing,
@@ -15,6 +17,9 @@ Id Manager::createLobby()
 {
     std::unique_lock lock(_mutex);
     static Id nbLobbies = 0;
+    if (nbLobbies > 255) {
+        return nbLobbies;
+    }
     _lobbies.emplace(nbLobbies, std::make_unique<Lobby>(nbLobbies, _outGoing));
     _lobbies.at(nbLobbies)->start(_config);
     return nbLobbies++;
@@ -67,6 +72,14 @@ void Manager::pushActionToLobby(const packet::server::SessionPtr& session,
 void Manager::joinRoom(const packet::server::SessionPtr& session,
                        const lobby::Id roomId)
 {
+    if (roomId > 255) {
+        const Id lobbyId = createLobby();
+        if (lobbyId >= 255) {
+            _outGoing.push({{session}, packet::JoinAck{0, 0, game::state::GameMenu, false}});
+        }
+        joinRoom(session, lobbyId);
+        return;
+    }
     std::unique_lock lock(_mutex);
     if (_lobbies.contains(roomId)) {
         _lobbies.at(roomId)->join(session);

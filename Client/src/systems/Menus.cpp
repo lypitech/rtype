@@ -9,7 +9,7 @@
 
 namespace gui {
 
-LobbyButton::LobbyButton(const uint32_t& roomId,
+LobbyButton::LobbyButton(const uint16_t& roomId,
                          const Rectangle bounds,
                          const std::shared_ptr<Font>& font)
     : _roomId(roomId),
@@ -52,11 +52,12 @@ MenuRenderer::MenuRenderer(client::Lobby& lobby,
       _engine(engine),
       _texture(BACKGROUND_TEXTURE_FILEPATH.data())
 {
-    _buttons.reserve(4);
+    _buttons.reserve(5);
 
     _buttons.emplace_back(PLAY_BUTTON);
     _buttons.emplace_back(START_BUTTON);
     _buttons.emplace_back(CREDITS_BUTTON);
+    _buttons.emplace_back(CREATE_BUTTON);
     _basicFont = SHARE_FONT(BASIC_FONT.data());
     _dyslexicFont = SHARE_FONT(DYSLEXIC_FONT.data());
     _currentFont = _basicFont;
@@ -83,6 +84,9 @@ void MenuRenderer::renderLobbyList()
             _lobbyButtons.emplace_back(_lobby.roomIds[i - 1], bounds, _currentFont);
         }
         LOG_TRACE_R1("Created {} lobbies", _lobbyButtons.size());
+    }
+    if (_buttons[3].render()) {
+        _service.send(packet::Join{"username", 256});
     }
     for (const auto& lobbyButton : _lobbyButtons) {
         if (lobbyButton.render()) {
