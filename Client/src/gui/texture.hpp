@@ -8,8 +8,7 @@
 namespace gui {
 
 #define ASSET_FILEPATH_PREFIX "Client/assets"
-static constexpr std::string_view PLAYER_TEXTURE_FILEPATH =
-    ASSET_FILEPATH_PREFIX "/sprites/player1.gif";
+static constexpr std::string_view PLAYER_TEXTURE_FILEPATH = ASSET_FILEPATH_PREFIX "/sprites/player";
 static constexpr std::string_view BACKGROUND_TEXTURE_FILEPATH =
     ASSET_FILEPATH_PREFIX "/background.png";
 

@@ -21,6 +21,12 @@ void gui::AssetManager::init()
     _textures.emplace_back(ENEMY_TEXTURE_PATH.data(), 1.0f);
     _textures.emplace_back(BULLET_TEXTURE_PATH.data(), 1.0f);
 
+    _players.reserve(4);
+    for (int i = 0; i < 4; ++i) {
+        _players.emplace_back(
+            (PLAYER_TEXTURE_FILEPATH.data() + std::to_string(i + 1) + ".gif").c_str(), 1.0f);
+    }
+
     LOG_INFO("AssetManager: Loaded {} game textures and {} UI textures",
              _textures.size(),
              _uiTextures.size());
@@ -30,9 +36,13 @@ void gui::AssetManager::init()
     //     std::make_unique<gui::Texture>(UI_PAUSE_BTN_PATH.data(), 0.5f);
 }
 
-const gui::Texture& gui::AssetManager::getTexture(entity::Type id) const
+const gui::Texture& gui::AssetManager::getTexture(entity::Type id,
+                                                  short& players) const
 {
     size_t index = static_cast<size_t>(id);
+    if (id == entity::Type::kPlayer) {
+        return _players[players++];
+    }
     if (index >= _textures.size()) {
         LOG_ERR("AssetManager: Attempting to access unknown game texture index {}", index);
         return _textures[0];

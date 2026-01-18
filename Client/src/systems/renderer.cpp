@@ -31,11 +31,12 @@ void Renderer::apply(rtecs::ECS& ecs)
     BeginDrawing();
     ClearBackground(GREEN);
     DrawTexture(_assetManager.getBackground(), 0, 0, WHITE);
+    short players = 0;
     ecs.group<components::Sprite, components::Position>().apply(
-        [&](const rtecs::types::EntityID& id,
-            const components::Sprite& sprite,
-            const components::Position& pos) {
-            const gui::Texture& tex = _assetManager.getTexture(sprite.type);
+        [&, this](const rtecs::types::EntityID& id,
+                  const components::Sprite& sprite,
+                  const components::Position& pos) {
+            const gui::Texture& tex = _assetManager.getTexture(sprite.type, players);
             Texture2D rawTex = tex.getTexture();
 
             Rectangle sourceRec = {0.0f, 0.0f, (float)rawTex.width, (float)rawTex.height};
