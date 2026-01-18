@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
 #include <numeric>
+#include <ranges>
+#include <vector>
 
 #include "network_fixture.hpp"
 #include "rtnt/stat/recorder.hpp"

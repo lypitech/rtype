@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 
+#include <ranges>
+#include <vector>
+
 #include "network_fixture.hpp"
 
 namespace {
