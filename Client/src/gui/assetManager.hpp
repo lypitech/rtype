@@ -58,11 +58,14 @@ public:
 
     [[nodiscard]] const gui::Texture& getTexture(entity::Type id) const;
 
+    [[nodiscard]] const Texture2D& getBackground() const;
+
     [[nodiscard]] const gui::Texture& getUITexture(gui::UIAsset id) const;
 
     [[nodiscard]] const gui::SpriteConfig& getSpriteConfig(entity::Type id) const;
 
 private:
+    std::unique_ptr<gui::Texture> _background;
     std::vector<gui::Texture> _textures;
     std::map<entity::Type, gui::SpriteConfig> _spriteConfigs;
     std::map<gui::UIAsset, std::unique_ptr<gui::Texture>> _uiTextures;

@@ -32,6 +32,7 @@ void Renderer::apply(rtecs::ECS& ecs)
     }
     BeginDrawing();
     ClearBackground({0, 255, 0, 255});
+    DrawTexture(_assetManager.getBackground(), 0, 0, WHITE);
     ecs.group<components::Sprite, components::Position>().apply(
         [&](const rtecs::types::EntityID& id,
             const components::Sprite& sprite,
