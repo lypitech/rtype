@@ -35,7 +35,7 @@ void Lobby::registerAllSystems()
     _engine.registerSystem(std::make_shared<server::systems::ApplyMovement>());
     _engine.registerSystem(std::make_shared<server::systems::ApplyEnemyMovement>());
     _engine.registerSystem(std::make_shared<server::systems::BroadcastUpdatedMovements>(*this));
-    // _engine.registerSystem(std::make_shared<server::systems::BroadcastDeadEntities>(*this));
+    _engine.registerSystem(std::make_shared<server::systems::BroadcastDeadEntities>(*this));
 }
 
 lobby::Id Lobby::getRoomId() const { return _roomId; }
