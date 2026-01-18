@@ -16,15 +16,13 @@ namespace systems {
 class Renderer final : public rtecs::systems::ASystem
 {
 public:
-    Renderer(bool& shouldStop,
-             rteng::GameEngine& engine);
+    Renderer(bool& shouldStop);
 
     void apply(rtecs::ECS& entity) override;
 
 private:
     bool& _closing;
     gui::AssetManager _assetManager;
-    rteng::GameEngine& _engine;
 };
 
 }  // namespace systems
