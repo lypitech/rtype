@@ -73,6 +73,13 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 # --- Compiler settings ---
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 
+if(WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        _WIN32_WINNT=0x0A00 # Windows 10
+        WIN32_LEAN_AND_MEAN
+    )
+endif()
+
 if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4 /permissive-)
 else ()

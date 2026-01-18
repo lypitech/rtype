@@ -55,14 +55,17 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # --- Compiler settings ---
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 
-if (MSVC)
-    target_compile_definitions(${PROJECT_NAME}
-    PUBLIC
+if(WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        _WIN32_WINNT=0x0A00 # Windows 10
         WIN32_LEAN_AND_MEAN
         NOMINMAX
         NOGDI
         NOUSER
     )
+endif()
+
+if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE
