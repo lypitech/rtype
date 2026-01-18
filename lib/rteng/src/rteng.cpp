@@ -6,13 +6,13 @@ namespace rteng {
 
 void GameEngine::destroyEntity(const rtecs::types::EntityID& id) const { _ecs->destroyEntity(id); }
 
-void GameEngine::setGameState(const size_t& newState) { _gameState = newState; }
+void GameEngine::setGameState(const uint64_t& newState) { _gameState = newState; }
 
-size_t GameEngine::getGameState() const { return _gameState; }
+uint64_t GameEngine::getGameState() const { return _gameState; }
 
-void GameEngine::setMenuState(const size_t& newState) { _menuState = newState; }
+void GameEngine::setMenuState(const uint64_t& newState) { _menuState = newState; }
 
-size_t GameEngine::getMenuState() const { return _menuState; }
+uint64_t GameEngine::getMenuState() const { return _menuState; }
 
 void GameEngine::runOnce(const double dt) const
 {
