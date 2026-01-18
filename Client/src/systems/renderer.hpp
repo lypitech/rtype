@@ -9,19 +9,22 @@
 #include "gui/assetManager.hpp"
 #include "gui/texture.hpp"
 #include "rtecs/systems/ASystem.hpp"
+#include "rteng.hpp"
 
 namespace systems {
 
 class Renderer final : public rtecs::systems::ASystem
 {
 public:
-    Renderer(bool& shouldStop);
+    Renderer(bool& shouldStop,
+             rteng::GameEngine& engine);
 
     void apply(rtecs::ECS& entity) override;
 
 private:
     bool& _closing;
-    AssetManager _assetManager;
+    gui::AssetManager _assetManager;
+    rteng::GameEngine& _engine;
 };
 
 }  // namespace systems
