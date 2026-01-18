@@ -169,6 +169,14 @@ public:
     }
 
     /**
+     * @brief Remove an entity and broadcasts it's deletion.
+     * @param id The entity's ID.
+     * @param session The session triggering the deletion (nullptr if none).
+     */
+    rtecs::types::EntityID killEntity(rtecs::types::EntityID id,
+                                      const packet::server::SessionPtr& session = nullptr);
+
+    /**
      * @brief Getter for the gameEngine.
      * @return A reference to the used gameEngine.
      */
