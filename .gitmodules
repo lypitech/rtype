@@ -1,6 +1,3 @@
 [submodule "shuvlog"]
 	path = lib/shuvlog
 	url = https://github.com/lypitech/shuvlog
-[submodule "yml-parser"]
-	path = lib/yml-parser
-	url = https://github.com/lypitech/yml-parser
