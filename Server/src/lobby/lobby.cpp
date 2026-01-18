@@ -25,6 +25,7 @@ Lobby::Lobby(const lobby::Id id,
 {
     registerAllSystems();
     LOG_INFO("Creating new lobby.");
+    _engine.setGameState(game::state::GameWaiting);
 }
 
 void Lobby::registerAllSystems()
