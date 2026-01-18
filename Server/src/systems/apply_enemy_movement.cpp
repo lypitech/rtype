@@ -1,5 +1,7 @@
 #include "apply_enemy_movement.hpp"
 
+#include <cmath>
+
 #include "components/move_set.hpp"
 #include "components/position.hpp"
 #include "components/velocity.hpp"
@@ -14,6 +16,22 @@ static void straightSlow(const components::Position& pos,
     } else if (pos.x > 1900) {
         velocity.vx = -velocity.max_vx / 4;
     }
+}
+
+static void wave(const components::Position& pos,
+                 components::Velocity& velocity)
+{
+    constexpr float amplitude = 400.0f;
+    constexpr float frequency = 0.01f;
+
+    const float slope = amplitude * frequency * std::cos(pos.x * frequency);
+
+    if (pos.x < 700 && velocity.vx == 0) {
+        velocity.vx = velocity.max_vx / 2;
+    } else {
+        velocity.vx = -velocity.max_vx / 2;
+    }
+    velocity.vy = slope * velocity.vx;
 }
 
 namespace server::systems {
@@ -32,8 +50,10 @@ void ApplyEnemyMovement::apply(rtecs::ECS& ecs)
                       components::Velocity& velocity,
                       const components::MoveSet& moveSet) {
         if (moveSet.set == static_cast<uint8_t>(move::Set::kStraightSlow)) {
-            straightSlow(position, velocity);
-            return;
+            return straightSlow(position, velocity);
+        }
+        if (moveSet.set == static_cast<uint8_t>(move::Set::kWave)) {
+            return wave(position, velocity);
         }
     });
 }
