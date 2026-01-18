@@ -1,6 +1,7 @@
 #include "components/hitbox.hpp"
 #include "components/position.hpp"
 #include "enums/input.hpp"
+#include "enums/player_state.hpp"
 #include "handlers.hpp"
 #include "lobby/lobby.hpp"
 #include "packets/client/user_input.hpp"
@@ -14,8 +15,14 @@ static void spawnBullet(const rtecs::types::EntityID& id,
 {
     if (packet.input_mask & static_cast<uint8_t>(game::Input::kShoot)) {
         using namespace components;
-        lobby.spawnEntity<Type, Position, Owner, Velocity, Hitbox, Collision>(
-            {entity::Type::kBullet}, {pos.x, pos.y}, {id}, {20, 0}, {true, 75, 35}, {});
+        lobby.spawnEntity<Type, Position, Owner, Velocity, Hitbox, State, Collision>(
+            {entity::Type::kBullet},
+            {pos.x, pos.y},
+            {id},
+            {20, 0},
+            {true, 75, 35},
+            {entity::state::EntityAlive},
+            {});
     }
 }
 
@@ -34,7 +41,8 @@ void handleUserInput(const SessionPtr& session,
     if (!velocity) {
         LOG_WARN(
             "This should not happen, check for component velocity on this entity or for this "
-            "entity presence.");
+            "entity presence. (entity id: {})",
+            lobby.getPlayerId(session).value());
         return;
     }
     auto& [vx, vy, max_vx, max_vy] = velocity.value().get();
