@@ -12,7 +12,6 @@
 #include "enums/game_state.hpp"
 #include "enums/player_state.hpp"
 #include "logger/Thread.h"
-#include "systems/apply_bullet_movement.hpp"
 #include "systems/apply_enemy_movement.hpp"
 #include "systems/apply_movement.hpp"
 #include "systems/broadcast_dead_entities.hpp"
@@ -35,7 +34,6 @@ void Lobby::registerAllSystems()
 {
     _engine.registerSystem(std::make_shared<server::systems::ApplyMovement>());
     _engine.registerSystem(std::make_shared<server::systems::ApplyEnemyMovement>());
-    _engine.registerSystem(std::make_shared<server::systems::ApplyBulletMovement>(*this));
     _engine.registerSystem(std::make_shared<server::systems::BroadcastUpdatedMovements>(*this));
     _engine.registerSystem(std::make_shared<server::systems::BroadcastDeadEntities>(*this));
 }

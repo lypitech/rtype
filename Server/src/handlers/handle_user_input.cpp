@@ -8,17 +8,18 @@
 #include "packets/server/update_position.hpp"
 #include "rteng.hpp"
 
-static void spawnBullet(const rtecs::types::EntityID,
+static void spawnBullet(const rtecs::types::EntityID& id,
                         Lobby& lobby,
-                        const components::Position pos,
-                        const packet::UserInput packet)
+                        const components::Position& pos,
+                        const packet::UserInput& packet)
 {
     if (packet.input_mask & static_cast<uint8_t>(game::Input::kShoot)) {
         using namespace components;
-        lobby.spawnEntity<Type, Position, Owner, Hitbox, Collision, State>(
+        lobby.spawnEntity<Type, Position, Owner, Velocity, Hitbox, Collision, State>(
             {entity::Type::kBullet},
             {pos.x + 100, pos.y + 20, false},
-            {214},
+            {id},
+            {20, 0, 20, 0},
             {true, 75, 35},
             {false},
             {entity::state::EntityAlive});
@@ -52,11 +53,11 @@ void handleUserInput(const SessionPtr& session,
             "This should not be happening, the session may have been removed during the process.");
         return;
     }
-    spawnBullet(id.value(), lobby, position.value().get(), packet);
     vx = (packet.input_mask & static_cast<uint8_t>(game::Input::kRight)) ? 10.0f : 0.0f;
     vx += (packet.input_mask & static_cast<uint8_t>(game::Input::kLeft)) ? -10.0f : 0.0f;
     vy = (packet.input_mask & static_cast<uint8_t>(game::Input::kDown)) ? 10.0f : 0.0f;
     vy += (packet.input_mask & static_cast<uint8_t>(game::Input::kUp)) ? -10.0f : 0.0f;
+    spawnBullet(id.value(), lobby, position.value().get(), packet);
 }
 
 }  // namespace packet::handler
