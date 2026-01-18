@@ -69,6 +69,10 @@ It has been strictly tested and validated on the following environments:
 
 ### Installation & Build
 
+> [!NOTE]
+> Make sure to properly [setup Conan](docs/setup_conan.md) on your machine 
+> before.
+
 1. Clone the repository along with its submodules:
     ```sh
     git clone --recurse-submodules https://github.com/lypitech/rtype.git
@@ -79,9 +83,6 @@ It has been strictly tested and validated on the following environments:
     ```sh
     conan install . --output-folder=build/ --build=missing -s compiler.cppstd=23
     ```
-    > [!NOTE]
-    > Make sure to properly [setup Conan](docs/setup_conan.md) on your machine 
-    > before.
 
 3. Compile the project using CMake:
     ```shell
