@@ -182,6 +182,8 @@ public:
 
     std::vector<components::Position> getPlayerPositions();
 
+    bool isRunning() const { return _isRunning; }
+
     bool hasPlayerAlive();
 
     void restart();

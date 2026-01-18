@@ -164,6 +164,9 @@ void Lobby::leave(const packet::server::SessionPtr& session)
                     broadcast(packet::Destroy{entityId, 0});
                 }
                 _engine.setGameState(game::state::GameWaiting);
+                if (_roomId != 0) {
+                    _isRunning = false;
+                }
             }
         } else {
             LOG_WARN("Session tried to leave lobby {} but was not in it.", _roomId);

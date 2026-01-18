@@ -57,6 +57,7 @@ void App::start()
                 std::visit([&](auto&& p) { _server.sendTo(session, p); }, sendInterface.second);
             }
         }
+        _lobbyManager.update();
         _server.update();
         loopTimer.waitForNextTick();
     }
