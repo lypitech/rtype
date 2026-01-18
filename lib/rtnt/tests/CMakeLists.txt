@@ -29,9 +29,11 @@ target_compile_definitions(rtnt_tests PRIVATE
 )
 
 # Shuvlog: For relative paths in sources.
-target_compile_options(rtnt_tests PRIVATE
-    -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=.
-)
+if (NOT MSVC)
+    target_compile_options(rtnt_tests PRIVATE
+        -fmacro-prefix-map=${CMAKE_SOURCE_DIR}=.
+    )
+endif ()
 
 # --- Headers ---
 target_include_directories(rtnt_tests PRIVATE
