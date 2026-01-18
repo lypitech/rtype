@@ -19,6 +19,8 @@ static constexpr std::string_view START_BUTTON_FILEPATH =
 static constexpr std::string_view PLAY_BUTTON_FILEPATH = ASSET_FILEPATH_PREFIX "/buttons/play.png";
 static constexpr std::string_view CREDITS_BUTTON_FILEPATH =
     ASSET_FILEPATH_PREFIX "/buttons/credits.png";
+static constexpr std::string_view CREATE_BUTTON_FILEPATH =
+    ASSET_FILEPATH_PREFIX "/buttons/create.png";
 static constexpr std::string_view BASIC_FONT = ASSET_FILEPATH_PREFIX "/basic.ttf";
 static constexpr std::string_view DYSLEXIC_FONT = ASSET_FILEPATH_PREFIX "/dyslexic.ttf";
 
