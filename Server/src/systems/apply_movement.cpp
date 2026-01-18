@@ -44,7 +44,8 @@ void ApplyMovement::apply(rtecs::ECS& ecs)
             const std::optional<Collider> collider =
                 findCollider(id, nextPos, box, colliders, expectedType);
             handleEntityMovement(pos, vel, box, state, collider);
-            if (type.type == entity::Type::kBullet && (pos.x - box.width < 0 || pos.x > 1920 || pos.y - box.height < 0 || pos.y > 1080)) {
+            if (type.type == entity::Type::kBullet &&
+                (pos.x - box.width < 0 || pos.x > 1920 || pos.y - box.height < 0 || pos.y > 1080)) {
                 state.state = entity::state::EntityDead;
             }
         }
