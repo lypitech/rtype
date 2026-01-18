@@ -15,7 +15,7 @@ struct LobbyListAck
     static constexpr auto kFlag = rtnt::core::packet::Flag::kReliable;
     static constexpr rtnt::core::packet::Name kName = "LOBBY_LIST_ACK";
 
-    std::vector<uint32_t> roomIds;  ///< The list of rooms' id per page of 20 rooms
+    std::vector<uint16_t> roomIds;  ///< The list of rooms' id per page of 20 rooms
     uint32_t page;                  ///< The current page
     uint32_t maxPage;               ///< The max page
 

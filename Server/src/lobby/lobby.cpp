@@ -132,8 +132,7 @@ void Lobby::join(const packet::server::SessionPtr& session)
                 {},
                 {player::state::PlayerWaiting},
                 session);
-        packet::JoinAck j = {
-            static_cast<uint32_t>(_players.at(session)), _engine.getGameState(), true};
+        packet::JoinAck j = {_players.at(session), _roomId, _engine.getGameState(), true};
         send(session, j);
         if (id != 0) {
             packet::WorldInit w;
