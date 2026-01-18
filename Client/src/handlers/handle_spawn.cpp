@@ -1,6 +1,8 @@
 #include "app.hpp"
+#include "components/animations.hpp"
 #include "components/sprite.hpp"
 #include "components/target_pos.hpp"
+#include "gui/assetManager.hpp"
 #include "handlers.hpp"
 #include "rteng.hpp"
 
@@ -13,6 +15,14 @@ static void addGraphicalComponents(rtecs::types::EntityID id,
         toolbox.engine.getEcs()->addEntityComponents<components::Sprite>(
             id, {type.value().get().type});
     }
+
+    const gui::AnimationConfig& config = gui::typeToAnimation(type.value().get().type);
+    if (config.frameCount > 1) {
+        toolbox.engine.getEcs()->addEntityComponents<components::Animation>(
+            id,
+            {config.frameCount, 0, config.frameTime, 0.0f, config.frameWidth, config.frameHeight});
+    }
+
     rtecs::types::OptionalRef<components::Position> pos =
         toolbox.engine.getEcs()->group<components::Position>().getEntity<components::Position>(id);
     if (pos) {
@@ -42,5 +52,4 @@ void handleSpawn(Spawn packet,
     addGraphicalComponents(real, toolbox);
     LOG_TRACE_R2("Finished recomposing entity {}", real);
 }
-
 }  // namespace packet::handler
