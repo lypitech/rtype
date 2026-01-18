@@ -32,7 +32,7 @@ compatibility issues. Check your profile
 (usually located at `C:\Users\<YOU>\.conan2\profiles\default`) and ensure it
 matches the configuration below:
 
-```
+```ini
 [settings]
 arch=x86_64
 build_type=Debug
