@@ -28,6 +28,7 @@ add_executable(${PROJECT_NAME}
     src/handlers/handle_user_input.cpp
     src/app.cpp
     src/systems/apply_movement.cpp
+    src/systems/apply_enemy_movement.cpp
     src/systems/broadcast_updated_movements.cpp
 )
 
