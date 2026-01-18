@@ -121,7 +121,7 @@ void Lobby::restart()
     _levelDirector.restart();
     for (const auto& playerId : _players | std::views::values) {
         _engine.getEntityFromGroup<components::State>(playerId).value().get().state =
-            player::state::PlayerAlive;
+            entity::state::EntityAlive;
     }
 }
 
