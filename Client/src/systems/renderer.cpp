@@ -31,7 +31,7 @@ void Renderer::apply(rtecs::ECS& ecs)
         return;
     }
     BeginDrawing();
-    ClearBackground({0, 255, 0, 255});
+    ClearBackground(GREEN);
     DrawTexture(_assetManager.getBackground(), 0, 0, WHITE);
     ecs.group<components::Sprite, components::Position>().apply(
         [&](const rtecs::types::EntityID& id,
@@ -72,7 +72,6 @@ void Renderer::apply(rtecs::ECS& ecs)
 
             DrawTexturePro(rawTex, sourceRec, destRec, {0, 0}, 0.0f, WHITE);
         });
-    EndDrawing();
 }
 
 }  // namespace systems
