@@ -76,7 +76,14 @@ bool Lobby::hasPlayerAlive()
     });
 }
 
-void Lobby::restart() { _levelDirector.restart(); }
+void Lobby::restart()
+{
+    _levelDirector.restart();
+    for (const auto& playerId : _players | std::views::values) {
+        _engine.getEntityFromGroup<components::State>(playerId).value().get().state =
+            player::state::PlayerAlive;
+    }
+}
 
 void Lobby::pushTask(const lobby::Callback& action) { _actionQueue.push(action); }
 
