@@ -22,34 +22,20 @@ jobs:
             - name: Install system dependencies (Linux)
               if: matrix.os == 'ubuntu-latest'
               run: |
-                sudo apt-get update
-                sudo apt-get install -y software-properties-common
-                sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-                sudo apt-get update
-                sudo apt-get install -y \
-                  build-essential \
-                  cmake \
-                  ninja-build \
-                  pkg-config  \
-                  gcc-15 \
-                  g++-15
-#            - name: Install system dependencies (Linux)
-#              if: matrix.os == 'ubuntu-latest'
-#              run: |
-#                  sudo apt-get update
-#                  sudo apt-get install -y \
-#                    build-essential \
-#                    cmake \
-#                    ninja-build \
-#                    pkg-config  \
-#                    g++-15
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    build-essential \
+                    cmake \
+                    ninja-build \
+                    pkg-config  \
+                    g++-14
 
-            - name: Set GCC 15 as default compiler (Linux)
+            - name: Set GCC 14 as default compiler (Linux)
               if: matrix.os == 'ubuntu-latest'
               shell: bash
               run: |
-                  echo "CC=gcc-15" >> $GITHUB_ENV
-                  echo "CXX=g++-15" >> $GITHUB_ENV
+                  echo "CC=gcc-14" >> $GITHUB_ENV
+                  echo "CXX=g++-14" >> $GITHUB_ENV
 
             - name: Install system dependencies (Mac)
               if: matrix.os == 'macos-latest'
