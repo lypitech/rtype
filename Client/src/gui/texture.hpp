@@ -7,7 +7,7 @@
 
 namespace gui {
 
-static constexpr std::string_view PLAYER_TEXTURE_FILEPATH = "Client/assets/sprites/players.gif";
+static constexpr std::string_view PLAYER_TEXTURE_FILEPATH = "Client/assets/sprites/player1.gif";
 
 class Texture
 {
