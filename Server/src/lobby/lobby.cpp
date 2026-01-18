@@ -14,6 +14,7 @@
 #include "logger/Thread.h"
 #include "systems/apply_enemy_movement.hpp"
 #include "systems/apply_movement.hpp"
+#include "systems/broadcast_dead_entities.hpp"
 #include "systems/broadcast_updated_movements.hpp"
 
 Lobby::Lobby(const lobby::Id id,
@@ -34,6 +35,7 @@ void Lobby::registerAllSystems()
     _engine.registerSystem(std::make_shared<server::systems::ApplyMovement>());
     _engine.registerSystem(std::make_shared<server::systems::ApplyEnemyMovement>());
     _engine.registerSystem(std::make_shared<server::systems::BroadcastUpdatedMovements>(*this));
+    // _engine.registerSystem(std::make_shared<server::systems::BroadcastDeadEntities>(*this));
 }
 
 lobby::Id Lobby::getRoomId() const { return _roomId; }
@@ -68,6 +70,21 @@ void Lobby::broadcast(const packet::server::Variant& packet) const
     _outGoing.push({getAllSessions(), packet});
 }
 
+rtecs::types::EntityID Lobby::killEntity(const rtecs::types::EntityID id,
+                                         const packet::server::SessionPtr& session)
+{
+    std::cout << "Killing entity " << id << std::endl;
+    _engine.destroyEntity(id);
+    if (session) {
+        _players.erase(session);
+    }
+    packet::Destroy p{};
+    p.id = id;
+    p.earned_points = 0;
+    broadcast(p);
+    return id;
+}
+
 rteng::GameEngine& Lobby::getEngine() { return _engine; }
 
 void Lobby::changeGameState(const uint64_t& gameState)
@@ -95,7 +112,7 @@ bool Lobby::hasPlayerAlive()
     }
     return std::ranges::any_of(_players | std::views::values, [&](const auto& playerId) {
         const auto& stateOpt = _engine.getEntityFromGroup<components::State>(playerId);
-        return stateOpt && stateOpt->get().state == player::state::PlayerAlive;
+        return stateOpt && stateOpt->get().state == entity::state::EntityAlive;
     });
 }
 
@@ -130,7 +147,7 @@ void Lobby::join(const packet::server::SessionPtr& session)
                 {true, 150, 75},
                 {},
                 {},
-                {player::state::PlayerWaiting},
+                {entity::state::PlayerWaiting},
                 session);
         packet::JoinAck j = {_players.at(session), _roomId, _engine.getGameState(), true};
         send(session, j);
