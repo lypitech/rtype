@@ -95,6 +95,9 @@ It has been strictly tested and validated on the following environments:
 Server and client binaries will respectively be stored in 
 `./build/Server/r-type_server` and `./build/Client/r-type_client`.
 
+On Windows, they will be stored in `./build/Server/Release/r-type_server.exe`
+and `./build/Client/Release/r-type_client.exe`.
+
 ### Using Nix
 
 If you are a Nix user, you can run the project directly:
