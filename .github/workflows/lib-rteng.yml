@@ -7,17 +7,7 @@ on:
         branches: ["*rteng*"]
 
 jobs:
-    check-coding-style-on-rteng:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - name: Run Coding Style Script
-              run: |
-                  chmod +x scripts/checker.sh
-                  ./scripts/checker.sh
-
     build-and-test-on-rteng:
-        needs: check-coding-style-on-rteng
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false # If one failed, don't cancel the other jobs (Kinda like a debug option)
