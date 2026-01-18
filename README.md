@@ -24,15 +24,15 @@
 ## About
 
 This project is developed as part of the [Epitech](https://www.epitech.eu/) 
-Advanced C++ curriculum (Year 3).  
+curriculum, Advanced C++ unit (Year 3).  
 
 The primary goal of it is to design and implement a robust game engine 
 featuring:
-- **An ECS (`rtecs`)**: A high-performance Entity Component System for 
-  modular game logic.
-- **High level network library (`rtnt`)**: A cross-platform, asynchronous
-  network library built on [Asio](https://think-async.com/Asio/) providing 
-  reliable UDP communication.
+- **An ECS ([`rtecs`](lib/rtecs))**: A high-performance Entity Component System 
+  for modular game logic.
+- **High level network library ([`rtnt`](lib/rtnt))**: A cross-platform, 
+  asynchronous network library built on [Asio](https://think-async.com/Asio/) 
+  providing reliable UDP communication.
 - **Multithreading**: Decoupled game logic, rendering, and network I/O.
 - **Cross-platform support**: Can run on macOS, Linux and Windows on `arm64` and 
   `x86_64` CPU architectures.
@@ -61,7 +61,9 @@ It has been strictly tested and validated on the following environments:
 ### Prerequisites
 
 - [Git](https://git-scm.com)
-- C++ compiler supporting C++23 ([GCC](https://gcc.gnu.org) 10+, [Clang](https://clang.llvm.org) 10+, [MSVC](https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B) 19.28+)
+- C++ compiler supporting C++23 ([GCC](https://gcc.gnu.org) 10+,
+    [Clang](https://clang.llvm.org) 10+,
+    [MSVC](https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B) 19.28+)
 - [CMake](https://cmake.org) 3.20+
 - [Conan](https://conan.io/) 2.0+
 
