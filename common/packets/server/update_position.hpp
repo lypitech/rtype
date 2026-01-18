@@ -16,10 +16,10 @@ struct UpdatePosition
     static constexpr rtnt::core::packet::Name kName = "UPDATE_POSITION";
 
     rtecs::types::EntityID id;  ///< The id of the entity
-    float_t x;                  //< The x position of the entity
-    float_t y;                  //< The y position of the entity
-    float_t vx;                 //< The x velocity of the entity (used for dead reckoning)
-    float_t vy;                 //< The y velocity of the entity (used for dead reckoning)
+    float x;                    //< The x position of the entity
+    float y;                    //< The y position of the entity
+    float vx;                   //< The x velocity of the entity (used for dead reckoning)
+    float vy;                   //< The y velocity of the entity (used for dead reckoning)
 
     template <typename Archive>
     void serialize(Archive& ar)
