@@ -144,9 +144,16 @@ void Lobby::leave(const packet::server::SessionPtr& session)
         if (_players.contains(session)) {
             const rtecs::types::EntityID id = _players.at(session);
             _engine.destroyEntity(id);
-            broadcast(packet::Destroy{static_cast<uint32_t>(id), 0});
+            broadcast(packet::Destroy{id, 0});
             _players.erase(session);
             LOG_INFO("Player {} left lobby {}", session->getId(), _roomId);
+            if (_players.empty()) {
+                LOG_INFO("Lobby empty.", session->getId(), _roomId);
+                for (const auto& entityId : _engine.clearEcs()) {
+                    broadcast(packet::Destroy{entityId, 0});
+                }
+                _engine.setGameState(game::state::GameWaiting);
+            }
         } else {
             LOG_WARN("Session tried to leave lobby {} but was not in it.", _roomId);
         }
