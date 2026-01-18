@@ -81,15 +81,18 @@ void Manager::pushActionToLobby(const packet::server::SessionPtr& session,
 }
 
 void Manager::joinRoom(const packet::server::SessionPtr& session,
-                       const lobby::Id roomId)
+                       lobby::Id roomId)
 {
+    if (_playerLookup.contains(session)) {
+        return;
+    }
     if (roomId > 255) {
         const Id lobbyId = createLobby();
         if (lobbyId >= 255) {
             _outGoing.push({{session}, packet::JoinAck{0, 0, game::state::GameMenu, false}});
+            return;
         }
-        joinRoom(session, lobbyId);
-        return;
+        roomId = lobbyId - 1;
     }
     std::unique_lock lock(_mutex);
     if (_lobbies.contains(roomId)) {
