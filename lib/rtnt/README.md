@@ -116,7 +116,6 @@ ctest --test-dir build/ --output-on-failure
 | Channel independency |   ✅    | Blocks Channel 1 while leaving Channel 2 open. Verifies that Channel 2 continues processing packets even while Channel 1 is stalling.                          |
 | Stats                |   ✅    | Same as *Packet Loss*, but attaches a `Recorder` to export CSV metrics on bandwidth usage, RTT and retransmission rates.                                       |
 
-
 ## How to use
 
 ### 1. Packets
