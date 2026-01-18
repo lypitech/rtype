@@ -16,19 +16,14 @@ void handleUpdatePosition(UpdatePosition packet,
         return;
     }
     const rtecs::types::EntityID id = binding_map.at(packet.id);
-    auto positions =
-        toolbox.engine.getEcs()
-            ->group<components::Position, components::Velocity, components::TargetPos>();
+    auto positions = toolbox.engine.getEcs()->group<components::Position, components::TargetPos>();
     const auto posOpt = positions.getEntity<components::Position>(id);
-    const auto velOpt = positions.getEntity<components::Velocity>(id);
     const auto targetOpt = positions.getEntity<components::TargetPos>(id);
 
-    if (posOpt && velOpt && targetOpt) {
+    if (posOpt && targetOpt) {
         components::Position& pos = posOpt.value().get();
-        components::Velocity& vel = velOpt.value().get();
         components::TargetPos& target = targetOpt.value().get();
-        vel.vx = packet.vx;
-        vel.vy = packet.vy;
+
         const float dx = packet.x - pos.x;
         const float dy = packet.y - pos.y;
         if (dx * dx + dy * dy > 300.0f * 300.0f) {
@@ -38,6 +33,12 @@ void handleUpdatePosition(UpdatePosition packet,
             target.x = packet.x;
             target.y = packet.y;
         }
+    }
+    const auto velOpt = toolbox.engine.getEntityFromGroup<components::Velocity>(id);
+    if (velOpt) {
+        components::Velocity& vel = velOpt.value().get();
+        vel.vx = packet.vx;
+        vel.vy = packet.vy;
     }
 }
 

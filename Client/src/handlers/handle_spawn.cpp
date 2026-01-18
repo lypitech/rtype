@@ -14,18 +14,18 @@ static void addGraphicalComponents(rtecs::types::EntityID id,
     if (type) {
         toolbox.engine.getEcs()->addEntityComponents<components::Sprite>(
             id, {type.value().get().type});
-    }
 
-    const gui::AnimationConfig& config = gui::typeToAnimation(type.value().get().type);
-    if (config.frameCount > 1) {
-        toolbox.engine.getEcs()->addEntityComponents<components::Animation>(id,
-                                                                            {config.frameCount,
-                                                                             0,
-                                                                             config.frameTime,
-                                                                             0.0f,
-                                                                             config.frameWidth,
-                                                                             config.frameHeight,
-                                                                             config.loop});
+        const gui::AnimationConfig& config = gui::typeToAnimation(type.value().get().type);
+        if (config.frameCount > 1) {
+            toolbox.engine.getEcs()->addEntityComponents<components::Animation>(id,
+                                                                                {config.frameCount,
+                                                                                 0,
+                                                                                 config.frameTime,
+                                                                                 0.0f,
+                                                                                 config.frameWidth,
+                                                                                 config.frameHeight,
+                                                                                 config.loop});
+        }
     }
 
     rtecs::types::OptionalRef<components::Position> pos =
