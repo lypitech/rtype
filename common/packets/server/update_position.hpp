@@ -15,11 +15,11 @@ struct UpdatePosition
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr rtnt::core::packet::Name kName = "UPDATE_POSITION";
 
-    uint32_t id;  ///< The id of the entity
-    uint16_t x;   //< The x position of the entity
-    uint16_t y;   //< The y position of the entity
-    uint16_t vx;  //< The x velocity of the entity (used for dead reckoning)
-    uint16_t vy;  //< The y velocity of the entity (used for dead reckoning)
+    rtecs::types::EntityID id;  ///< The id of the entity
+    float_t x;                  //< The x position of the entity
+    float_t y;                  //< The y position of the entity
+    float_t vx;                 //< The x velocity of the entity (used for dead reckoning)
+    float_t vy;                 //< The y velocity of the entity (used for dead reckoning)
 
     template <typename Archive>
     void serialize(Archive& ar)

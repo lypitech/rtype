@@ -15,8 +15,8 @@ struct Destroy
     static constexpr auto kFlag = rtnt::core::packet::Flag::kUnreliable;
     static constexpr rtnt::core::packet::Name kName = "DESTROY";
 
-    uint32_t id;             ///< The id of the destroyed entity.
-    uint32_t earned_points;  ///< The points earned for this destruction.
+    rtecs::types::EntityID id;  ///< The id of the destroyed entity.
+    uint32_t earned_points;     ///< The points earned for this destruction.
 
     template <typename Archive>
     void serialize(Archive& ar)
