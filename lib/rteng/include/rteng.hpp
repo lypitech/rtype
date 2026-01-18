@@ -166,20 +166,20 @@ public:
      * @brief Set the current state of the game.
      * @param newState The new game state.
      */
-    void setGameState(const size_t& newState);
-    size_t getGameState() const;
+    void setGameState(const uint64_t& newState);
+    uint64_t getGameState() const;
 
     /**
      * @brief Set the current state of the menus.
      * @param newState The new menu state.
      */
-    void setMenuState(const size_t& newState);
-    size_t getMenuState() const;
+    void setMenuState(const uint64_t& newState);
+    uint64_t getMenuState() const;
 
 private:
     std::unique_ptr<rtecs::ECS> _ecs;
-    size_t _gameState;
-    size_t _menuState;
+    uint64_t _gameState;
+    uint64_t _menuState;
 };
 
 }  // namespace rteng
