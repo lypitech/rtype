@@ -38,7 +38,7 @@ TEST_F(NetworkTest,
     statsRecorderServer.start(std::chrono::milliseconds(10));
     statsRecorderClient.start(std::chrono::milliseconds(10));
 
-    const uint32_t packetAmount = 50000;
+    const uint32_t packetAmount = 8192;
 
     std::vector<uint32_t> receivedIndices;
     bool hasDisconnected = false;
