@@ -20,7 +20,10 @@ void AnimationSystem::apply(rtecs::ECS& ecs)
             anim.elapsed_time += dt;
             if (anim.elapsed_time >= anim.frame_time) {
                 anim.elapsed_time = 0;
-                anim.current_frame = (anim.current_frame + 1) % anim.frame_count;
+
+                if (anim.loop || anim.current_frame < anim.frame_count - 1) {
+                    anim.current_frame = (anim.current_frame + 1) % anim.frame_count;
+                }
             }
         });
 }
