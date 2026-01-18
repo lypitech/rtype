@@ -46,6 +46,17 @@ std::vector<Id> Manager::getLobbiesId(const uint32_t page) const
 
 uint32_t Manager::getLobbiesMaxPage() const { return _lobbies.size() / 20 + 1; }
 
+void Manager::update()
+{
+    for (size_t i = _lobbies.size() - 1; i > 0; --i) {
+        const auto& lobby = _lobbies.at(i);
+        if (!lobby->isRunning()) {
+            lobby->stop();
+            _lobbies.erase(i);
+        }
+    }
+}
+
 Manager::~Manager() { stopAll(); }
 
 void Manager::stopAll() const

@@ -64,6 +64,8 @@ public:
      */
     uint32_t getLobbiesMaxPage() const;
 
+    void update();
+
 private:
     mutable std::mutex _mutex;
     packet::server::OutGoingQueue& _outGoing;
