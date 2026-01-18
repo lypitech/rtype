@@ -11,8 +11,10 @@ option(BUILD_TEST "Build the unit tests" OFF)
 option(USE_CONAN "Use Conan for dependencies" ON)
 
 # --- Dependencies ---
-if(USE_CONAN AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    if(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
+if(USE_CONAN)
+    if(DEFINED CMAKE_TOOLCHAIN_FILE AND CMAKE_TOOLCHAIN_FILE MATCHES "conan_toolchain")
+        set(USING_CONAN TRUE)
+    elseif(EXISTS "${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
         include("${CMAKE_BINARY_DIR}/conan_toolchain.cmake")
         set(USING_CONAN TRUE)
     else()
@@ -34,10 +36,9 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 
-find_package(PkgConfig REQUIRED)
-
 # Find packages using pkg-config when not using Conan
 if(NOT USING_CONAN)
+    find_package(PkgConfig REQUIRED)
     pkg_check_modules(ASIO REQUIRED asio)
     find_package(raylib REQUIRED)
     find_package(nlohmann_json REQUIRED)
