@@ -14,6 +14,7 @@
 #include "packets/server/spawn.hpp"
 #include "systems/IO.hpp"
 #include "systems/Menus.hpp"
+#include "systems/animationSystem.hpp"
 #include "systems/interpolation.hpp"
 #include "systems/network.hpp"
 #include "systems/renderer.hpp"
@@ -52,13 +53,15 @@ void App::registerAllComponents()
 
 void App::registerAllSystems()
 {
+    _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::AnimationSystem>());
     _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::Interpolation>());
     _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::IO>(_networkService));
-    _toolbox.engine.getEcs()->registerSystem(std::make_shared<systems::Renderer>(_shouldStop));
-    _toolbox.engine.getEcs()->registerSystem(
-        std::make_shared<systems::MenuRenderer>(_lobbies, _networkService, _toolbox.engine));
     _toolbox.engine.getEcs()->registerSystem(
         std::make_shared<systems::Network>(_client, _networkService));
+    _toolbox.engine.getEcs()->registerSystem(
+        std::make_shared<systems::Renderer>(_shouldStop, _toolbox.engine));
+    _toolbox.engine.getEcs()->registerSystem(
+        std::make_shared<systems::MenuRenderer>(_lobbies, _networkService, _toolbox.engine));
 }
 
 void App::registerAllCallbacks()
